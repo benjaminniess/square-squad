@@ -1,7 +1,7 @@
 const app = require('express')()
 const http = require('http').createServer(app)
 const io = require('socket.io')(http)
-let players = []
+let players = {}
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/html/index.html')
@@ -22,16 +22,29 @@ http.listen(3000, () => {
 })
 
 io.on('connection', (socket) =>{
-  players.push({
-    'id': socket.id,
-    'x': 100 * (players.length+ 1),
-    'y': 200 * (players.length + 1)
-  })
+  players[socket.id] = {
+    'x': 100,
+    'y': 200
+  };
 
   socket.on('disconnect', function () {
-    players = players.filter(function(player) {
-      return player.id != socket.id 
-    })
+    delete players[socket.id];
+  });
+
+  socket.on('keyPressed', function (socket) {
+    if ( socket.key == 39 ) {
+      players[socket.id].x += 5
+    } else if ( socket.key == 37 ) {
+      players[socket.id].x -= 5 
+    }
+    
+    if ( socket.key == 40 ) {
+      players[socket.id].y += 5
+    } else if ( socket.key == 38 ) {
+      players[socket.id].y -= 5 
+    }
+    
+    console.log(socket.key)
   });
 })
 
