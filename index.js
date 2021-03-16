@@ -4,6 +4,8 @@ const io = require('socket.io')(http)
 let players = {}
 let playersMoves = {}
 const speed = 6
+const ballRadius = 10
+const canvasWidth = 700
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/html/index.html')
@@ -77,16 +79,29 @@ function refreshData() {
   for (const [socketID, moves] of Object.entries(playersMoves)) {
     if ( moves.top ) {
       players[socketID].y += speed
+      if ( players[socketID].y > ( canvasWidth - ballRadius ) ) {
+        players[socketID].y = canvasWidth- ballRadius
+      }
     }
     if ( moves.right ) {
       players[socketID].x += speed
+      if ( players[socketID].x > ( canvasWidth - ballRadius ) ) {
+        players[socketID].x = canvasWidth - ballRadius
+      }
     }
     if ( moves.down ) {
       players[socketID].y -= speed
+      if ( players[socketID].y < ( ballRadius ) ) {
+        players[socketID].y = ballRadius
+      }
     }
     if ( moves.left ) {
       players[socketID].x -= speed
+      if ( players[socketID].x < ballRadius  ) {
+        players[socketID].x = ballRadius
+      }
     }
+    
   }
 
   io.emit('refreshCanvas', {
