@@ -30,12 +30,17 @@ http.listen(3000, () => {
 })
 
 io.on('connection', (socket) =>{
-  players[socket.id] = {
+  console.log('New player : ' + socket.id)
+
+  players[String(socket.id)] = {
     'x': 100,
-    'y': 200
+    'y': 200,
+    'isWolf': Object.keys(players).length === 1 ? true : false
   };
 
-  playersMoves[socket.id] = {
+  io.emit('refreshPlayers', players)
+  
+  playersMoves[String(socket.id)] = {
     'up': false,
     'down': false,
     'left': false,
@@ -43,8 +48,12 @@ io.on('connection', (socket) =>{
   };
 
   socket.on('disconnect', function () {
-    delete players[socket.id];
-    delete playersMoves[socket.id];
+    console.log('Player logout: ' + socket.id)
+    delete players[String(socket.id)];
+    delete playersMoves[String(socket.id)];
+
+    io.emit('refreshPlayers', players)
+    
   });
 
   socket.on('keyPressed', function (socket) {

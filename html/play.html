@@ -17,6 +17,11 @@
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
+    <h4>Players</h4>
+    
+    <ul id="players">
+
+    </ul>
     <canvas id="myCanvas" width="700" height="700"></canvas>
 
     <script>
@@ -24,15 +29,11 @@
       var canvas = document.getElementById('myCanvas')
       var ctx = canvas.getContext('2d')
       var ballRadius = 10
-      var x = canvas.width / 2
-      var y = canvas.height - 30
-      var dx = 2
-      var dy = -2
+      var playersList = document.getElementById('players')
 
-      var sessionID =false;
-      var socketConnection = io.connect();
-      socketConnection.on('connect', function() {
-        sessionID = socketConnection.id;
+      var sessionID = false;
+      socket.on('connect', function() {
+        sessionID = socket.id;
       });
 
       document.addEventListener("keydown", keyDownHandler, false);
@@ -45,17 +46,24 @@
         socket.emit( "keyUp", { "key" : e.keyCode, "id": sessionID } )
       }
 
-  
-
       socket.on('refreshCanvas', (data) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
 
         for (const [key, player] of Object.entries(data.players)) {
           ctx.beginPath()
           ctx.arc(player.x, player.y, ballRadius, 0, Math.PI * 2)
-          ctx.fillStyle = '#0095DD'
+          ctx.fillStyle = player.isWolf ? '#DD9500' : '#0095DD'
           ctx.fill()
           ctx.closePath()
+        }
+      })
+
+      socket.on('refreshPlayers', (data) => {
+        playersList.innerHTML = '';
+        for (const [socketID, player] of Object.entries(data)) {
+          var li = document.createElement("li");
+          li.appendChild(document.createTextNode(socketID));
+          playersList.appendChild(li);     
         }
       })
     </script>
