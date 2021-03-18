@@ -1,14 +1,29 @@
 const app = require('express')()
+const bodyParser = require('body-parser')
+const pug = require('pug');
+
 const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 let players = {}
 let playersMoves = {}
+let rooms = []
 const speed = 6
 const ballRadius = 10
 const canvasWidth = 700
 
+http.listen(3000)
+
+app.use(bodyParser.urlencoded({ extended: true }))
+app.set('view engine', 'pug');
+app.set('views', './html')
+
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/html/index.html')
+  res.render('index', { "rooms": rooms});
+})
+
+app.post('/room', (req, res) => {
+  rooms.push(req.body['new-room'])
+  res.redirect('/')
 })
 
 app.get('/play', (req, res) => {
@@ -25,12 +40,18 @@ io.on('connection', (socket) => {
   })
 })
 
-http.listen(3000, () => {
-  console.log('listening on *:3000')
-})
+
 
 io.on('connection', (socket) =>{
   console.log('New player : ' + socket.id)
+
+  //console.log(io.sockets.adapter.rooms)
+
+  var realRooms = Object.keys(io.sockets.adapter.rooms).reduce((filtered, key) => {
+    if(!io.sockets.adapter.rooms[key].sockets.hasOwnProperty(key)) filtered.push(key);
+    return filtered;
+  }, []);
+  console.log(realRooms);
 
   players[String(socket.id)] = {
     'x': 100,

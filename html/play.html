@@ -17,13 +17,15 @@
     <script src="/socket.io/socket.io.js"></script>
   </head>
   <body>
+    
+    <canvas id="myCanvas" width="700" height="700"></canvas>
+
     <h4>Players</h4>
     
     <ul id="players">
 
     </ul>
-    <canvas id="myCanvas" width="700" height="700"></canvas>
-
+    
     <script>
       const socket = io()
       var canvas = document.getElementById('myCanvas')

@@ -1,0 +1,21 @@
+html
+  head
+    title= title
+  body
+    form(
+      method='post'
+      action='/room'
+    )
+      input(
+        type='text'
+        name='new-room'
+      ) 
+      input(
+        type='submit'
+        value='Create room'
+      )
+    
+    ul
+      each room in rooms
+        li
+          a(href='/' + room) !{room}
