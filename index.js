@@ -1,12 +1,13 @@
 const app = require('express')()
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const { resourceUsage } = require('process');
 const pug = require('pug');
 
 const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 let players = {}
 let playersMoves = {}
-let rooms = []
+let rooms = {}
 const speed = 6
 const ballRadius = 10
 const canvasWidth = 700
@@ -22,24 +23,31 @@ app.get('/', (req, res) => {
 })
 
 app.post('/room', (req, res) => {
-  rooms.push(req.body['new-room'])
-  res.redirect('/')
+  let roomName = req.body['new-room']
+  let roomSlug = stringToSlug( roomName )
+  if ( typeof( rooms[ roomSlug] ) !== undefined ) {
+    res.redirect('/')
+  } else {
+
+  }
+  rooms[roomSlug] = roomName
+  res.redirect('/room/' + roomSlug)
 })
 
 app.get('/play', (req, res) => {
   res.sendFile(__dirname + '/html/play.html')
 })
 
+app.get('/room/:roomSlug', (req, res) => {
+  if (typeof(rooms[ req.params.roomSlug ]) === 'undefined') {
+    res.redirect('/')
+  }
+  res.render('room', { "roomName": rooms[ req.params.roomSlug ]});
+})
+
 app.get('/html/*', (req, res) => {
   res.sendFile(__dirname + '/html/' + req.params[0])
 })
-
-io.on('connection', (socket) => {
-  socket.on('move', (socketVal) => {
-    console.log(socketVal)
-  })
-})
-
 
 
 io.on('connection', (socket) =>{
@@ -141,4 +149,22 @@ function refreshData() {
   io.emit('refreshCanvas', {
     'players' : players
   })
+}
+
+function stringToSlug (str) {
+  str = str.replace(/^\s+|\s+$/g, ''); // trim
+  str = str.toLowerCase();
+
+  // remove accents, swap ñ for n, etc
+  var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+  var to   = "aaaaeeeeiiiioooouuuunc------";
+  for (var i=0, l=from.length ; i<l ; i++) {
+      str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+  }
+
+  str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+      .replace(/\s+/g, '-') // collapse whitespace and replace by -
+      .replace(/-+/g, '-'); // collapse dashes
+
+  return str;
 }
