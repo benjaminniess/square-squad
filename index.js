@@ -1,10 +1,13 @@
 const app = require('express')()
 const bodyParser = require('body-parser');
-const { resourceUsage } = require('process');
 const pug = require('pug');
 
 const http = require('http').createServer(app)
 const io = require('socket.io')(http)
+
+const crypto = require("crypto");
+const randomId = () => crypto.randomBytes(8).toString("hex");
+
 let players = {}
 let playersMoves = {}
 let rooms = {}
@@ -25,13 +28,13 @@ app.get('/', (req, res) => {
 app.post('/room', (req, res) => {
   let roomName = req.body['new-room']
   let roomSlug = stringToSlug( roomName )
-  if ( typeof( rooms[ roomSlug] ) !== undefined ) {
+  if ( typeof( rooms[ roomSlug] ) !== "undefined" ) {
     res.redirect('/')
   } else {
-
+    rooms[roomSlug] = roomName
+    res.redirect('/room/' + roomSlug) 
   }
-  rooms[roomSlug] = roomName
-  res.redirect('/room/' + roomSlug)
+  
 })
 
 app.get('/play', (req, res) => {
@@ -49,9 +52,10 @@ app.get('/html/*', (req, res) => {
   res.sendFile(__dirname + '/html/' + req.params[0])
 })
 
-
 io.on('connection', (socket) =>{
-  console.log('New player : ' + socket.id)
+  socket.sessionID = randomId();
+  socket.userID = randomId();
+  socket.username = 'Player ' + randomId();
 
   //console.log(io.sockets.adapter.rooms)
 
@@ -64,7 +68,8 @@ io.on('connection', (socket) =>{
   players[String(socket.id)] = {
     'x': 100,
     'y': 200,
-    'isWolf': Object.keys(players).length === 1 ? true : false
+    'isWolf': Object.keys(players).length === 1 ? true : false,
+    'name': socket.username
   };
 
   io.emit('refreshPlayers', players)
