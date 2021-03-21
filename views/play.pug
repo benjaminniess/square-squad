@@ -1,23 +1,13 @@
-doctype html
-head
-  meta(charset='utf-8')
-  title Gamedev Canvas Workshop
-  style.
-    * {
-    padding: 0;
-    margin: 0;
-    }
-    canvas {
-    background: #eee;
-    display: block;
-    margin: 0 auto;
-    }
+html
+  include includes/header.pug
   script(src='/assets/js/dist/socket.io.js')
-  
-body
-  canvas#myCanvas(width='700' height='700')
-  h3 !{roomName}
-  h4 Players
-  ul#players
-
-  script(src='/assets/js/play.js')
+  body
+    div.uk-text-center.uk-grid
+      div.uk-width-1-4
+        div.uk-card.uk-card-default.uk-card-body
+          h3 !{roomName}
+          h4 Players
+          ul#players
+      div.uk-width-3-4
+        canvas#myCanvas(width='700' height='700')
+    script(src='/assets/js/play.js')
