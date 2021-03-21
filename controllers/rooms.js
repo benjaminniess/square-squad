@@ -23,14 +23,6 @@ module.exports = function (app) {
 
   app.use('/rooms', router)
 
-  app.use(function (req, res, next) {
-    if ( ! req.session.nickname ) {
-      res.redirect('/') 
-    } else {
-      next()
-    }
-  })
-
   io.on('connection', (socket) =>{
     socket.sessionID = randomId();
     socket.userID = randomId();
@@ -136,6 +128,14 @@ module.exports = function (app) {
   }
   
 }
+
+router.get('*', function (req, res, next) {
+  if ( ! req.session.nickname ) {
+    res.redirect('/') 
+  } else {
+    next()
+  }
+})
 
 router.get('/', function (req, res, next) {
   res.render('rooms', { "rooms": Object.keys(rooms).length ? rooms : null, "playerName" : req.session.nickname })
