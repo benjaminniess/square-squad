@@ -1,10 +1,13 @@
 html
-  head
-    title= title
+  include includes/header.pug
   body
-    p  bla!{roomName} bla
+    div.uk-section
+        div.uk-container.uk-container-small 
+          h1.uk-heading-large.uk-text-center Square Squad
+          h3 !{roomName}
 
-    p
-      a(href='/rooms/' + roomSlug + '/play') play
-      a(href='/') back
-      
+          p
+            a.uk-button.uk-button-primary(href='/rooms/' + roomSlug + '/play') play
+          p
+            a.uk-button.uk-button-default(href='/') back
+    include includes/footer.pug
