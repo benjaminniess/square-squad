@@ -1,5 +1,6 @@
 'use_strict'
 
+const e = require('express')
 const express = require('express')
 const router = express.Router()
 
@@ -12,10 +13,15 @@ module.exports = function (app) {
 }
 
 router.get('/', function (req, res, next) {
-  res.render('index')
+  if ( ! req.session.nickname || req.query.action == 'edit-login' ) {
+    res.render('index', { nickName : req.session.nickname })
+  } else {
+    res.redirect('/rooms')  
+  }
+  
 })
 
 router.post('/', function (req, res, next) {
-  console.log('ok post')
+  req.session.nickname = req.body.playerName
   res.redirect('/rooms')
 })
