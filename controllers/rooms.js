@@ -130,7 +130,7 @@ module.exports = function (app) {
 }
 
 router.get('/', function (req, res, next) {
-  res.render('index', { "rooms": rooms})
+  res.render('rooms', { "rooms": Object.keys(rooms).length ? rooms : null})
 })
 
 router.get('/:roomSlug', function (req, res, next) {

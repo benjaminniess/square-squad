@@ -1,21 +1,24 @@
 html
-  head
-    title= title
+  include includes/header.pug
   body
-    form(
-      method='post'
-      action='/rooms'
-    )
-      input(
-        type='text'
-        name='new-room'
-      ) 
-      input(
-        type='submit'
-        value='Create room'
-      )
-    
-    ul
-      each roomName, roomSlug in rooms
-        li
-          a(href='/rooms/' + roomSlug) !{roomName}
+    div.uk-section
+      div.uk-container.uk-container-small 
+        h1.uk-heading-large.uk-text-center Square Squad
+        h3 What's your name?
+        form(
+          method='post'
+          action='/'
+        )
+          div.uk-margin
+            input(
+              class="uk-input uk-form-large"
+              type='text'
+              name='playerName'
+            ) 
+          div.uk-margin
+            input(
+              class="uk-input uk-form-large"
+              type='submit'
+              value='GO!'
+            )
+    include includes/footer.pug
