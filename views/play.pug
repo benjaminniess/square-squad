@@ -1,0 +1,23 @@
+doctype html
+head
+  meta(charset='utf-8')
+  title Gamedev Canvas Workshop
+  style.
+    * {
+    padding: 0;
+    margin: 0;
+    }
+    canvas {
+    background: #eee;
+    display: block;
+    margin: 0 auto;
+    }
+  script(src='/assets/js/dist/socket.io.js')
+  
+body
+  canvas#myCanvas(width='700' height='700')
+  h3 !{roomName}
+  h4 Players
+  ul#players
+
+  script(src='/assets/js/play.js')

@@ -4,7 +4,7 @@ html
   body
     form(
       method='post'
-      action='/room'
+      action='/rooms'
     )
       input(
         type='text'
@@ -18,4 +18,4 @@ html
     ul
       each roomName, roomSlug in rooms
         li
-          a(href='/room/' + roomSlug) !{roomName}
+          a(href='/rooms/' + roomSlug) !{roomName}
