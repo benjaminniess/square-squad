@@ -23,6 +23,14 @@ module.exports = function (app) {
 
   app.use('/rooms', router)
 
+  app.use(function (req, res, next) {
+    if ( ! req.session.nickname ) {
+      res.redirect('/') 
+    } else {
+      next()
+    }
+  })
+
   io.on('connection', (socket) =>{
     socket.sessionID = randomId();
     socket.userID = randomId();
@@ -138,7 +146,7 @@ router.get('/:roomSlug', function (req, res, next) {
     next()
     return
   }
-  res.render('room', { "roomName": rooms[ req.params.roomSlug ], "roomSlug": req.params.roomSlug});
+  res.render('room', { "roomName": rooms[ req.params.roomSlug ], "roomSlug": req.params.roomSlug,  "playerName" : req.session.nickname });
 })
 
 router.get('/:roomSlug/play', function (req, res, next) {
