@@ -9,9 +9,9 @@ html
           div#roomsList
             if rooms
               ul
-                each roomName, roomSlug in rooms
+                each room, roomSlug in rooms
                   li
-                    a(href='/rooms/' + roomSlug) !{roomName}
+                    a(href='/rooms/' + roomSlug) !{room.getName(  )}
             else
               p No rooms yet
           h3 Or create a new one?

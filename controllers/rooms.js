@@ -2,6 +2,8 @@
 
 const express = require('express')
 const router = express.Router()
+const cookie = require("cookie")
+const Room = require('../lib/room')
 
 
 let rooms = {}
@@ -23,9 +25,8 @@ module.exports = function (app) {
 
   app.use('/rooms', router)
 
-  io.on('connection', (socket) =>{
-    socket.sessionID = randomId();
-    socket.userID = randomId();
+  io.on('connection', (socket) => {
+    socket.sessionID = cookie.parse(socket.handshake.headers.cookie)['connect.sid']
     socket.username = 'Player ' + randomId();
   
     /*
@@ -147,7 +148,7 @@ router.get('/:roomSlug', function (req, res, next) {
     next()
     return
   }
-  res.render('room', { "roomName": rooms[ req.params.roomSlug ], "roomSlug": req.params.roomSlug,  "playerName" : req.session.nickname });
+  res.render('room', { "roomName": rooms[ req.params.roomSlug ].getName(), "roomSlug": req.params.roomSlug,  "playerName" : req.session.nickname });
 })
 
 router.get('/:roomSlug/play', function (req, res, next) {
@@ -156,7 +157,7 @@ router.get('/:roomSlug/play', function (req, res, next) {
     return
   }
 
-  res.render('play', { "roomName": rooms[ req.params.roomSlug ], "roomSlug": req.params.roomSlug});
+  res.render('play', { "roomName": rooms[ req.params.roomSlug ].getName(), "roomSlug": req.params.roomSlug});
 })
 
 
@@ -166,7 +167,7 @@ router.post('/', function (req, res, next) {
   if ( typeof( rooms[ roomSlug] ) !== "undefined" ) {
     res.redirect('/')
   } else {
-    rooms[roomSlug] = roomName
+    rooms[roomSlug] = new Room(roomName);
     res.redirect('/rooms/' + roomSlug) 
   }
 })
