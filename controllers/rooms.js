@@ -28,14 +28,15 @@ module.exports = function (app) {
     socket.userID = randomId();
     socket.username = 'Player ' + randomId();
   
-    //console.log(io.sockets.adapter.rooms)
-  
+    /*
+    console.log(io.sockets.adapter.rooms)
     var realRooms = Object.keys(io.sockets.adapter.rooms).reduce((filtered, key) => {
       if(!io.sockets.adapter.rooms[key].sockets.hasOwnProperty(key)) filtered.push(key);
       return filtered;
     }, []);
     console.log(realRooms);
-  
+    */
+
     players[String(socket.id)] = {
       'x': 100,
       'y': 200,
