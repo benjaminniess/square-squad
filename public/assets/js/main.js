@@ -4,6 +4,7 @@ const socket = io()
 const preHomeForm = document.getElementById('pre-home-form')
 const playerNameField = document.getElementById('playerName')
 const playerNameLabel = document.getElementById('playerNameLabel')
+const  playersList = document.getElementById('players')
 
 if ( preHomeForm ) {
   preHomeForm.addEventListener('submit', (event) => {
@@ -34,6 +35,17 @@ socket.on('sessionEstablished', (sessionData) => {
 
   if ( playerNameField ) {
     playerNameField.value = sessionData.nickName
+  }
+})
+
+socket.on('refreshPlayers', (data) => {
+  if ( playersList ) {
+    playersList.innerHTML = ''
+    for (const [socketID, player] of Object.entries(data)) {
+      var li = document.createElement('li')
+      li.appendChild(document.createTextNode(player.name))
+      playersList.appendChild(li)
+    }
   }
 })
 
