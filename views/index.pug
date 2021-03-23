@@ -1,19 +1,21 @@
 html
   include includes/header.pug
+  script(src='/assets/js/dist/socket.io.js')
   body
     div.uk-section
       div.uk-container.uk-container-small 
         h1.uk-heading-large.uk-text-center Square Squad
         h3 What's your name?
-        form(
+        form#pre-home-form(
           method='post'
           action='/'
         )
           div.uk-margin
-            input(
+            input#playerName(
               class="uk-input uk-form-large"
               type='text'
               name='playerName'
+              required
               value= nickName
             ) 
           div.uk-margin
@@ -22,4 +24,5 @@ html
               type='submit'
               value='GO!'
             )
+    script(src='/assets/js/main.js')
     include includes/footer.pug
