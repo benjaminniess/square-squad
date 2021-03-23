@@ -1,10 +1,11 @@
 html
   include includes/header.pug
+  script(src='/assets/js/dist/socket.io.js')
   body
     div.uk-section
         div.uk-container.uk-container-small 
           h1.uk-heading-large.uk-text-center Square Squad
-          p Hello #[a(href="/?action=edit-login") !{playerName} ]! you first need to select a room or create a new one
+          p Hello #[a(href="/?action=edit-login" id="playerNameLabel") !{playerName} ]! you first need to select a room or create a new one
           h3 Join a room...
           div#roomsList
             if rooms
@@ -32,6 +33,7 @@ html
                 type='submit'
                 value='Create room'
               )
+    script(src='/assets/js/main.js')
     include includes/footer.pug
           
           

@@ -16,7 +16,6 @@ module.exports = function (app, io, sessionStore) {
     socket.on('nicknameSubmitted', function (data) {
       let sessionID = randomId()
       sessionStore.saveSession(sessionID, { nickName: data.nickName })
-      console.log('ok', sessionStore.findAllSessions())
       socket.emit('nicknameSet', { sessionID: sessionID })
     })
   })

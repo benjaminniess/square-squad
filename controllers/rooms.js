@@ -107,14 +107,6 @@ module.exports = function (app, io, sessionStore) {
   }
 }
 
-router.get('*', function (req, res, next) {
-  if (!req.session.nickname) {
-    res.redirect('/')
-  } else {
-    next()
-  }
-})
-
 router.get('/', function (req, res, next) {
   res.render('rooms', {
     rooms: Object.keys(rooms).length ? rooms : null,

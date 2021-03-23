@@ -5,7 +5,7 @@ html
     div.uk-section
         div.uk-container.uk-container-small 
           h1.uk-heading-large.uk-text-center Square Squad
-          p Hello #[a(href="/?action=edit-login") !{playerName} ]! your about to play
+          p Hello #[a(href="/?action=edit-login" id="playerNameLabel") !{playerName} ]! your about to play
           h3 !{roomName}
           h4 Players
           ul#players
@@ -13,5 +13,5 @@ html
             a.uk-button.uk-button-primary(href='/rooms/' + roomSlug + '/play') play
           p
             a.uk-button.uk-button-default(href='/') back
-    script(src='/assets/js/room.js')
+    script(src='/assets/js/main.js')
     include includes/footer.pug

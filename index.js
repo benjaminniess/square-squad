@@ -29,24 +29,8 @@ server.listen(3000)
 io.on('connection', (socket) => {
   socket.on('setSessionID', (data) => {
     sessionData = sessionStore.findSession(data.sessionID)
-    console.log(sessionStore.findSession(data.sessionID))
-    console.log(sessionData, 'bn', data, data.sessionID)
+    io.to(socket.id).emit("sessionEstablished", sessionData );
   })
-
-  /**
-  sessionStore.saveSession(socket.sessionID, {
-    userID: socket.userID,
-    username: socket.username,
-    connected: true,
-  })
-
-  socket.emit('session', {
-    sessionID: socket.sessionID,
-    userID: socket.userID,
-  })
-
-  console.log(sessionStore.findAllSessions)
-  */
 })
 
 // Dynamically loads all controllers
