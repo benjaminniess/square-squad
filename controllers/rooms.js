@@ -4,6 +4,7 @@ const express = require('express')
 const router = express.Router()
 const cookie = require('cookie')
 const Room = require('../lib/room')
+const helpers = require('../lib/helpers')
 
 let rooms = {}
 
@@ -17,6 +18,9 @@ let playersMoves = {}
 module.exports = function (app, io, sessionStore) {
   app.use('/rooms', router)
 
+  /**
+   * Global check. Nobody is allowed here if no session ID or no nickname
+   */
   router.get('*', function (req, res, next) {
     if (!req.session.ID) {
       res.redirect('/')
@@ -29,6 +33,9 @@ module.exports = function (app, io, sessionStore) {
     }
   })
 
+  /**
+   * The rooms list view
+   */
   router.get('/', function (req, res, next) {
     let sessionData = sessionStore.findSession(req.session.ID)
     res.render('rooms', {
@@ -37,6 +44,9 @@ module.exports = function (app, io, sessionStore) {
     })
   })
 
+  /**
+   * A single room view
+   */
   router.get('/:roomSlug', function (req, res, next) {
     let sessionData = sessionStore.findSession(req.session.ID)
     if (typeof rooms[req.params.roomSlug] === 'undefined') {
@@ -50,6 +60,9 @@ module.exports = function (app, io, sessionStore) {
     })
   })
 
+  /**
+   * A room's game view
+   */
   router.get('/:roomSlug/play', function (req, res, next) {
     if (typeof rooms[req.params.roomSlug] === 'undefined') {
       next()
@@ -62,9 +75,12 @@ module.exports = function (app, io, sessionStore) {
     })
   })
 
+  /**
+   * The room's add form handling
+   */
   router.post('/', function (req, res, next) {
     let roomName = req.body['new-room']
-    let roomSlug = stringToSlug(roomName)
+    let roomSlug = helpers.stringToSlug(roomName)
     if (typeof rooms[roomSlug] !== 'undefined') {
       res.redirect('/')
     } else {
@@ -161,23 +177,4 @@ module.exports = function (app, io, sessionStore) {
       players: players,
     })
   }
-}
-
-function stringToSlug(str) {
-  str = str.replace(/^\s+|\s+$/g, '') // trim
-  str = str.toLowerCase()
-
-  // remove accents, swap ñ for n, etc
-  var from = 'àáäâèéëêìíïîòóöôùúüûñç·/_,:;'
-  var to = 'aaaaeeeeiiiioooouuuunc------'
-  for (var i = 0, l = from.length; i < l; i++) {
-    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i))
-  }
-
-  str = str
-    .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-    .replace(/\s+/g, '-') // collapse whitespace and replace by -
-    .replace(/-+/g, '-') // collapse dashes
-
-  return str
 }

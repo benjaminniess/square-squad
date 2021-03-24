@@ -26,12 +26,5 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 server.listen(3000)
 
-io.on('connection', (socket) => {
-  socket.on('setSessionID', (data) => {
-    sessionData = sessionStore.findSession(data.sessionID)
-    io.to(socket.id).emit("sessionEstablished", sessionData );
-  })
-})
-
 // Dynamically loads all controllers
 require('./lib/controller')(app, io, sessionStore)
