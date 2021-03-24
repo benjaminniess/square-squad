@@ -19,17 +19,26 @@ module.exports = function (app, io, sessionStore) {
       socket.emit('nicknameSet', { sessionID: sessionID })
     })
   })
-}
 
-router.get('/', function (req, res, next) {
-  if (!req.session.nickname || req.query.action == 'edit-login') {
-    res.render('index', { nickName: req.session.nickname })
-  } else {
+  router.get('/', function (req, res, next) {
+    if (!req.session.ID || req.query.action == 'edit-login') {
+      res.render('index', { nickName: req.session.nickname })
+    } else {
+      let sessionData = sessionStore.findSession(req.session.ID)
+      if (!sessionData.nickName) {
+        res.render('index')
+      } else {
+        res.redirect('/rooms')
+      }
+    }
+  })
+
+  router.post('/', function (req, res, next) {
+    if (!req.session.ID) {
+      req.session.ID = randomId()
+    }
+
+    sessionStore.saveSession(req.session.ID, { nickName: req.body.playerName })
     res.redirect('/rooms')
-  }
-})
-
-router.post('/', function (req, res, next) {
-  req.session.nickname = req.body.playerName
-  res.redirect('/rooms')
-})
+  })
+}

@@ -17,6 +17,62 @@ let playersMoves = {}
 module.exports = function (app, io, sessionStore) {
   app.use('/rooms', router)
 
+  router.get('*', function (req, res, next) {
+    if (!req.session.ID) {
+      res.redirect('/')
+    } else {
+      let sessionData = sessionStore.findSession(req.session.ID)
+      if (!sessionData.nickName) {
+        res.render('index')
+      }
+      next()
+    }
+  })
+
+  router.get('/', function (req, res, next) {
+    let sessionData = sessionStore.findSession(req.session.ID)
+    res.render('rooms', {
+      rooms: Object.keys(rooms).length ? rooms : null,
+      playerName: sessionData.nickName,
+    })
+  })
+
+  router.get('/:roomSlug', function (req, res, next) {
+    let sessionData = sessionStore.findSession(req.session.ID)
+    if (typeof rooms[req.params.roomSlug] === 'undefined') {
+      next()
+      return
+    }
+    res.render('room', {
+      roomName: rooms[req.params.roomSlug].getName(),
+      roomSlug: req.params.roomSlug,
+      playerName: sessionData.nickName,
+    })
+  })
+
+  router.get('/:roomSlug/play', function (req, res, next) {
+    if (typeof rooms[req.params.roomSlug] === 'undefined') {
+      next()
+      return
+    }
+
+    res.render('play', {
+      roomName: rooms[req.params.roomSlug].getName(),
+      roomSlug: req.params.roomSlug,
+    })
+  })
+
+  router.post('/', function (req, res, next) {
+    let roomName = req.body['new-room']
+    let roomSlug = stringToSlug(roomName)
+    if (typeof rooms[roomSlug] !== 'undefined') {
+      res.redirect('/')
+    } else {
+      rooms[roomSlug] = new Room(roomName)
+      res.redirect('/rooms/' + roomSlug)
+    }
+  })
+
   io.on('connection', (socket) => {
     players[String(socket.id)] = {
       x: 100,
@@ -106,48 +162,6 @@ module.exports = function (app, io, sessionStore) {
     })
   }
 }
-
-router.get('/', function (req, res, next) {
-  res.render('rooms', {
-    rooms: Object.keys(rooms).length ? rooms : null,
-    playerName: req.session.nickname,
-  })
-})
-
-router.get('/:roomSlug', function (req, res, next) {
-  if (typeof rooms[req.params.roomSlug] === 'undefined') {
-    next()
-    return
-  }
-  res.render('room', {
-    roomName: rooms[req.params.roomSlug].getName(),
-    roomSlug: req.params.roomSlug,
-    playerName: req.session.nickname,
-  })
-})
-
-router.get('/:roomSlug/play', function (req, res, next) {
-  if (typeof rooms[req.params.roomSlug] === 'undefined') {
-    next()
-    return
-  }
-
-  res.render('play', {
-    roomName: rooms[req.params.roomSlug].getName(),
-    roomSlug: req.params.roomSlug,
-  })
-})
-
-router.post('/', function (req, res, next) {
-  let roomName = req.body['new-room']
-  let roomSlug = stringToSlug(roomName)
-  if (typeof rooms[roomSlug] !== 'undefined') {
-    res.redirect('/')
-  } else {
-    rooms[roomSlug] = new Room(roomName)
-    res.redirect('/rooms/' + roomSlug)
-  }
-})
 
 function stringToSlug(str) {
   str = str.replace(/^\s+|\s+$/g, '') // trim
