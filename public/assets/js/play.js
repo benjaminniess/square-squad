@@ -1,7 +1,6 @@
 var canvas = document.getElementById('myCanvas')
 var ctx = canvas.getContext('2d')
 var ballRadius = 10
-var playersList = document.getElementById('players')
 
 var sessionID = false
 socket.on('connect', function () {
