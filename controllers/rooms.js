@@ -97,7 +97,7 @@ module.exports = function (app, io, sessionStore) {
       name: socket.username,
     }
 
-    io.emit('refreshPlayers', players)
+    io.emit('refreshPlayers', sessionStore.findAllSessions())
 
     playersMoves[String(socket.id)] = {
       up: false,
@@ -111,7 +111,7 @@ module.exports = function (app, io, sessionStore) {
       delete players[String(socket.id)]
       delete playersMoves[String(socket.id)]
 
-      io.emit('refreshPlayers', players)
+      io.emit('refreshPlayers', sessionStore.findAllSessions())
     })
 
     socket.on('keyPressed', function (socket) {
