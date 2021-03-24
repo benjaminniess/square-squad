@@ -14,15 +14,15 @@ module.exports = function (app, io, sessionStore) {
    */
   router.get('/', function (req, res, next) {
     // No session ID yet or explicitely need to update login => show the nickname form
-    if (!req.session.ID || req.query.action == 'edit-login') {
-      res.render('index', { nickName: req.session.nickname })
+    if (!req.session.ID) {
+      res.render('index')
     } else {
-      // Check if the nickname is set and redirect to the rooms list if all is ok
       let sessionData = sessionStore.findSession(req.session.ID)
-      if (!sessionData.nickName) {
-        res.render('index')
+
+      if (req.query.action == 'edit-login') {
+        res.render('index', { nickName: sessionData.nickName })
       } else {
-        res.redirect('/rooms')
+        res.render('index')
       }
     }
   })
