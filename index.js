@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const session = require('express-session')
+const cookieParser = require('cookie-parser')
 
 const { InMemorySessionStore } = require('./lib/sessionStore')
 const sessionStore = new InMemorySessionStore()
@@ -15,6 +16,7 @@ app.use(
   }),
 )
 
+app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'pug')

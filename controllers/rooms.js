@@ -2,9 +2,9 @@
 
 const express = require('express')
 const router = express.Router()
-const cookie = require('cookie')
 const Room = require('../lib/room')
 const helpers = require('../lib/helpers')
+const cookie = require('cookie')
 
 let rooms = {}
 
@@ -22,22 +22,19 @@ module.exports = function (app, io, sessionStore) {
    * Global check. Nobody is allowed here if no session ID or no nickname
    */
   router.get('*', function (req, res, next) {
-    if (!req.session.ID) {
-      res.redirect('/')
-    } else {
-      let sessionData = sessionStore.findSession(req.session.ID)
-      if (!sessionData.nickName) {
-        res.render('index')
+      let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
+      if (!sessionData || !sessionData.nickName) {
+        res.redirect('/')
+      } else {
+        next()
       }
-      next()
-    }
   })
 
   /**
    * The rooms list view
    */
   router.get('/', function (req, res, next) {
-    let sessionData = sessionStore.findSession(req.session.ID)
+    let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
     res.render('rooms', {
       rooms: Object.keys(rooms).length ? rooms : null,
       playerName: sessionData.nickName,
@@ -48,7 +45,7 @@ module.exports = function (app, io, sessionStore) {
    * A single room view
    */
   router.get('/:roomSlug', function (req, res, next) {
-    let sessionData = sessionStore.findSession(req.session.ID)
+    let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
     if (typeof rooms[req.params.roomSlug] === 'undefined') {
       next()
       return
@@ -90,6 +87,13 @@ module.exports = function (app, io, sessionStore) {
   })
 
   io.on('connection', (socket) => {
+    let cookies = cookie.parse(socket.handshake.headers.cookie)
+    let sessionData = sessionStore.findSession(cookies['connect.sid'])
+    
+    if (sessionData){
+      io.to(socket.id).emit('player-connected', { "nickName" : sessionData.nickName, "playerID": sessionData.playerID, "sessionID" : cookies['connect.sid'] })
+    }
+
     players[String(socket.id)] = {
       x: 100,
       y: 200,
@@ -107,37 +111,36 @@ module.exports = function (app, io, sessionStore) {
     }
 
     socket.on('disconnect', function () {
-      console.log('Player logout: ' + socket.id)
       delete players[String(socket.id)]
       delete playersMoves[String(socket.id)]
 
       io.emit('refreshPlayers', sessionStore.findAllSessions())
     })
 
-    socket.on('keyPressed', function (socket) {
-      if (socket.key == 39) {
+    socket.on('keyPressed', function (socketData) {
+      if (socketData.key == 39) {
         playersMoves[socket.id].right = true
-      } else if (socket.key == 37) {
+      } else if (socketData.key == 37) {
         playersMoves[socket.id].left = true
       }
 
-      if (socket.key == 40) {
+      if (socketData.key == 40) {
         playersMoves[socket.id].top = true
-      } else if (socket.key == 38) {
+      } else if (socketData.key == 38) {
         playersMoves[socket.id].down = true
       }
     })
 
-    socket.on('keyUp', function (socket) {
-      if (socket.key == 39) {
+    socket.on('keyUp', function (socketData) {
+      if (socketData.key == 39) {
         playersMoves[socket.id].right = false
-      } else if (socket.key == 37) {
+      } else if (socketData.key == 37) {
         playersMoves[socket.id].left = false
       }
 
-      if (socket.key == 40) {
+      if (socketData.key == 40) {
         playersMoves[socket.id].top = false
-      } else if (socket.key == 38) {
+      } else if (socketData.key == 38) {
         playersMoves[socket.id].down = false
       }
     })

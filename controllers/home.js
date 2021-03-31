@@ -13,17 +13,13 @@ module.exports = function (app, io, sessionStore) {
    * The home URL
    */
   router.get('/', function (req, res, next) {
-    // No session ID yet or explicitely need to update login => show the nickname form
-    if (!req.session.ID) {
+    let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
+    if ( !sessionData) {
       res.render('index')
+    } else if (req.query.action == 'edit-login') {
+      res.render('index', { nickName: sessionData.nickName })
     } else {
-      let sessionData = sessionStore.findSession(req.session.ID)
-
-      if (req.query.action == 'edit-login') {
-        res.render('index', { nickName: sessionData.nickName })
-      } else {
-        res.render('index')
-      }
+      res.redirect('/rooms')
     }
   })
 
@@ -31,11 +27,8 @@ module.exports = function (app, io, sessionStore) {
    * Save the new nickname in session. If the session is new, also create a session ID
    */
   router.post('/', function (req, res, next) {
-    if (!req.session.ID) {
-      req.session.ID = randomId()
-    }
-
-    sessionStore.saveSession(req.session.ID, { nickName: req.body.playerName })
+    sessionStore.saveSession(req.cookies['connect.sid'], { nickName: req.body.playerName, playerID: randomId() })
+    
     res.redirect('/rooms')
   })
 }
