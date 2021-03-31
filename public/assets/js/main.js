@@ -9,8 +9,7 @@ socket.on('refreshPlayers', (data) => {
     data.map((player) => {
       var li = document.createElement('li')
       li.appendChild(document.createTextNode(player.nickName))
-      console.log(socket.playerID, socket.id, socket.sid )
-      if ( player.playerID === socket.playerID ) {
+      if ( player.playerID === sessionData.playerID ) {
         li.appendChild(document.createTextNode("(You)"))
       }
       playersList.appendChild(li)
