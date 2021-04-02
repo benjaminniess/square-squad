@@ -46,15 +46,13 @@ module.exports = function (app, io, sessionStore) {
    */
   router.get('/:roomSlug', function (req, res, next) {
     let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
-    if (typeof rooms[req.params.roomSlug] === 'undefined') {
-      next()
-      return
+    if (typeof rooms[req.params.roomSlug] !== 'undefined') {
+      res.render('room', {
+        roomName: rooms[req.params.roomSlug].getName(),
+        roomSlug: req.params.roomSlug,
+        playerName: sessionData.nickName,
+      })
     }
-    res.render('room', {
-      roomName: rooms[req.params.roomSlug].getName(),
-      roomSlug: req.params.roomSlug,
-      playerName: sessionData.nickName,
-    })
   })
 
   /**
@@ -78,7 +76,7 @@ module.exports = function (app, io, sessionStore) {
   router.post('/', function (req, res, next) {
     let roomName = req.body['new-room']
     let roomSlug = helpers.stringToSlug(roomName)
-    if (typeof rooms[roomSlug] !== 'undefined') {
+    if (typeof rooms[roomSlug] !== 'undefined' || roomName === '') {
       res.redirect('/')
     } else {
       rooms[roomSlug] = new Room(roomName)
@@ -90,7 +88,10 @@ module.exports = function (app, io, sessionStore) {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
     let sessionData = sessionStore.findSession(cookies['connect.sid'])
     
+    
     if (sessionData){
+      sessionData.socketID = socket.id
+      sessionStore.saveSession(cookies['connect.sid'], sessionData)
       io.to(socket.id).emit('player-connected', { "nickName" : sessionData.nickName, "playerID": sessionData.playerID, "sessionID" : cookies['connect.sid'] })
     }
 
@@ -101,8 +102,6 @@ module.exports = function (app, io, sessionStore) {
       name: socket.username,
     }
 
-    io.emit('refreshPlayers', sessionStore.findAllSessions())
-
     playersMoves[String(socket.id)] = {
       up: false,
       down: false,
@@ -110,11 +109,45 @@ module.exports = function (app, io, sessionStore) {
       right: false,
     }
 
+    // When player ask for joining a room
+    socket.on("room-join", (data) => {
+      if ( typeof rooms[data.roomSlug] === 'undefined') {
+        return
+      } else {
+        socket.join(data.roomSlug)
+        refreshPlayersInRoom(data.roomSlug)
+      }
+    })
+
+    // When a change occurs, refresh the room's players list
+    function refreshPlayersInRoom(roomSlug, disconnectedPlayerSocketID = null) {
+      socketClients = Array.from(io.sockets.adapter.rooms.get(roomSlug))
+      let sessionsInRoom = []
+      let countPlayers = socketClients.length
+      socketClients.map((socketID, i) => {
+        sessionStore.findSessionFromSocketID(socketID).then(sessionInRoom => {
+          // If a player is about to disconnect, don't show it in the room
+          if ( disconnectedPlayerSocketID !== socketID ) {
+            sessionsInRoom.push(sessionInRoom)
+          }
+          
+
+          if (countPlayers === i + 1) {
+            io.in(roomSlug).emit('refreshPlayers', sessionsInRoom)
+          }
+        })
+      })
+    }
+
+    socket.on('disconnecting', () => {
+      socket.rooms.forEach(roomSlug => {
+        refreshPlayersInRoom(roomSlug, socket.id)
+      })
+    });
+
     socket.on('disconnect', function () {
       delete players[String(socket.id)]
       delete playersMoves[String(socket.id)]
-
-      io.emit('refreshPlayers', sessionStore.findAllSessions())
     })
 
     socket.on('keyPressed', function (socketData) {
