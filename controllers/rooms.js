@@ -88,25 +88,10 @@ module.exports = function (app, io, sessionStore) {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
     let sessionData = sessionStore.findSession(cookies['connect.sid'])
     
-    
     if (sessionData){
       sessionData.socketID = socket.id
       sessionStore.saveSession(cookies['connect.sid'], sessionData)
       io.to(socket.id).emit('player-connected', { "nickName" : sessionData.nickName, "playerID": sessionData.playerID, "sessionID" : cookies['connect.sid'] })
-    }
-
-    players[String(socket.id)] = {
-      x: 100,
-      y: 200,
-      isWolf: Object.keys(players).length === 1 ? true : false,
-      name: socket.username,
-    }
-
-    playersMoves[String(socket.id)] = {
-      up: false,
-      down: false,
-      left: false,
-      right: false,
     }
 
     // When player ask for joining a room
@@ -116,6 +101,24 @@ module.exports = function (app, io, sessionStore) {
       } else {
         socket.join(data.roomSlug)
         refreshPlayersInRoom(data.roomSlug)
+
+        if (! players[data.roomSlug] ) {
+          players[data.roomSlug] = {}
+          playersMoves[data.roomSlug] = {}
+        }
+        players[data.roomSlug][String(socket.id)] = {
+          x: 100,
+          y: 200,
+          isWolf: Object.keys(players).length === 1 ? true : false,
+          name: socket.username,
+        }
+    
+        playersMoves[data.roomSlug][String(socket.id)] = {
+          up: false,
+          down: false,
+          left: false,
+          right: false,
+        }
       }
     })
 
@@ -130,7 +133,6 @@ module.exports = function (app, io, sessionStore) {
           if ( disconnectedPlayerSocketID !== socketID ) {
             sessionsInRoom.push(sessionInRoom)
           }
-          
 
           if (countPlayers === i + 1) {
             io.in(roomSlug).emit('refreshPlayers', sessionsInRoom)
@@ -142,75 +144,90 @@ module.exports = function (app, io, sessionStore) {
     socket.on('disconnecting', () => {
       socket.rooms.forEach(roomSlug => {
         refreshPlayersInRoom(roomSlug, socket.id)
+        if ( players[roomSlug] && players[roomSlug][String(socket.id)] ) {
+          delete players[roomSlug][String(socket.id)]
+          delete playersMoves[roomSlug][String(socket.id)]
+        }
       })
     });
 
     socket.on('disconnect', function () {
-      delete players[String(socket.id)]
-      delete playersMoves[String(socket.id)]
+      
     })
 
     socket.on('keyPressed', function (socketData) {
-      if (socketData.key == 39) {
-        playersMoves[socket.id].right = true
-      } else if (socketData.key == 37) {
-        playersMoves[socket.id].left = true
-      }
-
-      if (socketData.key == 40) {
-        playersMoves[socket.id].top = true
-      } else if (socketData.key == 38) {
-        playersMoves[socket.id].down = true
-      }
+      socket.rooms.forEach(roomSlug => {
+        if ( roomSlug != socket.id ) {
+          if (socketData.key == 39) {
+            playersMoves[roomSlug][socket.id].right = true
+          } else if (socketData.key == 37) {
+            playersMoves[roomSlug][socket.id].left = true
+          }
+    
+          if (socketData.key == 40) {
+            playersMoves[roomSlug][socket.id].top = true
+          } else if (socketData.key == 38) {
+            playersMoves[roomSlug][socket.id].down = true
+          }
+        }
+      })
     })
 
     socket.on('keyUp', function (socketData) {
-      if (socketData.key == 39) {
-        playersMoves[socket.id].right = false
-      } else if (socketData.key == 37) {
-        playersMoves[socket.id].left = false
-      }
-
-      if (socketData.key == 40) {
-        playersMoves[socket.id].top = false
-      } else if (socketData.key == 38) {
-        playersMoves[socket.id].down = false
-      }
+      socket.rooms.forEach(roomSlug => {
+        if ( roomSlug != socket.id ) {
+          if (socketData.key == 39) {
+            playersMoves[roomSlug][socket.id].right = false
+          } else if (socketData.key == 37) {
+            playersMoves[roomSlug][socket.id].left = false
+          }
+    
+          if (socketData.key == 40) {
+            playersMoves[roomSlug][socket.id].top = false
+          } else if (socketData.key == 38) {
+            playersMoves[roomSlug][socket.id].down = false
+          }
+        }
+      })
+      
     })
   })
 
   setInterval(refreshData, 10)
 
   function refreshData() {
-    for (const [socketID, moves] of Object.entries(playersMoves)) {
-      if (moves.top) {
-        players[socketID].y += speed
-        if (players[socketID].y > canvasWidth - ballRadius) {
-          players[socketID].y = canvasWidth - ballRadius
+    for (const [roomSlug, roomPlayers] of Object.entries(playersMoves)) {
+      for (const [socketID, moves] of Object.entries(roomPlayers)) {
+        if (moves.top) {
+          players[roomSlug][socketID].y += speed
+          if (players[roomSlug][socketID].y > canvasWidth - ballRadius) {
+            players[roomSlug][socketID].y = canvasWidth - ballRadius
+          }
+        }
+        if (moves.right) {
+          players[roomSlug][socketID].x += speed
+          if (players[roomSlug][socketID].x > canvasWidth - ballRadius) {
+            players[roomSlug][socketID].x = canvasWidth - ballRadius
+          }
+        }
+        if (moves.down) {
+          players[roomSlug][socketID].y -= speed
+          if (players[roomSlug][socketID].y < ballRadius) {
+            players[roomSlug][socketID].y = ballRadius
+          }
+        }
+        if (moves.left) {
+          players[roomSlug][socketID].x -= speed
+          if (players[roomSlug][socketID].x < ballRadius) {
+            players[roomSlug][socketID].x = ballRadius
+          }
         }
       }
-      if (moves.right) {
-        players[socketID].x += speed
-        if (players[socketID].x > canvasWidth - ballRadius) {
-          players[socketID].x = canvasWidth - ballRadius
-        }
-      }
-      if (moves.down) {
-        players[socketID].y -= speed
-        if (players[socketID].y < ballRadius) {
-          players[socketID].y = ballRadius
-        }
-      }
-      if (moves.left) {
-        players[socketID].x -= speed
-        if (players[socketID].x < ballRadius) {
-          players[socketID].x = ballRadius
-        }
-      }
+  
+      io.to(roomSlug).emit('refreshCanvas', {
+        players: players[roomSlug],
+      })
     }
-
-    io.emit('refreshCanvas', {
-      players: players,
-    })
+    
   }
 }

@@ -1,7 +1,7 @@
 html
   include includes/header.pug
   script(src='/assets/js/dist/socket.io.js')
-  body
+  body(data-roomSlug=roomSlug)
     div.uk-text-center.uk-grid
       div.uk-width-1-4
         div.uk-card.uk-card-default.uk-card-body
