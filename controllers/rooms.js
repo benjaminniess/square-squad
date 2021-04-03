@@ -107,7 +107,6 @@ io.on('connection', (socket) => {
       return
     } else {
       socket.join(room.getSlug())
-      room.addPlayer()
       refreshPlayersInRoom(data.roomSlug)
 
       if (!players[data.roomSlug]) {
