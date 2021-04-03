@@ -20,8 +20,10 @@ module.exports = function (app, io) {
    * Global check. Nobody is allowed here if no session ID or no nickname
    */
   router.get('*', function (req, res, next) {
-    let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
-    if (!sessionData || !sessionData.nickName) {
+    let currentPlayer = helpers.getPlayerFromSessionID(
+      req.cookies['connect.sid'],
+    )
+    if (!currentPlayer || !currentPlayer.nickName) {
       res.redirect('/')
     } else {
       next()
@@ -32,11 +34,13 @@ module.exports = function (app, io) {
    * The rooms list view
    */
   router.get('/', function (req, res, next) {
-    let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
+    let currentPlayer = helpers.getPlayerFromSessionID(
+      req.cookies['connect.sid'],
+    )
     let rooms = helpers.getRooms()
     res.render('rooms', {
       rooms: Object.keys(rooms).length ? rooms : null,
-      playerName: sessionData.nickName,
+      playerName: currentPlayer.nickName,
     })
   })
 
@@ -44,13 +48,15 @@ module.exports = function (app, io) {
    * A single room view
    */
   router.get('/:roomSlug', function (req, res, next) {
-    let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
+    let currentPlayer = helpers.getPlayerFromSessionID(
+      req.cookies['connect.sid'],
+    )
     let room = helpers.getRoom(req.params.roomSlug)
     if (typeof room !== null) {
       res.render('room', {
         roomName: room.getName(),
         roomSlug: room.getSlug(),
-        playerName: sessionData.nickName,
+        playerName: currentPlayer.nickName,
       })
     }
   })
@@ -60,15 +66,14 @@ module.exports = function (app, io) {
    */
   router.get('/:roomSlug/play', function (req, res, next) {
     let room = helpers.getRoom(req.params.roomSlug)
-    if (typeof room !== null) {
+    if (typeof room === null) {
       next()
-      return
+    } else {
+      res.render('play', {
+        roomName: room.getName(),
+        roomSlug: room.getSlug(),
+      })
     }
-
-    res.render('play', {
-      roomName: rooms[req.params.roomSlug].getName(),
-      roomSlug: req.params.roomSlug,
-    })
   })
 
   /**
@@ -86,14 +91,14 @@ module.exports = function (app, io) {
 
   io.on('connection', (socket) => {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let sessionData = helpers.getPlayerFromSessionID(cookies['connect.sid'])
+    let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
 
-    if (sessionData) {
-      sessionData.socketID = socket.id
-      helpers.updatePlayer(cookies['connect.sid'], sessionData)
+    if (currentPlayer) {
+      currentPlayer.socketID = socket.id
+      helpers.updatePlayer(cookies['connect.sid'], currentPlayer)
       io.to(socket.id).emit('player-connected', {
-        nickName: sessionData.nickName,
-        playerID: sessionData.playerID,
+        nickName: currentPlayer.nickName,
+        playerID: currentPlayer.playerID,
         sessionID: cookies['connect.sid'],
       })
     }
