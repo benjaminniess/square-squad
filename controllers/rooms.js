@@ -6,23 +6,23 @@ const Room = require('../lib/room')
 const helpers = require('../lib/helpers')
 const cookie = require('cookie')
 
+let players = helpers.getPlayers()
 let rooms = helpers.getRooms()
 
 const speed = 6
 const ballRadius = 10
 const canvasWidth = 700
 
-let players = helpers.getPlayers()
 let playersMoves = {}
 
-module.exports = function (app, io, sessionStore) {
+module.exports = function (app, io) {
   app.use('/rooms', router)
 
   /**
    * Global check. Nobody is allowed here if no session ID or no nickname
    */
   router.get('*', function (req, res, next) {
-    let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
+    let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
     if (!sessionData || !sessionData.nickName) {
       res.redirect('/')
     } else {
@@ -34,7 +34,7 @@ module.exports = function (app, io, sessionStore) {
    * The rooms list view
    */
   router.get('/', function (req, res, next) {
-    let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
+    let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
     res.render('rooms', {
       rooms: Object.keys(rooms).length ? rooms : null,
       playerName: sessionData.nickName,
@@ -45,7 +45,7 @@ module.exports = function (app, io, sessionStore) {
    * A single room view
    */
   router.get('/:roomSlug', function (req, res, next) {
-    let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
+    let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
     if (typeof rooms[req.params.roomSlug] !== 'undefined') {
       res.render('room', {
         roomName: rooms[req.params.roomSlug].getName(),
@@ -86,11 +86,11 @@ module.exports = function (app, io, sessionStore) {
 
   io.on('connection', (socket) => {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let sessionData = sessionStore.findSession(cookies['connect.sid'])
+    let sessionData = helpers.getPlayerFromSessionID(cookies['connect.sid'])
 
     if (sessionData) {
       sessionData.socketID = socket.id
-      sessionStore.saveSession(cookies['connect.sid'], sessionData)
+      helpers.updatePlayer(cookies['connect.sid'], sessionData)
       io.to(socket.id).emit('player-connected', {
         nickName: sessionData.nickName,
         playerID: sessionData.playerID,
@@ -132,7 +132,7 @@ module.exports = function (app, io, sessionStore) {
       let sessionsInRoom = []
       let countPlayers = socketClients.length
       socketClients.map((socketID, i) => {
-        sessionStore.findSessionFromSocketID(socketID).then((sessionInRoom) => {
+        helpers.getPlayerFromSocketID(socketID).then((sessionInRoom) => {
           // If a player is about to disconnect, don't show it in the room
           if (disconnectedPlayerSocketID !== socketID) {
             sessionsInRoom.push(sessionInRoom)

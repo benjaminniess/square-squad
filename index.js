@@ -3,9 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
-
 const { InMemorySessionStore } = require('./lib/sessionStore')
-const sessionStore = new InMemorySessionStore()
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(
@@ -24,12 +22,13 @@ app.set('views', './views')
 
 app.use(express.static(__dirname + '/public'))
 
-global.rooms = {}
-global.players = {}
+global.globalRooms = {}
+global.globalPlayers = {}
+global.globalSessionStore = new InMemorySessionStore()
 
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 server.listen(3000)
 
 // Dynamically loads all controllers
-require('./lib/controller')(app, io, sessionStore)
+require('./lib/controller')(app, io)
