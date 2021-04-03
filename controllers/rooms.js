@@ -107,7 +107,7 @@ io.on('connection', (socket) => {
       return
     } else {
       socket.join(room.getSlug())
-      refreshPlayersInRoom(data.roomSlug)
+      room.refreshPlayers()
 
       if (!players[data.roomSlug]) {
         players[data.roomSlug] = {}
@@ -129,31 +129,17 @@ io.on('connection', (socket) => {
     }
   })
 
-  // When a change occurs, refresh the room's players list
-  function refreshPlayersInRoom(roomSlug, disconnectedPlayerSocketID = null) {
-    socketClients = Array.from(io.sockets.adapter.rooms.get(roomSlug))
-    let sessionsInRoom = []
-    let countPlayers = socketClients.length
-    socketClients.map((socketID, i) => {
-      helpers.getPlayerFromSocketID(socketID).then((sessionInRoom) => {
-        // If a player is about to disconnect, don't show it in the room
-        if (disconnectedPlayerSocketID !== socketID) {
-          sessionsInRoom.push(sessionInRoom)
-        }
-
-        if (countPlayers === i + 1) {
-          io.in(roomSlug).emit('refreshPlayers', sessionsInRoom)
-        }
-      })
-    })
-  }
-
   socket.on('disconnecting', () => {
     socket.rooms.forEach((roomSlug) => {
-      refreshPlayersInRoom(roomSlug, socket.id)
-      if (players[roomSlug] && players[roomSlug][String(socket.id)]) {
-        delete players[roomSlug][String(socket.id)]
-        delete playersMoves[roomSlug][String(socket.id)]
+      let room = helpers.getRoom(roomSlug)
+      if (room === null) {
+        return
+      } else {
+        room.refreshPlayers(socket.id)
+        if (players[roomSlug] && players[roomSlug][String(socket.id)]) {
+          delete players[roomSlug][String(socket.id)]
+          delete playersMoves[roomSlug][String(socket.id)]
+        }
       }
     })
   })
