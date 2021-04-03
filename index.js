@@ -22,13 +22,14 @@ app.set('views', './views')
 
 app.use(express.static(__dirname + '/public'))
 
+const server = require('http').Server(app)
+
 global.globalRooms = {}
 global.globalPlayers = {}
 global.globalSessionStore = new InMemorySessionStore()
 
-const server = require('http').Server(app)
-const io = require('socket.io')(server)
+global.io = require('socket.io')(server)
 server.listen(3000)
 
 // Dynamically loads all controllers
-require('./lib/controller')(app, io)
+require('./lib/controller')(app)
