@@ -2,12 +2,10 @@
 
 const express = require('express')
 const router = express.Router()
-const Room = require('../lib/room')
 const helpers = require('../lib/helpers')
 const cookie = require('cookie')
 
 let players = helpers.getPlayers()
-let rooms = helpers.getRooms()
 
 const speed = 6
 const ballRadius = 10
@@ -35,6 +33,7 @@ module.exports = function (app, io) {
    */
   router.get('/', function (req, res, next) {
     let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
+    let rooms = helpers.getRooms()
     res.render('rooms', {
       rooms: Object.keys(rooms).length ? rooms : null,
       playerName: sessionData.nickName,
@@ -46,10 +45,11 @@ module.exports = function (app, io) {
    */
   router.get('/:roomSlug', function (req, res, next) {
     let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
-    if (typeof rooms[req.params.roomSlug] !== 'undefined') {
+    let room = helpers.getRoom(req.params.roomSlug)
+    if (typeof room !== null) {
       res.render('room', {
-        roomName: rooms[req.params.roomSlug].getName(),
-        roomSlug: req.params.roomSlug,
+        roomName: room.getName(),
+        roomSlug: room.getSlug(),
         playerName: sessionData.nickName,
       })
     }
@@ -59,7 +59,8 @@ module.exports = function (app, io) {
    * A room's game view
    */
   router.get('/:roomSlug/play', function (req, res, next) {
-    if (typeof rooms[req.params.roomSlug] === 'undefined') {
+    let room = helpers.getRoom(req.params.roomSlug)
+    if (typeof room !== null) {
       next()
       return
     }
@@ -75,11 +76,10 @@ module.exports = function (app, io) {
    */
   router.post('/', function (req, res, next) {
     let roomName = req.body['new-room']
-    let roomSlug = helpers.stringToSlug(roomName)
-    if (typeof rooms[roomSlug] !== 'undefined' || roomName === '') {
-      res.redirect('/')
+    let roomSlug = helpers.createRoom(roomName)
+    if (null === roomSlug) {
+      res.redirect('/rooms')
     } else {
-      rooms[roomSlug] = new Room(roomName)
       res.redirect('/rooms/' + roomSlug)
     }
   })
@@ -100,6 +100,7 @@ module.exports = function (app, io) {
 
     // When player ask for joining a room
     socket.on('room-join', (data) => {
+      let rooms = helpers.getRooms()
       if (typeof rooms[data.roomSlug] === 'undefined') {
         return
       } else {
@@ -197,8 +198,8 @@ module.exports = function (app, io) {
   setInterval(refreshData, 10)
 
   function refreshData() {
-    for (const [roomSlug, room] of Object.entries(rooms)) {
-    }
+    //for (const [roomSlug, room] of Object.entries(rooms)) {
+    //}
     for (const [roomSlug, roomPlayers] of Object.entries(playersMoves)) {
       for (const [socketID, moves] of Object.entries(roomPlayers)) {
         if (moves.top) {
