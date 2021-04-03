@@ -24,6 +24,9 @@ app.set('views', './views')
 
 app.use(express.static(__dirname + '/public'))
 
+global.rooms = {}
+global.players = {}
+
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 server.listen(3000)

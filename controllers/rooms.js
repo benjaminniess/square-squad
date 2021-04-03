@@ -6,13 +6,13 @@ const Room = require('../lib/room')
 const helpers = require('../lib/helpers')
 const cookie = require('cookie')
 
-let rooms = {}
+let rooms = helpers.getRooms()
 
 const speed = 6
 const ballRadius = 10
 const canvasWidth = 700
 
-let players = {}
+let players = helpers.getPlayers()
 let playersMoves = {}
 
 module.exports = function (app, io, sessionStore) {
@@ -22,12 +22,12 @@ module.exports = function (app, io, sessionStore) {
    * Global check. Nobody is allowed here if no session ID or no nickname
    */
   router.get('*', function (req, res, next) {
-      let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
-      if (!sessionData || !sessionData.nickName) {
-        res.redirect('/')
-      } else {
-        next()
-      }
+    let sessionData = sessionStore.findSession(req.cookies['connect.sid'])
+    if (!sessionData || !sessionData.nickName) {
+      res.redirect('/')
+    } else {
+      next()
+    }
   })
 
   /**
@@ -87,22 +87,26 @@ module.exports = function (app, io, sessionStore) {
   io.on('connection', (socket) => {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
     let sessionData = sessionStore.findSession(cookies['connect.sid'])
-    
-    if (sessionData){
+
+    if (sessionData) {
       sessionData.socketID = socket.id
       sessionStore.saveSession(cookies['connect.sid'], sessionData)
-      io.to(socket.id).emit('player-connected', { "nickName" : sessionData.nickName, "playerID": sessionData.playerID, "sessionID" : cookies['connect.sid'] })
+      io.to(socket.id).emit('player-connected', {
+        nickName: sessionData.nickName,
+        playerID: sessionData.playerID,
+        sessionID: cookies['connect.sid'],
+      })
     }
 
     // When player ask for joining a room
-    socket.on("room-join", (data) => {
-      if ( typeof rooms[data.roomSlug] === 'undefined') {
+    socket.on('room-join', (data) => {
+      if (typeof rooms[data.roomSlug] === 'undefined') {
         return
       } else {
         socket.join(data.roomSlug)
         refreshPlayersInRoom(data.roomSlug)
 
-        if (! players[data.roomSlug] ) {
+        if (!players[data.roomSlug]) {
           players[data.roomSlug] = {}
           playersMoves[data.roomSlug] = {}
         }
@@ -112,7 +116,7 @@ module.exports = function (app, io, sessionStore) {
           isWolf: Object.keys(players).length === 1 ? true : false,
           name: socket.username,
         }
-    
+
         playersMoves[data.roomSlug][String(socket.id)] = {
           up: false,
           down: false,
@@ -128,9 +132,9 @@ module.exports = function (app, io, sessionStore) {
       let sessionsInRoom = []
       let countPlayers = socketClients.length
       socketClients.map((socketID, i) => {
-        sessionStore.findSessionFromSocketID(socketID).then(sessionInRoom => {
+        sessionStore.findSessionFromSocketID(socketID).then((sessionInRoom) => {
           // If a player is about to disconnect, don't show it in the room
-          if ( disconnectedPlayerSocketID !== socketID ) {
+          if (disconnectedPlayerSocketID !== socketID) {
             sessionsInRoom.push(sessionInRoom)
           }
 
@@ -142,28 +146,26 @@ module.exports = function (app, io, sessionStore) {
     }
 
     socket.on('disconnecting', () => {
-      socket.rooms.forEach(roomSlug => {
+      socket.rooms.forEach((roomSlug) => {
         refreshPlayersInRoom(roomSlug, socket.id)
-        if ( players[roomSlug] && players[roomSlug][String(socket.id)] ) {
+        if (players[roomSlug] && players[roomSlug][String(socket.id)]) {
           delete players[roomSlug][String(socket.id)]
           delete playersMoves[roomSlug][String(socket.id)]
         }
       })
-    });
-
-    socket.on('disconnect', function () {
-      
     })
 
+    socket.on('disconnect', function () {})
+
     socket.on('keyPressed', function (socketData) {
-      socket.rooms.forEach(roomSlug => {
-        if ( roomSlug != socket.id ) {
+      socket.rooms.forEach((roomSlug) => {
+        if (roomSlug != socket.id) {
           if (socketData.key == 39) {
             playersMoves[roomSlug][socket.id].right = true
           } else if (socketData.key == 37) {
             playersMoves[roomSlug][socket.id].left = true
           }
-    
+
           if (socketData.key == 40) {
             playersMoves[roomSlug][socket.id].top = true
           } else if (socketData.key == 38) {
@@ -174,14 +176,14 @@ module.exports = function (app, io, sessionStore) {
     })
 
     socket.on('keyUp', function (socketData) {
-      socket.rooms.forEach(roomSlug => {
-        if ( roomSlug != socket.id ) {
+      socket.rooms.forEach((roomSlug) => {
+        if (roomSlug != socket.id) {
           if (socketData.key == 39) {
             playersMoves[roomSlug][socket.id].right = false
           } else if (socketData.key == 37) {
             playersMoves[roomSlug][socket.id].left = false
           }
-    
+
           if (socketData.key == 40) {
             playersMoves[roomSlug][socket.id].top = false
           } else if (socketData.key == 38) {
@@ -189,13 +191,14 @@ module.exports = function (app, io, sessionStore) {
           }
         }
       })
-      
     })
   })
 
   setInterval(refreshData, 10)
 
   function refreshData() {
+    for (const [roomSlug, room] of Object.entries(rooms)) {
+    }
     for (const [roomSlug, roomPlayers] of Object.entries(playersMoves)) {
       for (const [socketID, moves] of Object.entries(roomPlayers)) {
         if (moves.top) {
@@ -223,11 +226,10 @@ module.exports = function (app, io, sessionStore) {
           }
         }
       }
-  
+
       io.to(roomSlug).emit('refreshCanvas', {
         players: players[roomSlug],
       })
     }
-    
   }
 }
