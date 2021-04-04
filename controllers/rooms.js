@@ -121,15 +121,23 @@ io.on('connection', (socket) => {
     socket.rooms.forEach((roomSlug) => {
       if (roomSlug != socket.id) {
         if (socketData.key == 39) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'right', true)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'right', true)
         } else if (socketData.key == 37) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'left', true)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'left', true)
         }
 
         if (socketData.key == 40) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'top', true)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'top', true)
         } else if (socketData.key == 38) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'down', true)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'down', true)
         }
       }
     })
@@ -139,15 +147,23 @@ io.on('connection', (socket) => {
     socket.rooms.forEach((roomSlug) => {
       if (roomSlug != socket.id) {
         if (socketData.key == 39) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'right', false)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'right', false)
         } else if (socketData.key == 37) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'left', false)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'left', false)
         }
 
         if (socketData.key == 40) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'top', false)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'top', false)
         } else if (socketData.key == 38) {
-          rooms[roomSlug].updatePlayerButtonState(socket.id, 'down', false)
+          rooms[roomSlug]
+            .getGame()
+            .updatePlayerButtonState(socket.id, 'down', false)
         }
       }
     })
@@ -158,10 +174,13 @@ setInterval(refreshData, 10)
 
 function refreshData() {
   for (const [roomSlug, room] of Object.entries(helpers.getRooms())) {
-    let players = room.refreshData()
+    let roomGame = room.getGame()
+    if (roomGame) {
+      let players = roomGame.refreshData()
 
-    io.to(roomSlug).emit('refreshCanvas', {
-      players: players,
-    })
+      io.to(roomSlug).emit('refreshCanvas', {
+        players: players,
+      })
+    }
   }
 }

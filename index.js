@@ -24,9 +24,11 @@ app.use(express.static(__dirname + '/public'))
 
 const server = require('http').Server(app)
 
+global.__base = __dirname + '/'
 global.globalRooms = {}
 global.globalPlayers = {}
 global.globalSessionStore = new InMemorySessionStore()
+global.canvasWidth = 700
 
 global.io = require('socket.io')(server)
 server.listen(3000)
