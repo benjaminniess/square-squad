@@ -123,21 +123,21 @@ io.on('connection', (socket) => {
         if (socketData.key == 39) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'right', true)
+            .updatePlayerButtonState(currentPlayer.playerID, 'right', true)
         } else if (socketData.key == 37) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'left', true)
+            .updatePlayerButtonState(currentPlayer.playerID, 'left', true)
         }
 
         if (socketData.key == 40) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'top', true)
+            .updatePlayerButtonState(currentPlayer.playerID, 'top', true)
         } else if (socketData.key == 38) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'down', true)
+            .updatePlayerButtonState(currentPlayer.playerID, 'down', true)
         }
       }
     })
@@ -149,21 +149,21 @@ io.on('connection', (socket) => {
         if (socketData.key == 39) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'right', false)
+            .updatePlayerButtonState(currentPlayer.playerID, 'right', false)
         } else if (socketData.key == 37) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'left', false)
+            .updatePlayerButtonState(currentPlayer.playerID, 'left', false)
         }
 
         if (socketData.key == 40) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'top', false)
+            .updatePlayerButtonState(currentPlayer.playerID, 'top', false)
         } else if (socketData.key == 38) {
           rooms[roomSlug]
             .getGame()
-            .updatePlayerButtonState(socket.id, 'down', false)
+            .updatePlayerButtonState(currentPlayer.playerID, 'down', false)
         }
       }
     })
