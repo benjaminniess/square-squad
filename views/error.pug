@@ -1,0 +1,11 @@
+html
+  include includes/header.pug
+  body
+    div.uk-section
+      div.uk-container.uk-container-small 
+
+        div.uk-alert-danger.uk-alert
+          h3 Something went wrong?
+          p.error !{message}
+          a(href="javascript:history.back()") Back
+    include includes/footer.pug

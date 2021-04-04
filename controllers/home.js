@@ -29,11 +29,15 @@ module.exports = function (app) {
    * Save the new nickname in session. If the session is new, also create a session ID
    */
   router.post('/', function (req, res, next) {
-    helpers.updatePlayer(req.cookies['connect.sid'], {
-      nickName: req.body.playerName,
-      playerID: randomId(),
-    })
+    if (!req.body.playerName) {
+      res.render('error', { message: 'Nickame is required' })
+    } else {
+      helpers.updatePlayer(req.cookies['connect.sid'], {
+        nickName: req.body.playerName,
+        playerID: randomId(),
+      })
 
-    res.redirect('/rooms')
+      res.redirect('/rooms')
+    }
   })
 }
