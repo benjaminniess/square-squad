@@ -2,7 +2,7 @@ const socket = io()
 const playersList = document.getElementById('players')
 
 // Prepare the variable that'll recieve connection data
-let sessionData;
+let sessionData
 
 // When recieving players in current room
 socket.on('refreshPlayers', (data) => {
@@ -14,8 +14,8 @@ socket.on('refreshPlayers', (data) => {
       li.appendChild(document.createTextNode(player.nickName))
 
       // Flag the current user
-      if ( player.playerID === sessionData.playerID ) {
-        li.appendChild(document.createTextNode("(You)"))
+      if (player.playerID === sessionData.playerID) {
+        li.appendChild(document.createTextNode('(You)'))
       }
 
       playersList.appendChild(li)
@@ -28,7 +28,7 @@ socket.on('player-connected', (data) => {
   sessionData = data
 
   let bodyAttribute = document.body.getAttribute('data-roomSlug')
-  if ( bodyAttribute ) {
-    socket.emit("room-join", { "roomSlug" : bodyAttribute })
+  if (bodyAttribute) {
+    socket.emit('room-join', { roomSlug: bodyAttribute })
   }
 })
