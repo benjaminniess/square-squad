@@ -46,7 +46,7 @@ router.get('/:roomSlug', function (req, res, next) {
       playerName: currentPlayer.nickName,
     })
   } else {
-    res.redirect('/rooms')
+    res.render('error', { message: 'This room does not exist' })
   }
 })
 
@@ -61,7 +61,7 @@ router.get('/:roomSlug/play', function (req, res, next) {
       roomSlug: room.getSlug(),
     })
   } else {
-    next()
+    res.render('error', { message: 'This room does not exist' })
   }
 })
 
@@ -72,7 +72,7 @@ router.post('/', function (req, res, next) {
   let roomName = req.body['new-room']
   let roomSlug = helpers.createRoom(roomName)
   if (null === roomSlug) {
-    res.redirect('/rooms')
+    res.render('error', { message: 'This name is already taken' })
   } else {
     res.redirect('/rooms/' + roomSlug)
   }
