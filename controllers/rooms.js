@@ -44,6 +44,7 @@ router.get('/:roomSlug', function (req, res, next) {
       roomName: room.getName(),
       roomSlug: room.getSlug(),
       playerName: currentPlayer.nickName,
+      isAdmin: room.getAdminPlayer() === currentPlayer.playerID,
     })
   } else {
     res.render('error', { message: 'This room does not exist' })
@@ -69,11 +70,17 @@ router.get('/:roomSlug/play', function (req, res, next) {
  * The room's add form handling
  */
 router.post('/', function (req, res, next) {
+  let currentPlayer = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
   let roomName = req.body['new-room']
   let roomSlug = helpers.createRoom(roomName)
-  if (null === roomSlug) {
+  if (!currentPlayer) {
+    res.redirect('/')
+  }
+  if (!roomSlug) {
     res.render('error', { message: 'This name is already taken' })
   } else {
+    let room = helpers.getRoom(roomSlug)
+    room.setAdminPlayer(currentPlayer.playerID)
     res.redirect('/rooms/' + roomSlug)
   }
 })
