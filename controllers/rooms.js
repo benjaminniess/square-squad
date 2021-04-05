@@ -175,61 +175,70 @@ io.on('connection', (socket) => {
   socket.on('disconnect', function () {})
 
   socket.on('keyPressed', function (socketData) {
-    socket.rooms.forEach((roomSlug) => {
-      if (roomSlug != socket.id) {
-        let room = helpers.getRoom(roomSlug)
-        if (room && room.getGameStatus() === 'playing') {
-          if (socketData.key == 39) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'right', true)
-          } else if (socketData.key == 37) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'left', true)
-          }
+    let cookies = cookie.parse(socket.handshake.headers.cookie)
+    let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
 
-          if (socketData.key == 40) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'top', true)
-          } else if (socketData.key == 38) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'down', true)
+    if (currentPlayer && !currentPlayer.isSpectator) {
+      socket.rooms.forEach((roomSlug) => {
+        if (roomSlug != socket.id) {
+          let room = helpers.getRoom(roomSlug)
+          if (room && room.getGameStatus() === 'playing') {
+            if (socketData.key == 39) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'right', true)
+            } else if (socketData.key == 37) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'left', true)
+            }
+
+            if (socketData.key == 40) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'top', true)
+            } else if (socketData.key == 38) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'down', true)
+            }
           }
         }
-      }
-    })
+      })
+    }
   })
 
   socket.on('keyUp', function (socketData) {
-    socket.rooms.forEach((roomSlug) => {
-      let room = helpers.getRoom(roomSlug)
-      if (room && room.getGameStatus() === 'playing') {
-        if (roomSlug != socket.id) {
-          if (socketData.key == 39) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'right', false)
-          } else if (socketData.key == 37) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'left', false)
-          }
+    let cookies = cookie.parse(socket.handshake.headers.cookie)
+    let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
+    if (currentPlayer && !currentPlayer.isSpectator) {
+      socket.rooms.forEach((roomSlug) => {
+        let room = helpers.getRoom(roomSlug)
+        if (room && room.getGameStatus() === 'playing') {
+          if (roomSlug != socket.id) {
+            if (socketData.key == 39) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'right', false)
+            } else if (socketData.key == 37) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'left', false)
+            }
 
-          if (socketData.key == 40) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'top', false)
-          } else if (socketData.key == 38) {
-            rooms[roomSlug]
-              .getGame()
-              .updatePlayerButtonState(currentPlayer.playerID, 'down', false)
+            if (socketData.key == 40) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'top', false)
+            } else if (socketData.key == 38) {
+              rooms[roomSlug]
+                .getGame()
+                .updatePlayerButtonState(currentPlayer.playerID, 'down', false)
+            }
           }
         }
-      }
-    })
+      })
+    }
   })
 })
 
