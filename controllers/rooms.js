@@ -62,7 +62,7 @@ router.get('/:roomSlug/play', function (req, res, next) {
     res.redirect(room.getLobbyURL())
   } else if (gameStatus === 'playing') {
     res.redirect(room.getLobbyURL())
-  } else if (room !== null) {
+  } else if (room === null) {
     res.render('error', { message: 'This room does not exist' })
   } else {
     res.render('play', {
