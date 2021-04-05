@@ -114,7 +114,9 @@ io.on('connection', (socket) => {
       return
     } else {
       socket.join(room.getSlug())
-      room.refreshPlayers()
+      room.refreshPlayers().then((sessions) => {
+        io.in(room.getSlug()).emit('refreshPlayers', sessions)
+      })
     }
   })
 
@@ -127,7 +129,9 @@ io.on('connection', (socket) => {
         if (room.getAdminPlayer() === currentPlayer.playerID) {
           room.resetAdminPlayer()
         }
-        room.refreshPlayers(socket.id)
+        room.refreshPlayers(socket.id).then((sessions) => {
+          io.in(room.getSlug()).emit('refreshPlayers', sessions)
+        })
       }
     })
   })
