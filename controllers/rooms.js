@@ -45,6 +45,7 @@ router.get('/:roomSlug', function (req, res, next) {
       roomSlug: room.getSlug(),
       playerName: currentPlayer.nickName,
       isAdmin: room.getAdminPlayer() === currentPlayer.playerID,
+      status: room.getGameStatus(),
     })
   } else {
     res.render('error', { message: 'This room does not exist' })
@@ -56,13 +57,16 @@ router.get('/:roomSlug', function (req, res, next) {
  */
 router.get('/:roomSlug/play', function (req, res, next) {
   let room = helpers.getRoom(req.params.roomSlug)
-  if (room !== null) {
+  let gameStatus = room.getGameStatus()
+  if (gameStatus === 'waiting') {
+    res.redirect(room.getLobbyURL())
+  } else if (room !== null) {
+    res.render('error', { message: 'This room does not exist' })
+  } else {
     res.render('play', {
       roomName: room.getName(),
       roomSlug: room.getSlug(),
     })
-  } else {
-    res.render('error', { message: 'This room does not exist' })
   }
 })
 
@@ -75,13 +79,14 @@ router.post('/', function (req, res, next) {
   let roomSlug = helpers.createRoom(roomName)
   if (!currentPlayer) {
     res.redirect('/')
-  }
-  if (!roomSlug) {
-    res.render('error', { message: 'This name is already taken' })
   } else {
-    let room = helpers.getRoom(roomSlug)
-    room.setAdminPlayer(currentPlayer.playerID)
-    res.redirect('/rooms/' + roomSlug)
+    if (!roomSlug) {
+      res.render('error', { message: 'This name is already taken' })
+    } else {
+      let room = helpers.getRoom(roomSlug)
+      room.setAdminPlayer(currentPlayer.playerID)
+      res.redirect(room.getLobbyURL())
+    }
   }
 })
 
@@ -118,6 +123,18 @@ io.on('connection', (socket) => {
         return
       } else {
         room.refreshPlayers(socket.id)
+      }
+    })
+  })
+
+  socket.on('start-game', (data) => {
+    helpers.getPlayerFromSocketID(socket.id).then((emiter) => {
+      let room = helpers.getRoom(data.roomSlug)
+      if (room && room.getAdminPlayer() === emiter.playerID) {
+        room.setGameStatus('starting')
+        io.to(data.roomSlug).emit('game-is-starting', {
+          href: room.getPlayURL(),
+        })
       }
     })
   })

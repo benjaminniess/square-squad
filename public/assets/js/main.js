@@ -1,5 +1,7 @@
 const socket = io()
 const playersList = document.getElementById('players')
+const startButton = document.getElementById('startButton')
+const roomSlug = document.body.getAttribute('data-roomSlug')
 
 // Prepare the variable that'll recieve connection data
 let sessionData
@@ -27,8 +29,17 @@ socket.on('refreshPlayers', (data) => {
 socket.on('player-connected', (data) => {
   sessionData = data
 
-  let bodyAttribute = document.body.getAttribute('data-roomSlug')
-  if (bodyAttribute) {
-    socket.emit('room-join', { roomSlug: bodyAttribute })
+  if (roomSlug) {
+    socket.emit('room-join', { roomSlug: roomSlug })
   }
 })
+
+socket.on('game-is-starting', (data) => {
+  console.log(data)
+  window.location.href = data.href
+})
+
+startButton.onclick = function () {
+  socket.emit('start-game', { roomSlug: roomSlug })
+  return false
+}
