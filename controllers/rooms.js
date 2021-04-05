@@ -124,6 +124,9 @@ io.on('connection', (socket) => {
       if (room === null) {
         return
       } else {
+        if (room.getAdminPlayer() === currentPlayer.playerID) {
+          room.resetAdminPlayer()
+        }
         room.refreshPlayers(socket.id)
       }
     })

@@ -20,6 +20,10 @@ socket.on('refreshPlayers', (data) => {
         li.appendChild(document.createTextNode('(You)'))
       }
 
+      if (player.isAdmin) {
+        li.appendChild(document.createTextNode('[admin]'))
+      }
+
       playersList.appendChild(li)
     })
   }
@@ -35,7 +39,6 @@ socket.on('player-connected', (data) => {
 })
 
 socket.on('game-is-starting', (data) => {
-  console.log(data)
   window.location.href = data.href
 })
 
