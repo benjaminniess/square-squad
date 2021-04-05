@@ -31,7 +31,9 @@ global.globalSessionStore = new InMemorySessionStore()
 global.canvasWidth = 700
 
 global.io = require('socket.io')(server)
-server.listen(3000)
+
+const PORT = process.env.PORT || 8080
+server.listen(PORT)
 
 // Dynamically loads all controllers
 require('./lib/controller')(app)
