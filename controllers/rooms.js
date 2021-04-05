@@ -40,13 +40,20 @@ router.get('/:roomSlug', function (req, res, next) {
   let currentPlayer = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
   let room = helpers.getRoom(req.params.roomSlug)
   if (room !== null) {
-    res.render('room', {
-      roomName: room.getName(),
-      roomSlug: room.getSlug(),
-      playerName: currentPlayer.nickName,
-      isAdmin: room.getAdminPlayer() === currentPlayer.playerID,
-      status: room.getGameStatus(),
-    })
+    if (
+      room.getGameStatus() === 'starting' ||
+      room.getGameStatus() === 'playing'
+    ) {
+      res.redirect(room.getPlayURL())
+    } else {
+      res.render('room', {
+        roomName: room.getName(),
+        roomSlug: room.getSlug(),
+        playerName: currentPlayer.nickName,
+        isAdmin: room.getAdminPlayer() === currentPlayer.playerID,
+        status: room.getGameStatus(),
+      })
+    }
   } else {
     res.render('error', { message: 'This room does not exist' })
   }
@@ -59,8 +66,6 @@ router.get('/:roomSlug/play', function (req, res, next) {
   let room = helpers.getRoom(req.params.roomSlug)
   let gameStatus = room.getGameStatus()
   if (gameStatus === 'waiting') {
-    res.redirect(room.getLobbyURL())
-  } else if (gameStatus === 'playing') {
     res.redirect(room.getLobbyURL())
   } else if (room === null) {
     res.render('error', { message: 'This room does not exist' })
@@ -110,10 +115,15 @@ io.on('connection', (socket) => {
   // When player ask for joining a room
   socket.on('room-join', (data) => {
     let room = helpers.getRoom(data.roomSlug)
+    let cookies = cookie.parse(socket.handshake.headers.cookie)
+    let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
     if (room === null) {
       return
     } else {
       socket.join(room.getSlug())
+      currentPlayer.isSpectator =
+        room.getGameStatus() === 'playing' ? true : false
+      helpers.updatePlayer(cookies['connect.sid'], currentPlayer)
       room.refreshPlayers().then((sessions) => {
         io.in(room.getSlug()).emit('refreshPlayers', sessions)
       })
@@ -144,6 +154,20 @@ io.on('connection', (socket) => {
         io.to(data.roomSlug).emit('game-is-starting', {
           href: room.getPlayURL(),
         })
+
+        let timeleft = 4
+        let countdownTimer = setInterval(function () {
+          if (timeleft <= 0) {
+            clearInterval(countdownTimer)
+            room.setGameStatus('playing')
+          }
+
+          io.to(data.roomSlug).emit('countdown-update', {
+            timeleft: timeleft,
+          })
+
+          timeleft -= 1
+        }, 1000)
       }
     })
   })
@@ -153,24 +177,27 @@ io.on('connection', (socket) => {
   socket.on('keyPressed', function (socketData) {
     socket.rooms.forEach((roomSlug) => {
       if (roomSlug != socket.id) {
-        if (socketData.key == 39) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'right', true)
-        } else if (socketData.key == 37) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'left', true)
-        }
+        let room = helpers.getRoom(roomSlug)
+        if (room && room.getGameStatus() === 'playing') {
+          if (socketData.key == 39) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'right', true)
+          } else if (socketData.key == 37) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'left', true)
+          }
 
-        if (socketData.key == 40) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'top', true)
-        } else if (socketData.key == 38) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'down', true)
+          if (socketData.key == 40) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'top', true)
+          } else if (socketData.key == 38) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'down', true)
+          }
         }
       }
     })
@@ -178,25 +205,28 @@ io.on('connection', (socket) => {
 
   socket.on('keyUp', function (socketData) {
     socket.rooms.forEach((roomSlug) => {
-      if (roomSlug != socket.id) {
-        if (socketData.key == 39) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'right', false)
-        } else if (socketData.key == 37) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'left', false)
-        }
+      let room = helpers.getRoom(roomSlug)
+      if (room && room.getGameStatus() === 'playing') {
+        if (roomSlug != socket.id) {
+          if (socketData.key == 39) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'right', false)
+          } else if (socketData.key == 37) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'left', false)
+          }
 
-        if (socketData.key == 40) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'top', false)
-        } else if (socketData.key == 38) {
-          rooms[roomSlug]
-            .getGame()
-            .updatePlayerButtonState(currentPlayer.playerID, 'down', false)
+          if (socketData.key == 40) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'top', false)
+          } else if (socketData.key == 38) {
+            rooms[roomSlug]
+              .getGame()
+              .updatePlayerButtonState(currentPlayer.playerID, 'down', false)
+          }
         }
       }
     })
