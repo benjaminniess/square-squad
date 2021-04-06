@@ -4,13 +4,13 @@ class Wolf_And_Sheep {
     this.ballRadius = 10
     this.playersData = {}
     this.playersMoves = {}
+    this.wolf = null
   }
 
   initPlayer(playerSession) {
     this.playersData[playerSession.playerID] = {
       x: 100,
       y: 200,
-      isWolf: false,
       name: playerSession.nickName,
     }
 
@@ -20,18 +20,44 @@ class Wolf_And_Sheep {
       left: false,
       right: false,
     }
+
+    this.resetWolf()
   }
 
   removePlayer(playerID) {
     delete this.playersData[playerID]
     delete this.playersMoves[playerID]
+
+    let wolf = this.getWolf()
+    if (wolf && wolf.playerID === playerID) {
+      this.resetWolf()
+    }
   }
 
   updatePlayerButtonState(playerID, button, state) {
     this.playersMoves[playerID][button] = state
   }
 
+  getWolf() {
+    return this.wolf
+  }
+
+  setWolf(wolf) {
+    this.wolf = wolf
+  }
+
+  resetWolf() {
+    let wolf = this.getWolf()
+    if (!wolf) {
+      for (const [playerID, moves] of Object.entries(this.playersMoves)) {
+        this.setWolf(playerID)
+      }
+    }
+  }
+
   refreshData() {
+    let currentWolf = this.getWolf()
+
     for (const [playerID, moves] of Object.entries(this.playersMoves)) {
       if (moves.top) {
         this.playersData[playerID].y += this.speed
@@ -57,6 +83,9 @@ class Wolf_And_Sheep {
           this.playersData[playerID].x = this.ballRadius
         }
       }
+
+      this.playersData[playerID].isWolf =
+        currentWolf && currentWolf === playerID ? true : false
     }
 
     return this.playersData

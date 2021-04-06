@@ -155,7 +155,7 @@ io.on('connection', (socket) => {
           href: room.getPlayURL(),
         })
 
-        let timeleft = 4
+        let timeleft = 3
         let countdownTimer = setInterval(function () {
           if (timeleft <= 0) {
             clearInterval(countdownTimer)

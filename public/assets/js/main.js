@@ -42,7 +42,9 @@ socket.on('game-is-starting', (data) => {
   window.location.href = data.href
 })
 
-startButton.onclick = function () {
-  socket.emit('start-game', { roomSlug: roomSlug })
-  return false
+if (startButton) {
+  startButton.onclick = function () {
+    socket.emit('start-game', { roomSlug: roomSlug })
+    return false
+  }
 }
