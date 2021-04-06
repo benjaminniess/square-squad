@@ -1,4 +1,6 @@
-const socket = io()
+const socket = io(window.location.host, {
+  transports: ['websocket'],
+})
 const playersList = document.getElementById('players')
 const startButton = document.getElementById('startButton')
 const roomSlug = document.body.getAttribute('data-roomSlug')
