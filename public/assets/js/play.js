@@ -1,7 +1,7 @@
 var canvas = document.getElementById('gameCanvas')
 var countdownText = document.getElementById('countdown-text')
 var ctx = canvas.getContext('2d')
-var ballRadius = 10
+var squareSize = 16
 
 document.addEventListener('keydown', keyDownHandler, false)
 document.addEventListener('keyup', keyUpHandler, false)
@@ -33,7 +33,7 @@ socket.on('refreshCanvas', (data) => {
 
   for (const [key, player] of Object.entries(data.players)) {
     ctx.beginPath()
-    ctx.arc(player.x, player.y, ballRadius, 0, Math.PI * 2)
+    ctx.rect(player.x, player.y, squareSize, squareSize)
     ctx.fillStyle = player.isWolf ? '#DD9500' : '#0095DD'
     ctx.fill()
     ctx.closePath()
