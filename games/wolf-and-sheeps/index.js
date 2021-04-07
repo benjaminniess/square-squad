@@ -1,7 +1,7 @@
 class Wolf_And_Sheep {
   constructor(slug, name) {
     this.speed = 6
-    this.ballRadius = 10
+    this.squareSize = 15
     this.duration = 30
     this.playersData = {}
     this.playersMoves = {}
@@ -63,29 +63,47 @@ class Wolf_And_Sheep {
   refreshData() {
     let currentWolf = this.getWolf()
 
+    for (const [playerIDA, playerPosA] of Object.entries(this.playersData)) {
+      for (const [playerIDB, playerPosB] of Object.entries(this.playersData)) {
+        if (
+          playerPosA.x > playerPosB.x &&
+          playerPosA.x < playerPosB.x + this.squareSize &&
+          playerPosA.y > playerPosB.y &&
+          playerPosA.y < playerPosB.y + this.squareSize
+        ) {
+          if (currentWolf === playerIDA) {
+            this.setWolf(playerIDB)
+          } else if (currentWolf === playerIDB) {
+            this.setWolf(playerIDA)
+          }
+
+          console.log('collision')
+        }
+      }
+    }
     for (const [playerID, moves] of Object.entries(this.playersMoves)) {
       if (moves.top) {
         this.playersData[playerID].y += this.speed
-        if (this.playersData[playerID].y > canvasWidth - this.ballRadius) {
-          this.playersData[playerID].y = canvasWidth - this.ballRadius
+        if (this.playersData[playerID].y > canvasWidth - this.squareSize) {
+          this.playersData[playerID].y = canvasWidth - this.squareSize
         }
       }
       if (moves.right) {
         this.playersData[playerID].x += this.speed
-        if (this.playersData[playerID].x > canvasWidth - this.ballRadius) {
-          this.playersData[playerID].x = canvasWidth - this.ballRadius
+        if (this.playersData[playerID].x > canvasWidth - this.squareSize) {
+          this.playersData[playerID].x = canvasWidth - this.squareSize
         }
       }
       if (moves.down) {
         this.playersData[playerID].y -= this.speed
-        if (this.playersData[playerID].y < this.ballRadius) {
-          this.playersData[playerID].y = this.ballRadius
+        if (this.playersData[playerID].y < this.squareSize) {
+          this.playersData[playerID].y = this.squareSize
         }
       }
       if (moves.left) {
         this.playersData[playerID].x -= this.speed
-        if (this.playersData[playerID].x < this.ballRadius) {
-          this.playersData[playerID].x = this.ballRadius
+        if (this.playersData[playerID].x < this.squareSize) {
+          this.playersData[playerID].x = this.squareSize
         }
       }
 
