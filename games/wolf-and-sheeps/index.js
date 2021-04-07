@@ -2,6 +2,7 @@ class Wolf_And_Sheep {
   constructor(slug, name) {
     this.speed = 6
     this.ballRadius = 10
+    this.duration = 30
     this.playersData = {}
     this.playersMoves = {}
     this.wolf = null
@@ -36,6 +37,10 @@ class Wolf_And_Sheep {
 
   updatePlayerButtonState(playerID, button, state) {
     this.playersMoves[playerID][button] = state
+  }
+
+  getDuration() {
+    return this.duration
   }
 
   getWolf() {

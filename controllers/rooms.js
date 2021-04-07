@@ -149,6 +149,7 @@ io.on('connection', (socket) => {
   socket.on('start-game', (data) => {
     helpers.getPlayerFromSocketID(socket.id).then((emiter) => {
       let room = helpers.getRoom(data.roomSlug)
+      let game = room.getGame()
       if (room && room.getAdminPlayer() === emiter.playerID) {
         room.setGameStatus('starting')
         io.to(data.roomSlug).emit('game-is-starting', {
@@ -160,6 +161,21 @@ io.on('connection', (socket) => {
           if (timeleft <= 0) {
             clearInterval(countdownTimer)
             room.setGameStatus('playing')
+
+            let gameTimeleft = game.getDuration()
+            let gameTimer = setInterval(function () {
+              if (gameTimeleft <= 0) {
+                clearInterval(gameTimer)
+                room.setGameStatus('waiting')
+              }
+
+              io.to(data.roomSlug).emit('in-game-countdown-update', {
+                timeleft: gameTimeleft,
+                href: room.getLobbyURL(),
+              })
+
+              gameTimeleft -= 1
+            }, 1000)
           }
 
           io.to(data.roomSlug).emit('countdown-update', {

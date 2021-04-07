@@ -20,6 +20,14 @@ socket.on('countdown-update', (data) => {
   }
 })
 
+socket.on('in-game-countdown-update', (data) => {
+  countdownText.innerHTML = data.timeleft
+  if (data.timeleft == 0) {
+    countdownText.innerHTML = 'Game over'
+    window.location.href = data.href
+  }
+})
+
 socket.on('refreshCanvas', (data) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
