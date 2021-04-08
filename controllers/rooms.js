@@ -180,6 +180,7 @@ io.on('connection', (socket) => {
 
           io.to(data.roomSlug).emit('countdown-update', {
             timeleft: timeleft,
+            gameData: game.getBasicData(),
           })
 
           timeleft -= 1

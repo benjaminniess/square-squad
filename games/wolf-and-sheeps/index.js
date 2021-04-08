@@ -1,7 +1,10 @@
+'use strict'
+
+const helpers = require('../../lib/helpers')
+
 class Wolf_And_Sheep {
   constructor(slug, name) {
     this.speed = 6
-    this.squareSize = 15
     this.duration = 30
     this.playersData = {}
     this.playersMoves = {}
@@ -10,9 +13,11 @@ class Wolf_And_Sheep {
 
   initPlayer(playerSession) {
     this.playersData[playerSession.playerID] = {
-      x: 100,
+      x: helpers.getRandomInt(50, 600),
       y: 200,
       name: playerSession.nickName,
+      isColliding: false,
+      isCatchable: true,
     }
 
     this.playersMoves[playerSession.playerID] = {
@@ -47,6 +52,12 @@ class Wolf_And_Sheep {
     return this.wolf
   }
 
+  getBasicData() {
+    return {
+      squareSize: squareSize,
+    }
+  }
+
   setWolf(wolf) {
     this.wolf = wolf
   }
@@ -63,47 +74,63 @@ class Wolf_And_Sheep {
   refreshData() {
     let currentWolf = this.getWolf()
 
-    for (const [playerIDA, playerPosA] of Object.entries(this.playersData)) {
+    firstfor: for (const [playerIDA, playerPosA] of Object.entries(
+      this.playersData,
+    )) {
       for (const [playerIDB, playerPosB] of Object.entries(this.playersData)) {
         if (
-          playerPosA.x > playerPosB.x &&
-          playerPosA.x < playerPosB.x + this.squareSize &&
-          playerPosA.y > playerPosB.y &&
-          playerPosA.y < playerPosB.y + this.squareSize
+          playerIDA !== playerIDB &&
+          playerPosA.x < playerPosB.x + squareSize &&
+          playerPosA.x + squareSize > playerPosB.x &&
+          playerPosA.y < playerPosB.y + squareSize &&
+          squareSize + playerPosA.y > playerPosB.y
         ) {
-          if (currentWolf === playerIDA) {
-            this.setWolf(playerIDB)
-          } else if (currentWolf === playerIDB) {
-            this.setWolf(playerIDA)
+          if (!playerPosA.isColliding && !playerPosB.isColliding) {
+            if (currentWolf === playerIDA && this.isCatchable(playerIDB)) {
+              this.setWolf(playerIDB)
+              this.setCatchable(playerIDA, false)
+              playerPosA.isColliding = true
+              playerPosB.isColliding = true
+              break firstfor
+            } else if (
+              currentWolf === playerIDB &&
+              this.isCatchable(playerIDA)
+            ) {
+              this.setWolf(playerIDA)
+              playerPosA.isColliding = true
+              playerPosB.isColliding = true
+              break firstfor
+            }
           }
-
-          console.log('collision')
+        } else {
+          playerPosA.isColliding = false
+          playerPosB.isColliding = false
         }
       }
     }
     for (const [playerID, moves] of Object.entries(this.playersMoves)) {
       if (moves.top) {
         this.playersData[playerID].y += this.speed
-        if (this.playersData[playerID].y > canvasWidth - this.squareSize) {
-          this.playersData[playerID].y = canvasWidth - this.squareSize
+        if (this.playersData[playerID].y > canvasWidth - squareSize) {
+          this.playersData[playerID].y = canvasWidth - squareSize
         }
       }
       if (moves.right) {
         this.playersData[playerID].x += this.speed
-        if (this.playersData[playerID].x > canvasWidth - this.squareSize) {
-          this.playersData[playerID].x = canvasWidth - this.squareSize
+        if (this.playersData[playerID].x > canvasWidth - squareSize) {
+          this.playersData[playerID].x = canvasWidth - squareSize
         }
       }
       if (moves.down) {
         this.playersData[playerID].y -= this.speed
-        if (this.playersData[playerID].y < this.squareSize) {
-          this.playersData[playerID].y = this.squareSize
+        if (this.playersData[playerID].y < 0) {
+          this.playersData[playerID].y = 0
         }
       }
       if (moves.left) {
         this.playersData[playerID].x -= this.speed
-        if (this.playersData[playerID].x < this.squareSize) {
-          this.playersData[playerID].x = this.squareSize
+        if (this.playersData[playerID].x < 0) {
+          this.playersData[playerID].x = 0
         }
       }
 
@@ -112,6 +139,21 @@ class Wolf_And_Sheep {
     }
 
     return this.playersData
+  }
+
+  setCatchable(playerID, catchable = true) {
+    this.playersData[playerID].isCatchable = catchable
+    if (!catchable) {
+      let currentClass = this
+      let notCatchableTimer = setInterval(function () {
+        clearInterval(notCatchableTimer)
+        currentClass.setCatchable(playerID, true)
+      }, 1000)
+    }
+  }
+
+  isCatchable(playerID) {
+    return this.playersData[playerID].isCatchable
   }
 }
 
