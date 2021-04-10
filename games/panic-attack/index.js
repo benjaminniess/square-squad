@@ -2,14 +2,18 @@
 
 const helpers = require('../../lib/helpers')
 
-class Wolf_And_Sheep {
+class Panick_Attack {
   constructor() {
+    this.slug = 'panic-attack'
     this.speed = 6
-    this.slug = 'wolf-and-sheep'
     this.duration = 30
     this.playersData = {}
     this.playersMoves = {}
     this.wolf = null
+  }
+
+  getSlug() {
+    return this.slug
   }
 
   initPlayer(playerSession) {
@@ -29,10 +33,6 @@ class Wolf_And_Sheep {
     }
 
     this.resetWolf()
-  }
-
-  getSlug() {
-    return this.slug
   }
 
   removePlayer(playerID) {
@@ -143,7 +143,7 @@ class Wolf_And_Sheep {
         currentWolf && currentWolf === playerID ? true : false
     }
 
-    return this.playersData
+    return { players: this.playersData }
   }
 
   setCatchable(playerID, catchable = true) {
@@ -162,4 +162,4 @@ class Wolf_And_Sheep {
   }
 }
 
-module.exports = Wolf_And_Sheep
+module.exports = Panick_Attack

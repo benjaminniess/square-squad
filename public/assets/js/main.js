@@ -2,6 +2,11 @@ const socket = io()
 const playersList = document.getElementById('players')
 const startButton = document.getElementById('startButton')
 const roomSlug = document.body.getAttribute('data-roomSlug')
+const countdownText = document.getElementById('countdown-text')
+
+const canvas = document.getElementById('gameCanvas')
+const ctx = canvas ? canvas.getContext('2d') : null
+let gameData = {}
 
 // Prepare the variable that'll recieve connection data
 let sessionData
@@ -48,3 +53,29 @@ if (startButton) {
     return false
   }
 }
+
+document.addEventListener('keydown', keyDownHandler, false)
+document.addEventListener('keyup', keyUpHandler, false)
+
+function keyDownHandler(e) {
+  socket.emit('keyPressed', { key: e.keyCode })
+}
+function keyUpHandler(e) {
+  socket.emit('keyUp', { key: e.keyCode })
+}
+
+socket.on('countdown-update', (data) => {
+  gameData = data.gameData
+  countdownText.innerHTML = data.timeleft
+  if (data.timeleft == 0) {
+    countdownText.innerHTML = ''
+  }
+})
+
+socket.on('in-game-countdown-update', (data) => {
+  countdownText.innerHTML = data.timeleft
+  if (data.timeleft == 0) {
+    countdownText.innerHTML = 'Game over'
+    window.location.href = data.href
+  }
+})

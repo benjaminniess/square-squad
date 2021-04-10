@@ -71,6 +71,7 @@ router.get('/:roomSlug/play', function (req, res, next) {
     res.render('error', { message: 'This room does not exist' })
   } else {
     res.render('play', {
+      gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
       roomName: room.getName(),
       roomSlug: room.getSlug(),
     })
@@ -265,10 +266,10 @@ function refreshData() {
   for (const [roomSlug, room] of Object.entries(helpers.getRooms())) {
     let roomGame = room.getGame()
     if (roomGame) {
-      let players = roomGame.refreshData()
+      let gameData = roomGame.refreshData()
 
       io.to(roomSlug).emit('refreshCanvas', {
-        players: players,
+        players: gameData.players,
       })
     }
   }
