@@ -1,14 +1,10 @@
 'use strict'
 
-const helpers = require('../../lib/helpers')
+const MasterGame = require(__base + '/games/master-game')
 
-class Wolf_And_Sheep {
+class Wolf_And_Sheep extends MasterGame {
   constructor() {
-    this.speed = 6
     this.slug = 'wolf-and-sheep'
-    this.duration = 30
-    this.playersData = {}
-    this.playersMoves = {}
     this.wolf = null
   }
 
@@ -31,10 +27,6 @@ class Wolf_And_Sheep {
     this.resetWolf()
   }
 
-  getSlug() {
-    return this.slug
-  }
-
   removePlayer(playerID) {
     delete this.playersData[playerID]
     delete this.playersMoves[playerID]
@@ -45,22 +37,8 @@ class Wolf_And_Sheep {
     }
   }
 
-  updatePlayerButtonState(playerID, button, state) {
-    this.playersMoves[playerID][button] = state
-  }
-
-  getDuration() {
-    return this.duration
-  }
-
   getWolf() {
     return this.wolf
-  }
-
-  getBasicData() {
-    return {
-      squareSize: squareSize,
-    }
   }
 
   setWolf(wolf) {

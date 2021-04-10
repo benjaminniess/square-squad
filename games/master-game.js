@@ -1,11 +1,51 @@
 'use strict'
 
-const MasterGame = require(__base + '/games/master-game')
+const helpers = require(__base + 'lib/helpers')
 
-class Panick_Attack extends MasterGame {
+class MasterGame {
   constructor() {
-    super()
-    this.slug = 'panic-attack'
+    this.speed = 6
+    this.duration = 30
+    this.playersData = {}
+    this.playersMoves = {}
+  }
+
+  getSlug() {
+    return this.slug
+  }
+
+  initPlayer(playerSession) {
+    this.playersData[playerSession.playerID] = {
+      x: helpers.getRandomInt(50, 600),
+      y: 200,
+      name: playerSession.nickName,
+    }
+
+    this.playersMoves[playerSession.playerID] = {
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+    }
+  }
+
+  removePlayer(playerID) {
+    delete this.playersData[playerID]
+    delete this.playersMoves[playerID]
+  }
+
+  updatePlayerButtonState(playerID, button, state) {
+    this.playersMoves[playerID][button] = state
+  }
+
+  getDuration() {
+    return this.duration
+  }
+
+  getBasicData() {
+    return {
+      squareSize: squareSize,
+    }
   }
 
   refreshData() {
@@ -40,4 +80,4 @@ class Panick_Attack extends MasterGame {
   }
 }
 
-module.exports = Panick_Attack
+module.exports = MasterGame
