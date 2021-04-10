@@ -29,7 +29,7 @@ global.globalRooms = {}
 global.globalPlayers = {}
 global.globalSessionStore = new InMemorySessionStore()
 global.canvasWidth = 700
-global.squareSize = 15
+global.squareSize = 30
 
 global.io = require('socket.io')(server)
 

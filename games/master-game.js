@@ -31,6 +31,7 @@ class MasterGame {
       x: helpers.getRandomInt(50, 600),
       y: 200,
       name: playerSession.nickName,
+      alive: true,
     }
 
     this.playersMoves[playerSession.playerID] = {
@@ -66,7 +67,7 @@ class MasterGame {
 
   refreshData() {
     for (const [playerID, moves] of Object.entries(this.playersMoves)) {
-      if (moves.top) {
+      if (moves.down) {
         this.playersData[playerID].y += this.speed
         if (this.playersData[playerID].y > canvasWidth - squareSize) {
           this.playersData[playerID].y = canvasWidth - squareSize
@@ -78,7 +79,7 @@ class MasterGame {
           this.playersData[playerID].x = canvasWidth - squareSize
         }
       }
-      if (moves.down) {
+      if (moves.top) {
         this.playersData[playerID].y -= this.speed
         if (this.playersData[playerID].y < 0) {
           this.playersData[playerID].y = 0

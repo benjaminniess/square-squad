@@ -19,6 +19,10 @@ class Panick_Attack extends MasterGame {
     this.obstacles = obstacles
   }
 
+  killPlayer(playerID) {
+    this.playersData[playerID].alive = false
+  }
+
   initObstacle() {
     let direction = helpers.getRandomInt(1, 5)
     let holeSize = helpers.getRandomInt(squareSize * 2, squareSize * 8)
@@ -56,7 +60,7 @@ class Panick_Attack extends MasterGame {
         break
       case 2:
         obstacle = {
-          x: 0,
+          x: -obstacleWidth,
           y: 0,
           width: obstacleWidth,
           height: obstacleSpot,
@@ -67,7 +71,7 @@ class Panick_Attack extends MasterGame {
         this.obstacles.push(obstacle)
 
         obstacle = {
-          x: 0,
+          x: -obstacleWidth,
           y: obstacleSpot + holeSize,
           width: obstacleWidth,
           height: canvasWidth,
@@ -81,7 +85,7 @@ class Panick_Attack extends MasterGame {
       case 3:
         obstacle = {
           x: 0,
-          y: 0,
+          y: -obstacleWidth,
           width: obstacleSpot,
           height: obstacleWidth,
           direction: 'bottom',
@@ -92,7 +96,7 @@ class Panick_Attack extends MasterGame {
 
         obstacle = {
           x: obstacleSpot + holeSize,
-          y: 0,
+          y: -obstacleWidth,
           width: canvasWidth,
           height: obstacleWidth,
           direction: 'bottom',
@@ -104,7 +108,7 @@ class Panick_Attack extends MasterGame {
       case 4:
         obstacle = {
           x: 0,
-          y: canvasWidth,
+          y: canvasWidth + obstacleWidth,
           width: obstacleSpot,
           height: obstacleWidth,
           direction: 'top',
@@ -115,7 +119,7 @@ class Panick_Attack extends MasterGame {
 
         obstacle = {
           x: obstacleSpot + holeSize,
-          y: canvasWidth,
+          y: canvasWidth + obstacleWidth,
           width: canvasWidth,
           height: obstacleWidth,
           direction: 'top',
@@ -156,7 +160,7 @@ class Panick_Attack extends MasterGame {
               break
             case 'top':
               obstacle.y -= obstacle.speed
-              if (obstacle.y > 0) {
+              if (obstacle.y > -obstacle.height) {
                 updatedObstacles.push(obstacle)
               }
               break
@@ -168,43 +172,87 @@ class Panick_Attack extends MasterGame {
     }
 
     for (const [playerID, moves] of Object.entries(this.playersMoves)) {
-      let playerPosition = this.playersData[playerID]
+      let playerData = this.playersData[playerID]
+      if (playerData.alive) {
+        if (moves.top) {
+          this.playersData[playerID].y += this.speed
+          if (this.playersData[playerID].y > canvasWidth - squareSize) {
+            this.playersData[playerID].y = canvasWidth - squareSize
+          }
+        }
+        if (moves.right) {
+          this.playersData[playerID].x += this.speed
+          if (this.playersData[playerID].x > canvasWidth - squareSize) {
+            this.playersData[playerID].x = canvasWidth - squareSize
+          }
+        }
+        if (moves.down) {
+          this.playersData[playerID].y -= this.speed
+          if (this.playersData[playerID].y < 0) {
+            this.playersData[playerID].y = 0
+          }
+        }
+        if (moves.left) {
+          this.playersData[playerID].x -= this.speed
+          if (this.playersData[playerID].x < 0) {
+            this.playersData[playerID].x = 0
+          }
+        }
 
-      if (moves.top) {
-        this.playersData[playerID].y += this.speed
-        if (this.playersData[playerID].y > canvasWidth - squareSize) {
-          this.playersData[playerID].y = canvasWidth - squareSize
+        for (const [playerBID, movesB] of Object.entries(this.playersMoves)) {
+          let playerBdata = this.playersData[playerBID]
+          if (
+            playerID !== playerBID &&
+            playerData.x < playerBdata.x + squareSize &&
+            playerData.x + squareSize > playerBdata.x &&
+            playerData.y < playerBdata.y + squareSize &&
+            squareSize + playerData.y > playerBdata.y
+          ) {
+            if (moves.down && playerData.y < playerBdata.y + squareSize) {
+              this.playersData[playerBID].y -= this.speed
+              if (this.playersData[playerBID].y < 0) {
+                this.playersData[playerBID].y = 0
+                this.playersData[playerID].y = squareSize
+              }
+            } else if (moves.top && playerData.y > playerBdata.y - squareSize) {
+              this.playersData[playerBID].y += this.speed
+              if (this.playersData[playerBID].y > canvasWidth - squareSize) {
+                this.playersData[playerBID].y = canvasWidth - squareSize
+                this.playersData[playerID].y =
+                  canvasWidth - squareSize - squareSize
+              }
+            }
+            if (moves.left && playerData.x < playerBdata.x + squareSize) {
+              this.playersData[playerBID].x -= this.speed
+              if (this.playersData[playerBID].x < 0) {
+                this.playersData[playerBID].x = 0
+                this.playersData[playerID].x = squareSize
+              }
+            } else if (
+              moves.right &&
+              playerData.x > playerBdata.x - squareSize
+            ) {
+              this.playersData[playerBID].x += this.speed
+              if (this.playersData[playerBID].x > canvasWidth - squareSize) {
+                this.playersData[playerBID].x = canvasWidth - squareSize
+                this.playersData[playerID].x =
+                  canvasWidth - squareSize - squareSize
+              }
+            }
+          }
         }
-      }
-      if (moves.right) {
-        this.playersData[playerID].x += this.speed
-        if (this.playersData[playerID].x > canvasWidth - squareSize) {
-          this.playersData[playerID].x = canvasWidth - squareSize
-        }
-      }
-      if (moves.down) {
-        this.playersData[playerID].y -= this.speed
-        if (this.playersData[playerID].y < 0) {
-          this.playersData[playerID].y = 0
-        }
-      }
-      if (moves.left) {
-        this.playersData[playerID].x -= this.speed
-        if (this.playersData[playerID].x < 0) {
-          this.playersData[playerID].x = 0
-        }
-      }
 
-      updatedObstacles.map((obstacle) => {
-        if (
-          playerPosition.x < obstacle.x + obstacle.width &&
-          playerPosition.x + squareSize > obstacle.x &&
-          playerPosition.y < obstacle.y + obstacle.height &&
-          squareSize + playerPosition.y > obstacle.y
-        ) {
-          console.log('Collision')
-        }
-      })
+        updatedObstacles.map((obstacle) => {
+          if (
+            playerData.x < obstacle.x + obstacle.width &&
+            playerData.x + squareSize > obstacle.x &&
+            playerData.y < obstacle.y + obstacle.height &&
+            squareSize + playerData.y > obstacle.y
+          ) {
+            this.killPlayer(playerID)
+          }
+        })
+      }
     }
 
     return { players: this.playersData, obstacles: updatedObstacles }
