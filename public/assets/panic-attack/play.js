@@ -8,4 +8,12 @@ socket.on('refreshCanvas', (data) => {
     ctx.fill()
     ctx.closePath()
   }
+
+  data.obstacles.map((obstacle) => {
+    ctx.beginPath()
+    ctx.rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+    ctx.fillStyle = '#DD0000'
+    ctx.fill()
+    ctx.closePath()
+  })
 })

@@ -265,12 +265,11 @@ setInterval(refreshData, 10)
 function refreshData() {
   for (const [roomSlug, room] of Object.entries(helpers.getRooms())) {
     let roomGame = room.getGame()
-    if (roomGame) {
+    let status = room.getGameStatus()
+    if (roomGame && (status === 'playing' || status === 'starting')) {
       let gameData = roomGame.refreshData()
 
-      io.to(roomSlug).emit('refreshCanvas', {
-        players: gameData.players,
-      })
+      io.to(roomSlug).emit('refreshCanvas', gameData)
     }
   }
 }

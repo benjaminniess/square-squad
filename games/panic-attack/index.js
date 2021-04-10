@@ -1,14 +1,169 @@
 'use strict'
 
 const MasterGame = require(__base + '/games/master-game')
+const helpers = require(__base + '/lib/helpers')
 
 class Panick_Attack extends MasterGame {
   constructor() {
     super()
     this.slug = 'panic-attack'
+    this.obstacles = []
+  }
+
+  getObstacles() {
+    return this.obstacles
+  }
+
+  setObstacles(obstacles) {
+    this.obstacles = obstacles
+  }
+
+  initObstacle() {
+    let direction = helpers.getRandomInt(1, 5)
+    let holeSize = helpers.getRandomInt(squareSize * 1.2, squareSize * 4)
+    let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
+    let obstacleSpeed = helpers.getRandomInt(1, 4)
+    let obstacleSpot = helpers.getRandomInt(
+      squareSize,
+      canvasWidth - squareSize,
+    )
+    let obstacle = {}
+
+    switch (direction) {
+      case 1:
+        obstacle = {
+          x: canvasWidth,
+          y: 0,
+          width: obstacleWidth,
+          height: obstacleSpot,
+          direction: 'left',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+
+        obstacle = {
+          x: canvasWidth,
+          y: obstacleSpot + holeSize,
+          width: obstacleWidth,
+          height: canvasWidth,
+          direction: 'left',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+        break
+      case 2:
+        obstacle = {
+          x: 0,
+          y: 0,
+          width: obstacleWidth,
+          height: obstacleSpot,
+          direction: 'right',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+
+        obstacle = {
+          x: 0,
+          y: obstacleSpot + holeSize,
+          width: obstacleWidth,
+          height: canvasWidth,
+          direction: 'right',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+
+        break
+      case 3:
+        obstacle = {
+          x: 0,
+          y: 0,
+          width: obstacleSpot,
+          height: obstacleWidth,
+          direction: 'bottom',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+
+        obstacle = {
+          x: obstacleSpot + holeSize,
+          y: 0,
+          width: canvasWidth,
+          height: obstacleWidth,
+          direction: 'bottom',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+        break
+      case 4:
+        obstacle = {
+          x: 0,
+          y: canvasWidth,
+          width: obstacleSpot,
+          height: obstacleWidth,
+          direction: 'top',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+
+        obstacle = {
+          x: obstacleSpot + holeSize,
+          y: canvasWidth,
+          width: canvasWidth,
+          height: obstacleWidth,
+          direction: 'top',
+          speed: obstacleSpeed,
+        }
+
+        this.obstacles.push(obstacle)
+        break
+    }
   }
 
   refreshData() {
+    let obstacles = this.getObstacles()
+    let updatedObstacles = []
+    if (obstacles.length === 0) {
+      this.initObstacle()
+    } else {
+      obstacles.map((obstacle) => {
+        switch (obstacle.direction) {
+          case 'left':
+            obstacle.x -= obstacle.speed
+            if (obstacle.x > -obstacle.width) {
+              updatedObstacles.push(obstacle)
+            }
+            break
+          case 'right':
+            obstacle.x += obstacle.speed
+            if (obstacle.x < canvasWidth) {
+              updatedObstacles.push(obstacle)
+            }
+            break
+          case 'bottom':
+            obstacle.y += obstacle.speed
+            if (obstacle.y < canvasWidth) {
+              updatedObstacles.push(obstacle)
+            }
+            break
+          case 'top':
+            obstacle.y -= obstacle.speed
+            if (obstacle.y > 0) {
+              updatedObstacles.push(obstacle)
+            }
+            break
+        }
+
+        this.setObstacles(updatedObstacles)
+      })
+    }
+
     for (const [playerID, moves] of Object.entries(this.playersMoves)) {
       if (moves.top) {
         this.playersData[playerID].y += this.speed
@@ -36,7 +191,7 @@ class Panick_Attack extends MasterGame {
       }
     }
 
-    return { players: this.playersData }
+    return { players: this.playersData, obstacles: updatedObstacles }
   }
 }
 
