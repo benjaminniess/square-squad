@@ -6,6 +6,7 @@ const helpers = require(__base + '/lib/helpers')
 class Panick_Attack extends MasterGame {
   constructor() {
     super()
+    this.speed = 4
     this.slug = 'panic-attack'
     this.obstacles = []
   }
@@ -20,9 +21,9 @@ class Panick_Attack extends MasterGame {
 
   initObstacle() {
     let direction = helpers.getRandomInt(1, 5)
-    let holeSize = helpers.getRandomInt(squareSize * 1.2, squareSize * 4)
+    let holeSize = helpers.getRandomInt(squareSize * 2, squareSize * 8)
     let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
-    let obstacleSpeed = helpers.getRandomInt(1, 4)
+    let obstacleSpeed = helpers.getRandomInt(1, 3)
     let obstacleSpot = helpers.getRandomInt(
       squareSize,
       canvasWidth - squareSize,
@@ -129,42 +130,46 @@ class Panick_Attack extends MasterGame {
   refreshData() {
     let obstacles = this.getObstacles()
     let updatedObstacles = []
-    if (obstacles.length === 0) {
-      this.initObstacle()
-    } else {
-      obstacles.map((obstacle) => {
-        switch (obstacle.direction) {
-          case 'left':
-            obstacle.x -= obstacle.speed
-            if (obstacle.x > -obstacle.width) {
-              updatedObstacles.push(obstacle)
-            }
-            break
-          case 'right':
-            obstacle.x += obstacle.speed
-            if (obstacle.x < canvasWidth) {
-              updatedObstacles.push(obstacle)
-            }
-            break
-          case 'bottom':
-            obstacle.y += obstacle.speed
-            if (obstacle.y < canvasWidth) {
-              updatedObstacles.push(obstacle)
-            }
-            break
-          case 'top':
-            obstacle.y -= obstacle.speed
-            if (obstacle.y > 0) {
-              updatedObstacles.push(obstacle)
-            }
-            break
-        }
+    if (this.getStatus() === 'playing') {
+      if (obstacles.length === 0) {
+        this.initObstacle()
+      } else {
+        obstacles.map((obstacle) => {
+          switch (obstacle.direction) {
+            case 'left':
+              obstacle.x -= obstacle.speed
+              if (obstacle.x > -obstacle.width) {
+                updatedObstacles.push(obstacle)
+              }
+              break
+            case 'right':
+              obstacle.x += obstacle.speed
+              if (obstacle.x < canvasWidth) {
+                updatedObstacles.push(obstacle)
+              }
+              break
+            case 'bottom':
+              obstacle.y += obstacle.speed
+              if (obstacle.y < canvasWidth) {
+                updatedObstacles.push(obstacle)
+              }
+              break
+            case 'top':
+              obstacle.y -= obstacle.speed
+              if (obstacle.y > 0) {
+                updatedObstacles.push(obstacle)
+              }
+              break
+          }
 
-        this.setObstacles(updatedObstacles)
-      })
+          this.setObstacles(updatedObstacles)
+        })
+      }
     }
 
     for (const [playerID, moves] of Object.entries(this.playersMoves)) {
+      let playerPosition = this.playersData[playerID]
+
       if (moves.top) {
         this.playersData[playerID].y += this.speed
         if (this.playersData[playerID].y > canvasWidth - squareSize) {
@@ -189,6 +194,17 @@ class Panick_Attack extends MasterGame {
           this.playersData[playerID].x = 0
         }
       }
+
+      updatedObstacles.map((obstacle) => {
+        if (
+          playerPosition.x < obstacle.x + obstacle.width &&
+          playerPosition.x + squareSize > obstacle.x &&
+          playerPosition.y < obstacle.y + obstacle.height &&
+          squareSize + playerPosition.y > obstacle.y
+        ) {
+          console.log('Collision')
+        }
+      })
     }
 
     return { players: this.playersData, obstacles: updatedObstacles }

@@ -39,11 +39,9 @@ router.get('/', function (req, res, next) {
 router.get('/:roomSlug', function (req, res, next) {
   let currentPlayer = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
   let room = helpers.getRoom(req.params.roomSlug)
+  let gameStatus = room.getGame().getStatus()
   if (room !== null) {
-    if (
-      room.getGameStatus() === 'starting' ||
-      room.getGameStatus() === 'playing'
-    ) {
+    if (gameStatus === 'starting' || gameStatus === 'playing') {
       res.redirect(room.getPlayURL())
     } else {
       res.render('room', {
@@ -51,7 +49,7 @@ router.get('/:roomSlug', function (req, res, next) {
         roomSlug: room.getSlug(),
         playerName: currentPlayer.nickName,
         isAdmin: room.getAdminPlayer() === currentPlayer.playerID,
-        status: room.getGameStatus(),
+        status: gameStatus,
       })
     }
   } else {
@@ -64,7 +62,7 @@ router.get('/:roomSlug', function (req, res, next) {
  */
 router.get('/:roomSlug/play', function (req, res, next) {
   let room = helpers.getRoom(req.params.roomSlug)
-  let gameStatus = room.getGameStatus()
+  let gameStatus = room.getGame().getStatus()
   if (gameStatus === 'waiting') {
     res.redirect(room.getLobbyURL())
   } else if (room === null) {
@@ -123,7 +121,7 @@ io.on('connection', (socket) => {
     } else {
       socket.join(room.getSlug())
       currentPlayer.isSpectator =
-        room.getGameStatus() === 'playing' ? true : false
+        room.getGame().getStatus() === 'playing' ? true : false
       helpers.updatePlayer(cookies['connect.sid'], currentPlayer)
       room.refreshPlayers().then((sessions) => {
         io.in(room.getSlug()).emit('refreshPlayers', sessions)
@@ -152,7 +150,7 @@ io.on('connection', (socket) => {
       let room = helpers.getRoom(data.roomSlug)
       let game = room.getGame()
       if (room && room.getAdminPlayer() === emiter.playerID) {
-        room.setGameStatus('starting')
+        room.getGame().setStatus('starting')
         io.to(data.roomSlug).emit('game-is-starting', {
           href: room.getPlayURL(),
         })
@@ -161,13 +159,13 @@ io.on('connection', (socket) => {
         let countdownTimer = setInterval(function () {
           if (timeleft <= 0) {
             clearInterval(countdownTimer)
-            room.setGameStatus('playing')
+            room.getGame().setStatus('playing')
 
             let gameTimeleft = game.getDuration()
             let gameTimer = setInterval(function () {
               if (gameTimeleft <= 0) {
                 clearInterval(gameTimer)
-                room.setGameStatus('waiting')
+                room.getGame().setStatus('waiting')
               }
 
               io.to(data.roomSlug).emit('in-game-countdown-update', {
@@ -200,7 +198,8 @@ io.on('connection', (socket) => {
       socket.rooms.forEach((roomSlug) => {
         if (roomSlug != socket.id) {
           let room = helpers.getRoom(roomSlug)
-          if (room && room.getGameStatus() === 'playing') {
+          let gameStatus = room.getGame().getStatus()
+          if (room && gameStatus === 'playing') {
             if (socketData.key == 39) {
               rooms[roomSlug]
                 .getGame()
@@ -232,7 +231,7 @@ io.on('connection', (socket) => {
     if (currentPlayer && !currentPlayer.isSpectator) {
       socket.rooms.forEach((roomSlug) => {
         let room = helpers.getRoom(roomSlug)
-        if (room && room.getGameStatus() === 'playing') {
+        if (room && room.getGame().getStatus() === 'playing') {
           if (roomSlug != socket.id) {
             if (socketData.key == 39) {
               rooms[roomSlug]
@@ -265,7 +264,7 @@ setInterval(refreshData, 10)
 function refreshData() {
   for (const [roomSlug, room] of Object.entries(helpers.getRooms())) {
     let roomGame = room.getGame()
-    let status = room.getGameStatus()
+    let status = room.getGame().getStatus()
     if (roomGame && (status === 'playing' || status === 'starting')) {
       let gameData = roomGame.refreshData()
 

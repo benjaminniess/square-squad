@@ -8,10 +8,22 @@ class MasterGame {
     this.duration = 30
     this.playersData = {}
     this.playersMoves = {}
+    this.status = 'waiting'
   }
 
   getSlug() {
     return this.slug
+  }
+
+  /**
+   * waiting : waiting for players to join the lobby
+   * starting : redirecting users to the play screen + launching the countdown
+   * playing : game has started
+   *
+   * @returns
+   */
+  getStatus() {
+    return this.status
   }
 
   initPlayer(playerSession) {
@@ -46,6 +58,10 @@ class MasterGame {
     return {
       squareSize: squareSize,
     }
+  }
+
+  setStatus(status) {
+    this.status = status
   }
 
   refreshData() {
