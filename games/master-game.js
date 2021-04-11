@@ -66,6 +66,27 @@ class MasterGame {
     }
   }
 
+  countPlayers() {
+    return Object.keys(this.playersData).length
+  }
+
+  countAlivePlayers() {
+    return new Promise((resolve, reject) => {
+      let alive = 0
+      let countRows = 0
+      for (const [playerID, playerData] of Object.entries(this.playersData)) {
+        countRows ++
+        if ( playerData.alive ) {
+          alive ++
+        }
+
+        if ( countRows >= Object.keys(this.playersData).length ) {
+          resolve(alive)
+        }
+      }
+    })
+  }
+
   setStatus(status) {
     this.status = status
   }

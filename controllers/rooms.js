@@ -176,6 +176,20 @@ io.on('connection', (socket) => {
   
                 gameTimeleft -= 1
               }, 1000)  
+            } else {
+              let gameTimer = setInterval(function () {
+                game.countAlivePlayers().then(countAlive => {
+                  if (countAlive === 0) {
+                    clearInterval(gameTimer)
+                    game.setStatus('waiting')
+                    io.to(data.roomSlug).emit('in-game-countdown-update', {
+                      timeleft: 0,
+                      href: room.getLobbyURL(),
+                    })
+                  }
+                })
+                
+              }, 1000)  
             }
           }
 
@@ -269,7 +283,6 @@ function refreshData() {
     let status = room.getGame().getStatus()
     if (roomGame && (status === 'playing' || status === 'starting')) {
       let gameData = roomGame.refreshData()
-
       io.to(roomSlug).emit('refreshCanvas', gameData)
     }
   }
