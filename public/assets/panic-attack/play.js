@@ -1,4 +1,8 @@
 socket.on('refreshCanvas', (data) => {
+  if (data.increasePoints) {
+    pointsText.innerHTML = data.increasePoints
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
   for (const [key, player] of Object.entries(data.players)) {

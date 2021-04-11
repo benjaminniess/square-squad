@@ -159,22 +159,24 @@ io.on('connection', (socket) => {
         let countdownTimer = setInterval(function () {
           if (timeleft <= 0) {
             clearInterval(countdownTimer)
-            room.getGame().setStatus('playing')
+            game.setStatus('playing')
 
-            let gameTimeleft = game.getDuration()
-            let gameTimer = setInterval(function () {
-              if (gameTimeleft <= 0) {
-                clearInterval(gameTimer)
-                room.getGame().setStatus('waiting')
-              }
-
-              io.to(data.roomSlug).emit('in-game-countdown-update', {
-                timeleft: gameTimeleft,
-                href: room.getLobbyURL(),
-              })
-
-              gameTimeleft -= 1
-            }, 1000)
+            if ( game.getType() === 'countdown' ) {
+              let gameTimeleft = game.getDuration()
+              let gameTimer = setInterval(function () {
+                if (gameTimeleft <= 0) {
+                  clearInterval(gameTimer)
+                  game.setStatus('waiting')
+                }
+  
+                io.to(data.roomSlug).emit('in-game-countdown-update', {
+                  timeleft: gameTimeleft,
+                  href: room.getLobbyURL(),
+                })
+  
+                gameTimeleft -= 1
+              }, 1000)  
+            }
           }
 
           io.to(data.roomSlug).emit('countdown-update', {

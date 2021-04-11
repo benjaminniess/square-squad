@@ -9,6 +9,7 @@ class MasterGame {
     this.playersData = {}
     this.playersMoves = {}
     this.status = 'waiting'
+    this.type = 'countdown'
   }
 
   getSlug() {
@@ -53,6 +54,10 @@ class MasterGame {
 
   getDuration() {
     return this.duration
+  }
+
+  getType() {
+    return this.type
   }
 
   getBasicData() {

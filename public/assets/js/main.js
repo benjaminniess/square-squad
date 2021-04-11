@@ -3,6 +3,7 @@ const playersList = document.getElementById('players')
 const startButton = document.getElementById('startButton')
 const roomSlug = document.body.getAttribute('data-roomSlug')
 const countdownText = document.getElementById('countdown-text')
+const pointsText = document.getElementById('points-text')
 
 const canvas = document.getElementById('gameCanvas')
 const ctx = canvas ? canvas.getContext('2d') : null

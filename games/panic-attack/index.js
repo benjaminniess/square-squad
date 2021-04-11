@@ -9,6 +9,8 @@ class Panick_Attack extends MasterGame {
     this.speed = 4
     this.slug = 'panic-attack'
     this.obstacles = []
+    this.score = 1
+    this.type = 'battle-royale'
   }
 
   getObstacles() {
@@ -21,6 +23,14 @@ class Panick_Attack extends MasterGame {
 
   killPlayer(playerID) {
     this.playersData[playerID].alive = false
+  }
+
+  getScore() {
+    return this.score
+  }
+
+  increaseScore() {
+    this.score ++
   }
 
   initObstacle() {
@@ -134,9 +144,12 @@ class Panick_Attack extends MasterGame {
   refreshData() {
     let obstacles = this.getObstacles()
     let updatedObstacles = []
+    let increasePoints = false
     if (this.getStatus() === 'playing') {
       if (obstacles.length === 0) {
         this.initObstacle()
+        this.increaseScore()
+        increasePoints = this.getScore()
       } else {
         obstacles.map((obstacle) => {
           switch (obstacle.direction) {
@@ -255,7 +268,7 @@ class Panick_Attack extends MasterGame {
       }
     }
 
-    return { players: this.playersData, obstacles: updatedObstacles }
+    return { players: this.playersData, obstacles: updatedObstacles, increasePoints : increasePoints }
   }
 }
 
