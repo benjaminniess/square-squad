@@ -159,7 +159,7 @@ io.on('connection', (socket) => {
         let countdownTimer = setInterval(function () {
           if (timeleft <= 0) {
             clearInterval(countdownTimer)
-            game.setStatus('playing')
+            game.start()
 
             if ( game.getType() === 'countdown' ) {
               let gameTimeleft = game.getDuration()

@@ -13,6 +13,11 @@ class Panick_Attack extends MasterGame {
     this.type = 'battle-royale'
   }
 
+  start() {
+    this.setObstacles([])
+    this.score = 0
+    this.setStatus('playing')
+  }
   getObstacles() {
     return this.obstacles
   }
