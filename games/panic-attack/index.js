@@ -17,6 +17,7 @@ class Panick_Attack extends MasterGame {
     this.setObstacles([])
     this.score = 0
     this.setStatus('playing')
+    this.lastRoundRanking = []
   }
   getObstacles() {
     return this.obstacles
@@ -28,6 +29,12 @@ class Panick_Attack extends MasterGame {
 
   killPlayer(playerID) {
     this.playersData[playerID].alive = false
+    this.playersData[playerID].score = this.getScore()
+    this.addRoundScore({
+      playerID: playerID,
+      score: this.playersData[playerID].score,
+      nickname: this.playersData[playerID].name,
+    })
   }
 
   getScore() {
@@ -268,7 +275,6 @@ class Panick_Attack extends MasterGame {
             squareSize + playerData.y > obstacle.y
           ) {
             this.killPlayer(playerID)
-            this.playersData[playerID].score = this.getScore()
           }
         })
       }

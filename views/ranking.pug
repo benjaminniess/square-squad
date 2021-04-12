@@ -1,0 +1,16 @@
+html
+  include includes/header.pug
+  script(src='/assets/js/dist/socket.io.js')
+  body(data-roomSlug=roomSlug)
+    div.uk-section
+        div.uk-container.uk-container-small 
+          h1.uk-heading-large.uk-text-center Square Squad
+          h3 !{roomName}
+          h4 Players
+          ul#players
+          h1 The winner is !{roundWinner.nickname} with !{roundWinner.score} points
+          ul
+            each rank, index in ranking
+              li= '#' + (index+1) + ' ' + rank.nickname + ' (' + rank.score + ' points)'
+    script(src='/assets/js/main.js')
+    include includes/footer.pug

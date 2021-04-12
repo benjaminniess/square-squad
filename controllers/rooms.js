@@ -77,6 +77,29 @@ router.get('/:roomSlug/play', function (req, res, next) {
 })
 
 /**
+ * A room's ranking view
+ */
+router.get('/:roomSlug/ranking', function (req, res, next) {
+  let room = helpers.getRoom(req.params.roomSlug)
+  if (room === null) {
+    res.render('error', { message: 'This room does not exist' })
+  } else {
+    let game = room.getGame()
+    let gameStatus = game.getStatus()
+    if (gameStatus !== 'end-round') {
+      res.redirect(room.getLobbyURL())
+    } else {
+      res.render('ranking', {
+        roundWinner: game.getLastRoundWinner(),
+        ranking: game.getLastRoundRanking(),
+        roomName: room.getName(),
+        roomSlug: room.getSlug(),
+      })
+    }
+  }
+})
+
+/**
  * The room's add form handling
  */
 router.post('/', function (req, res, next) {
@@ -161,35 +184,34 @@ io.on('connection', (socket) => {
             clearInterval(countdownTimer)
             game.start()
 
-            if ( game.getType() === 'countdown' ) {
+            if (game.getType() === 'countdown') {
               let gameTimeleft = game.getDuration()
               let gameTimer = setInterval(function () {
                 if (gameTimeleft <= 0) {
                   clearInterval(gameTimer)
                   game.setStatus('waiting')
                 }
-  
+
                 io.to(data.roomSlug).emit('in-game-countdown-update', {
                   timeleft: gameTimeleft,
                   href: room.getLobbyURL(),
                 })
-  
+
                 gameTimeleft -= 1
-              }, 1000)  
+              }, 1000)
             } else {
               let gameTimer = setInterval(function () {
-                game.countAlivePlayers().then(countAlive => {
+                game.countAlivePlayers().then((countAlive) => {
                   if (countAlive === 0) {
                     clearInterval(gameTimer)
-                    game.setStatus('waiting')
+                    game.setStatus('end-round')
                     io.to(data.roomSlug).emit('in-game-countdown-update', {
                       timeleft: 0,
-                      href: room.getLobbyURL(),
+                      href: room.getRankingURL(),
                     })
                   }
                 })
-                
-              }, 1000)  
+              }, 1000)
             }
           }
 

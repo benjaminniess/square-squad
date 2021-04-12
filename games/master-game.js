@@ -11,6 +11,9 @@ class MasterGame {
     this.status = 'waiting'
     this.type = 'countdown'
     this.room = room
+    this.ranking = []
+    this.lastRoundRanking = []
+    this.lastWinner = {}
   }
 
   getRoom() {
@@ -64,6 +67,22 @@ class MasterGame {
 
   getType() {
     return this.type
+  }
+
+  getRanking() {
+    return this.ranking
+  }
+
+  addRoundScore(scoreData) {
+    this.lastRoundRanking.push(scoreData)
+  }
+
+  getLastRoundRanking() {
+    return JSON.parse(JSON.stringify(this.lastRoundRanking)).reverse()
+  }
+
+  getLastRoundWinner() {
+    return this.getLastRoundRanking()[0]
   }
 
   getBasicData() {
