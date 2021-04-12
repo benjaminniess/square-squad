@@ -3,13 +3,18 @@
 const helpers = require(__base + 'lib/helpers')
 
 class MasterGame {
-  constructor() {
+  constructor(room) {
     this.speed = 6
     this.duration = 30
     this.playersData = {}
     this.playersMoves = {}
     this.status = 'waiting'
     this.type = 'countdown'
+    this.room = room
+  }
+
+  getRoom() {
+    return this.room()
   }
 
   getSlug() {
@@ -33,6 +38,7 @@ class MasterGame {
       y: 200,
       name: playerSession.nickName,
       alive: true,
+      score: 0,
     }
 
     this.playersMoves[playerSession.playerID] = {
@@ -75,16 +81,20 @@ class MasterGame {
       let alive = 0
       let countRows = 0
       for (const [playerID, playerData] of Object.entries(this.playersData)) {
-        countRows ++
-        if ( playerData.alive ) {
-          alive ++
+        countRows++
+        if (playerData.alive) {
+          alive++
         }
 
-        if ( countRows >= Object.keys(this.playersData).length ) {
+        if (countRows >= Object.keys(this.playersData).length) {
           resolve(alive)
         }
       }
     })
+  }
+
+  getPlayersData() {
+    return this.playersData
   }
 
   setStatus(status) {

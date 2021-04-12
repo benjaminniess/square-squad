@@ -4,7 +4,7 @@ const MasterGame = require(__base + '/games/master-game')
 const helpers = require(__base + '/lib/helpers')
 
 class Panick_Attack extends MasterGame {
-  constructor() {
+  constructor(room) {
     super()
     this.speed = 4
     this.slug = 'panic-attack'
@@ -35,14 +35,14 @@ class Panick_Attack extends MasterGame {
   }
 
   increaseScore() {
-    this.score ++
+    this.score++
   }
 
   initObstacle() {
     let direction = helpers.getRandomInt(1, 5)
     let holeSize = helpers.getRandomInt(squareSize * 2, squareSize * 8)
     let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
-    let obstacleSpeed = helpers.getRandomInt(1, 3)
+    let obstacleSpeed = this.getScore() / 5 + 1
     let obstacleSpot = helpers.getRandomInt(
       squareSize,
       canvasWidth - squareSize,
@@ -268,12 +268,17 @@ class Panick_Attack extends MasterGame {
             squareSize + playerData.y > obstacle.y
           ) {
             this.killPlayer(playerID)
+            this.playersData[playerID].score = this.getScore()
           }
         })
       }
     }
 
-    return { players: this.playersData, obstacles: updatedObstacles, increasePoints : increasePoints }
+    return {
+      players: this.playersData,
+      obstacles: updatedObstacles,
+      increasePoints: increasePoints,
+    }
   }
 }
 
