@@ -1,0 +1,23 @@
+doctype html
+html(lang='fr')
+    block vars
+        - var pageTitle='Square Squad Reloaded'
+    head
+        block title
+            title #{pageTitle}
+        block styles
+            link(rel='stylesheet', href='/assets/css/dist/uikit/uikit.min.css')
+            link(rel='stylesheet', href='/assets/css/main.css')
+        block scripts
+            script(src='/assets/js/dist/uikit/uikit.min.js')
+            script(src='/assets/js/dist/uikit/uikit-icons.min.js')
+
+    block bodyClass
+        - var bodyClass = ''
+
+    body(class=bodyClass)
+        block content
+
+        footer.uk-section
+            div.uk-container.uk-container-small
+                p.uk-text-center Footer section
