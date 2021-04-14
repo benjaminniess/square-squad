@@ -5,6 +5,14 @@ const roomSlug = document.body.getAttribute('data-roomSlug')
 const countdownText = document.getElementById('countdown-text')
 const pointsText = document.getElementById('points-text')
 
+const lobbySection = document.getElementById('section-lobby')
+const playSection = document.getElementById('section-play')
+const rankSection = document.getElementById('section-ranking')
+
+const winnerNickname = document.getElementById('winner-nickname')
+const winnerScore = document.getElementById('winner-score')
+const rankList = document.getElementById('rank-list')
+
 const canvas = document.getElementById('gameCanvas')
 const ctx = canvas ? canvas.getContext('2d') : null
 let gameData = {}
@@ -45,7 +53,9 @@ socket.on('player-connected', (data) => {
 })
 
 socket.on('game-is-starting', (data) => {
-  window.location.href = data.href
+  lobbySection.style.display = 'none'
+  playSection.style.display = 'block'
+  rankSection.style.display = 'none'
 })
 
 if (startButton) {
@@ -77,6 +87,15 @@ socket.on('in-game-countdown-update', (data) => {
   countdownText.innerHTML = data.timeleft
   if (data.timeleft == 0) {
     countdownText.innerHTML = 'Game over'
-    window.location.href = data.href
+    lobbySection.style.display = 'none'
+    playSection.style.display = 'none'
+    rankSection.style.display = 'block'
+    winnerNickname.innerHTML = data.roundWinner.nickname
+    winnerScore.innerHTML = data.roundWinner.score
+    let ranking = ''
+    data.ranking.map((rank) => {
+      ranking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
+    })
+    rankList.innerHTML = ranking
   }
 })

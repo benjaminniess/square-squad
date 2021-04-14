@@ -42,61 +42,16 @@ router.get('/:roomSlug', function (req, res, next) {
   let room = helpers.getRoom(req.params.roomSlug)
   let gameStatus = room.getGame().getStatus()
   if (room !== null) {
-    if (gameStatus === 'starting' || gameStatus === 'playing') {
-      res.redirect(room.getPlayURL())
-    } else {
-      res.render('room', {
-        roomName: room.getName(),
-        roomSlug: room.getSlug(),
-        playerName: currentPlayer.getNickname(),
-        isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
-        status: gameStatus,
-      })
-    }
-  } else {
-    res.render('error', { message: 'This room does not exist' })
-  }
-})
-
-/**
- * A room's game view
- */
-router.get('/:roomSlug/play', function (req, res, next) {
-  let room = helpers.getRoom(req.params.roomSlug)
-  let gameStatus = room.getGame().getStatus()
-  if (gameStatus === 'waiting') {
-    res.redirect(room.getLobbyURL())
-  } else if (room === null) {
-    res.render('error', { message: 'This room does not exist' })
-  } else {
-    res.render('play', {
-      gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
+    res.render('room', {
       roomName: room.getName(),
       roomSlug: room.getSlug(),
+      playerName: currentPlayer.getNickname(),
+      isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
+      status: gameStatus,
+      gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
     })
-  }
-})
-
-/**
- * A room's ranking view
- */
-router.get('/:roomSlug/ranking', function (req, res, next) {
-  let room = helpers.getRoom(req.params.roomSlug)
-  if (room === null) {
-    res.render('error', { message: 'This room does not exist' })
   } else {
-    let game = room.getGame()
-    let gameStatus = game.getStatus()
-    if (gameStatus !== 'end-round') {
-      res.redirect(room.getLobbyURL())
-    } else {
-      res.render('ranking', {
-        roundWinner: game.getLastRoundWinner(),
-        ranking: game.getLastRoundRanking(),
-        roomName: room.getName(),
-        roomSlug: room.getSlug(),
-      })
-    }
+    res.render('error', { message: 'This room does not exist' })
   }
 })
 
@@ -178,9 +133,7 @@ io.on('connection', (socket) => {
     let game = room.getGame()
     if (room && room.getAdminPlayer() === currentPlayer.getPublicID()) {
       room.getGame().setStatus('starting')
-      io.to(data.roomSlug).emit('game-is-starting', {
-        href: room.getPlayURL(),
-      })
+      io.to(data.roomSlug).emit('game-is-starting')
 
       let timeleft = 3
       let countdownTimer = setInterval(function () {
@@ -198,7 +151,6 @@ io.on('connection', (socket) => {
 
               io.to(data.roomSlug).emit('in-game-countdown-update', {
                 timeleft: gameTimeleft,
-                href: room.getLobbyURL(),
               })
 
               gameTimeleft -= 1
@@ -211,7 +163,8 @@ io.on('connection', (socket) => {
                   game.setStatus('end-round')
                   io.to(data.roomSlug).emit('in-game-countdown-update', {
                     timeleft: 0,
-                    href: room.getRankingURL(),
+                    roundWinner: game.getLastRoundWinner(),
+                    ranking: game.getLastRoundRanking(),
                   })
                 }
               })
