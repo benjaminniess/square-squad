@@ -1,9 +1,12 @@
-html
-  include includes/header.pug
+extends includes/base
+
+block scripts
   script(src='/assets/js/dist/socket.io.js')
+
+block content
   body(data-roomSlug=roomSlug)
     div.uk-section
-        div.uk-container.uk-container-small 
+        div.uk-container.uk-container-small
           h1.uk-heading-large.uk-text-center Square Squad
           p Hello #[a(href="/?action=edit-login" id="playerNameLabel") !{playerName} ]! your about to play
           h3 !{roomName}
@@ -15,4 +18,3 @@ html
           p
             a.uk-button.uk-button-default(href='/') back
     script(src='/assets/js/main.js')
-    include includes/footer.pug

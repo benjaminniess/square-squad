@@ -1,9 +1,15 @@
-html
-  include includes/header.pug
+extends includes/base
+
+block title
+  title=`Rooms - ${pageTitle}`
+
+block scripts
   script(src='/assets/js/dist/socket.io.js')
+
+block content
   body(data-roomSlug=roomSlug)
     div.uk-section
-        div.uk-container.uk-container-small 
+        div.uk-container.uk-container-small
           h1.uk-heading-large.uk-text-center Square Squad
           h3 !{roomName}
           h4 Players
@@ -13,4 +19,3 @@ html
             each rank, index in ranking
               li= '#' + (index+1) + ' ' + rank.nickname + ' (' + rank.score + ' points)'
     script(src='/assets/js/main.js')
-    include includes/footer.pug
