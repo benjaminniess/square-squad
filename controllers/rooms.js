@@ -161,6 +161,7 @@ io.on('connection', (socket) => {
                 if (countAlive === 0) {
                   clearInterval(gameTimer)
                   game.setStatus('end-round')
+                  game.renewPlayers()
                   io.to(data.roomSlug).emit('in-game-countdown-update', {
                     timeleft: 0,
                     roundWinner: game.getLastRoundWinner(),

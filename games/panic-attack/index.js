@@ -19,6 +19,13 @@ class Panick_Attack extends MasterGame {
     this.setStatus('playing')
     this.lastRoundRanking = []
   }
+
+  renewPlayers() {
+    for (const [playerID, moves] of Object.entries(this.playersData)) {
+      this.playersData[playerID].alive = true
+    }
+  }
+
   getObstacles() {
     return this.obstacles
   }

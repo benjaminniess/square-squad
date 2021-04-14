@@ -1,5 +1,5 @@
 const socket = io()
-const playersList = document.getElementById('players')
+const playersLists = document.getElementsByClassName('players')
 const startButton = document.getElementById('startButton')
 const roomSlug = document.body.getAttribute('data-roomSlug')
 const countdownText = document.getElementById('countdown-text')
@@ -23,22 +23,25 @@ let sessionData
 // When recieving players in current room
 socket.on('refreshPlayers', (data) => {
   // Check if the current page has a players list container
-  if (playersList) {
-    playersList.innerHTML = ''
-    data.map((player) => {
-      var li = document.createElement('li')
-      li.appendChild(document.createTextNode(player.nickname))
+  if (playersLists) {
+    console.log(playersLists)
+    Array.prototype.slice.call(playersLists).map((playersList) => {
+      playersList.innerHTML = ''
+      data.map((player) => {
+        var li = document.createElement('li')
+        li.appendChild(document.createTextNode(player.nickname))
 
-      // Flag the current user
-      if (player.playerID === sessionData.playerID) {
-        li.appendChild(document.createTextNode('(You)'))
-      }
+        // Flag the current user
+        if (player.playerID === sessionData.playerID) {
+          li.appendChild(document.createTextNode('(You)'))
+        }
 
-      if (player.isAdmin) {
-        li.appendChild(document.createTextNode('[admin]'))
-      }
+        if (player.isAdmin) {
+          li.appendChild(document.createTextNode('[admin]'))
+        }
 
-      playersList.appendChild(li)
+        playersList.appendChild(li)
+      })
     })
   }
 })
@@ -97,5 +100,16 @@ socket.on('in-game-countdown-update', (data) => {
       ranking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
     })
     rankList.innerHTML = ranking
+
+    let timeleft = 3
+    let countdownTimer = setInterval(function () {
+      if (timeleft <= 0) {
+        clearInterval(countdownTimer)
+        socket.emit('start-game', { roomSlug: roomSlug })
+        countdownText.innerHTML = 'Starting...'
+      }
+
+      timeleft -= 1
+    }, 1000)
   }
 })
