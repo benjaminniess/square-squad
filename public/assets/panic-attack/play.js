@@ -9,7 +9,7 @@ socket.on('refreshCanvas', (data) => {
     if (player.alive) {
       ctx.beginPath()
       ctx.rect(player.x, player.y, gameData.squareSize, gameData.squareSize)
-      ctx.fillStyle = player.isWolf ? '#DD9500' : '#0095DD'
+      ctx.fillStyle = player.playerColor
       ctx.fill()
       ctx.closePath()
     }
