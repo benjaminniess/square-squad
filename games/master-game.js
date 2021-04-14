@@ -42,6 +42,7 @@ class MasterGame {
       name: playerSession.nickName,
       alive: true,
       score: 0,
+      color: playerSession.playerColor,
     }
 
     this.playersMoves[playerSession.playerID] = {
