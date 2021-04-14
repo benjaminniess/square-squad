@@ -5,9 +5,6 @@ const router = express.Router()
 
 const helpers = require('../lib/helpers')
 
-const crypto = require('crypto')
-const randomId = () => crypto.randomBytes(8).toString('hex')
-
 module.exports = function (app) {
   app.use('/', router)
 
@@ -21,7 +18,7 @@ module.exports = function (app) {
     } else if (req.query.action == 'edit-login') {
       res.render('index', {
         nickName: sessionData.nickName,
-        playerColor: sessionData.playerColor
+        playerColor: sessionData.playerColor,
       })
     } else {
       res.redirect('/rooms')
@@ -35,10 +32,11 @@ module.exports = function (app) {
     if (!req.body.playerName) {
       res.render('error', { message: 'Nickame is required' })
     } else {
-      helpers.updatePlayer(req.cookies['connect.sid'], {
+      let playerObj = helpers.getPlayer(req.cookies['connect.sid'])
+
+      playerObj.resetData({
         nickName: req.body.playerName,
-        playerColor: req.body.playerColor,
-        playerID: randomId(),
+        color: req.body.playerColor,
       })
 
       res.redirect('/rooms')

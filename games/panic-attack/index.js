@@ -33,7 +33,7 @@ class Panick_Attack extends MasterGame {
     this.addRoundScore({
       playerID: playerID,
       score: this.playersData[playerID].score,
-      nickname: this.playersData[playerID].name,
+      nickname: this.playersData[playerID].nickname,
     })
   }
 

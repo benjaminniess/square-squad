@@ -36,16 +36,16 @@ class MasterGame {
   }
 
   initPlayer(playerSession) {
-    this.playersData[playerSession.playerID] = {
+    this.playersData[playerSession.id] = {
       x: helpers.getRandomInt(50, 600),
       y: 200,
-      name: playerSession.nickName,
+      nickname: playerSession.nickname,
       alive: true,
       score: 0,
-      color: playerSession.playerColor,
+      color: playerSession.color,
     }
 
-    this.playersMoves[playerSession.playerID] = {
+    this.playersMoves[playerSession.id] = {
       up: false,
       down: false,
       left: false,

@@ -19,7 +19,7 @@ socket.on('refreshPlayers', (data) => {
     playersList.innerHTML = ''
     data.map((player) => {
       var li = document.createElement('li')
-      li.appendChild(document.createTextNode(player.nickName))
+      li.appendChild(document.createTextNode(player.nickname))
 
       // Flag the current user
       if (player.playerID === sessionData.playerID) {

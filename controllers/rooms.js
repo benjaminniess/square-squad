@@ -13,8 +13,8 @@ module.exports = function (app) {
  * Global check. Nobody is allowed here if no session ID or no nickname
  */
 router.get('*', function (req, res, next) {
-  let currentPlayer = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
-  if (!currentPlayer || !currentPlayer.nickName) {
+  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
+  if (!currentPlayer || !currentPlayer.getNickname()) {
     res.redirect('/')
   } else {
     next()
@@ -25,12 +25,12 @@ router.get('*', function (req, res, next) {
  * The rooms list view
  */
 router.get('/', function (req, res, next) {
-  let currentPlayer = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
+  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let rooms = helpers.getRooms()
   res.render('rooms', {
     rooms: Object.keys(rooms).length ? rooms : null,
-    playerName: currentPlayer.nickName,
-    playerColor: currentPlayer.playerColor,
+    playerName: currentPlayer.getNickname(),
+    playerColor: currentPlayer.getColor(),
   })
 })
 
@@ -38,7 +38,7 @@ router.get('/', function (req, res, next) {
  * A single room view
  */
 router.get('/:roomSlug', function (req, res, next) {
-  let currentPlayer = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
+  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let room = helpers.getRoom(req.params.roomSlug)
   let gameStatus = room.getGame().getStatus()
   if (room !== null) {
@@ -48,8 +48,8 @@ router.get('/:roomSlug', function (req, res, next) {
       res.render('room', {
         roomName: room.getName(),
         roomSlug: room.getSlug(),
-        playerName: currentPlayer.nickName,
-        isAdmin: room.getAdminPlayer() === currentPlayer.playerID,
+        playerName: currentPlayer.getNickname(),
+        isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
         status: gameStatus,
       })
     }
@@ -104,7 +104,7 @@ router.get('/:roomSlug/ranking', function (req, res, next) {
  * The room's add form handling
  */
 router.post('/', function (req, res, next) {
-  let currentPlayer = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
+  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let roomName = req.body['new-room']
   let roomSlug = helpers.createRoom(roomName)
   if (!currentPlayer) {
@@ -114,7 +114,7 @@ router.post('/', function (req, res, next) {
       res.render('error', { message: 'This name is already taken' })
     } else {
       let room = helpers.getRoom(roomSlug)
-      room.setAdminPlayer(currentPlayer.playerID)
+      room.setAdminPlayer(currentPlayer.getPublicID())
       res.redirect(room.getLobbyURL())
     }
   }
@@ -122,15 +122,15 @@ router.post('/', function (req, res, next) {
 
 io.on('connection', (socket) => {
   let cookies = cookie.parse(socket.handshake.headers.cookie)
-  let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
+  let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
   let rooms = helpers.getRooms()
 
-  if (currentPlayer) {
-    currentPlayer.socketID = socket.id
-    helpers.updatePlayer(cookies['connect.sid'], currentPlayer)
+  let playerNickName = currentPlayer.getNickname()
+  if (playerNickName) {
+    currentPlayer.resetData({ socketID: socket.id })
     io.to(socket.id).emit('player-connected', {
-      nickName: currentPlayer.nickName,
-      playerID: currentPlayer.playerID,
+      nickName: playerNickName,
+      playerID: currentPlayer.getPublicID(),
       sessionID: cookies['connect.sid'],
     })
   }
@@ -139,14 +139,15 @@ io.on('connection', (socket) => {
   socket.on('room-join', (data) => {
     let room = helpers.getRoom(data.roomSlug)
     let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
+    let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
     if (room === null) {
       return
     } else {
       socket.join(room.getSlug())
-      currentPlayer.isSpectator =
-        room.getGame().getStatus() === 'playing' ? true : false
-      helpers.updatePlayer(cookies['connect.sid'], currentPlayer)
+      currentPlayer.resetData({
+        socketID: socket.id,
+        isSpectator: room.getGame().getStatus() === 'playing',
+      })
       room.refreshPlayers().then((sessions) => {
         io.in(room.getSlug()).emit('refreshPlayers', sessions)
       })
@@ -170,70 +171,71 @@ io.on('connection', (socket) => {
   })
 
   socket.on('start-game', (data) => {
-    helpers.getPlayerFromSocketID(socket.id).then((emiter) => {
-      let room = helpers.getRoom(data.roomSlug)
-      let game = room.getGame()
-      if (room && room.getAdminPlayer() === emiter.playerID) {
-        room.getGame().setStatus('starting')
-        io.to(data.roomSlug).emit('game-is-starting', {
-          href: room.getPlayURL(),
+    let cookies = cookie.parse(socket.handshake.headers.cookie)
+    let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
+
+    let room = helpers.getRoom(data.roomSlug)
+    let game = room.getGame()
+    if (room && room.getAdminPlayer() === currentPlayer.getPublicID()) {
+      room.getGame().setStatus('starting')
+      io.to(data.roomSlug).emit('game-is-starting', {
+        href: room.getPlayURL(),
+      })
+
+      let timeleft = 3
+      let countdownTimer = setInterval(function () {
+        if (timeleft <= 0) {
+          clearInterval(countdownTimer)
+          game.start()
+
+          if (game.getType() === 'countdown') {
+            let gameTimeleft = game.getDuration()
+            let gameTimer = setInterval(function () {
+              if (gameTimeleft <= 0) {
+                clearInterval(gameTimer)
+                game.setStatus('waiting')
+              }
+
+              io.to(data.roomSlug).emit('in-game-countdown-update', {
+                timeleft: gameTimeleft,
+                href: room.getLobbyURL(),
+              })
+
+              gameTimeleft -= 1
+            }, 1000)
+          } else {
+            let gameTimer = setInterval(function () {
+              game.countAlivePlayers().then((countAlive) => {
+                if (countAlive === 0) {
+                  clearInterval(gameTimer)
+                  game.setStatus('end-round')
+                  io.to(data.roomSlug).emit('in-game-countdown-update', {
+                    timeleft: 0,
+                    href: room.getRankingURL(),
+                  })
+                }
+              })
+            }, 1000)
+          }
+        }
+
+        io.to(data.roomSlug).emit('countdown-update', {
+          timeleft: timeleft,
+          gameData: game.getBasicData(),
         })
 
-        let timeleft = 3
-        let countdownTimer = setInterval(function () {
-          if (timeleft <= 0) {
-            clearInterval(countdownTimer)
-            game.start()
-
-            if (game.getType() === 'countdown') {
-              let gameTimeleft = game.getDuration()
-              let gameTimer = setInterval(function () {
-                if (gameTimeleft <= 0) {
-                  clearInterval(gameTimer)
-                  game.setStatus('waiting')
-                }
-
-                io.to(data.roomSlug).emit('in-game-countdown-update', {
-                  timeleft: gameTimeleft,
-                  href: room.getLobbyURL(),
-                })
-
-                gameTimeleft -= 1
-              }, 1000)
-            } else {
-              let gameTimer = setInterval(function () {
-                game.countAlivePlayers().then((countAlive) => {
-                  if (countAlive === 0) {
-                    clearInterval(gameTimer)
-                    game.setStatus('end-round')
-                    io.to(data.roomSlug).emit('in-game-countdown-update', {
-                      timeleft: 0,
-                      href: room.getRankingURL(),
-                    })
-                  }
-                })
-              }, 1000)
-            }
-          }
-
-          io.to(data.roomSlug).emit('countdown-update', {
-            timeleft: timeleft,
-            gameData: game.getBasicData(),
-          })
-
-          timeleft -= 1
-        }, 1000)
-      }
-    })
+        timeleft -= 1
+      }, 1000)
+    }
   })
 
   socket.on('disconnect', function () {})
 
   socket.on('keyPressed', function (socketData) {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
+    let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
 
-    if (currentPlayer && !currentPlayer.isSpectator) {
+    if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
       socket.rooms.forEach((roomSlug) => {
         if (roomSlug != socket.id) {
           let room = helpers.getRoom(roomSlug)
@@ -242,21 +244,37 @@ io.on('connection', (socket) => {
             if (socketData.key == 39) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'right', true)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'right',
+                  true,
+                )
             } else if (socketData.key == 37) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'left', true)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'left',
+                  true,
+                )
             }
 
             if (socketData.key == 40) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'top', true)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'top',
+                  true,
+                )
             } else if (socketData.key == 38) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'down', true)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'down',
+                  true,
+                )
             }
           }
         }
@@ -266,8 +284,8 @@ io.on('connection', (socket) => {
 
   socket.on('keyUp', function (socketData) {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let currentPlayer = helpers.getPlayerFromSessionID(cookies['connect.sid'])
-    if (currentPlayer && !currentPlayer.isSpectator) {
+    let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
+    if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
       socket.rooms.forEach((roomSlug) => {
         let room = helpers.getRoom(roomSlug)
         if (room && room.getGame().getStatus() === 'playing') {
@@ -275,21 +293,37 @@ io.on('connection', (socket) => {
             if (socketData.key == 39) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'right', false)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'right',
+                  false,
+                )
             } else if (socketData.key == 37) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'left', false)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'left',
+                  false,
+                )
             }
 
             if (socketData.key == 40) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'top', false)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'top',
+                  false,
+                )
             } else if (socketData.key == 38) {
               rooms[roomSlug]
                 .getGame()
-                .updatePlayerButtonState(currentPlayer.playerID, 'down', false)
+                .updatePlayerButtonState(
+                  currentPlayer.getPublicID(),
+                  'down',
+                  false,
+                )
             }
           }
         }
