@@ -30,6 +30,7 @@ router.get('/', function (req, res, next) {
   res.render('rooms', {
     rooms: Object.keys(rooms).length ? rooms : null,
     playerName: currentPlayer.nickName,
+    playerColor: currentPlayer.playerColor,
   })
 })
 

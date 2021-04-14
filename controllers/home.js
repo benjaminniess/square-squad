@@ -19,7 +19,10 @@ module.exports = function (app) {
     if (!sessionData) {
       res.render('index')
     } else if (req.query.action == 'edit-login') {
-      res.render('index', { nickName: sessionData.nickName })
+      res.render('index', {
+        nickName: sessionData.nickName,
+        playerColor: sessionData.playerColor
+      })
     } else {
       res.redirect('/rooms')
     }
@@ -34,6 +37,7 @@ module.exports = function (app) {
     } else {
       helpers.updatePlayer(req.cookies['connect.sid'], {
         nickName: req.body.playerName,
+        playerColor: req.body.playerColor,
         playerID: randomId(),
       })
 

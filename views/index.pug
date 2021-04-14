@@ -23,4 +23,12 @@ html
               type='submit'
               value='GO!'
             )
-    include includes/footer.pug
+    include includes/footer.pug          label(for='playerColor') What color?
+          input#playerColor(
+            class="uk-input uk-form-large"
+            type='color'
+            name='playerColor'
+            required
+            value=playerColor
+          )
+        div.uk-margin
