@@ -13,7 +13,7 @@ block content
             | you first need to select a room or create a new one
           h3 !{roomName}
           h4 Players
-          ul.players
+          ul.player-list.players
           if isAdmin && status=="waiting"
             p
               a#startButton.uk-button.uk-button-primary(href='#') play
@@ -25,7 +25,7 @@ block content
           div.uk-card.uk-card-default.uk-card-body
             h3 !{roomName}
             h4 Players
-            ul.players
+            ul.player-list.players
             h1#countdown-text
             h1#points-text
         div.uk-width-3-4
@@ -35,7 +35,7 @@ block content
         h1.uk-heading-large.uk-text-center Square Squad
         h3 !{roomName}
         h4 Players
-        ul.players
+        ul.player-list.players
         h1 The winner is <span id="winner-nickname"></span> with <span id="winner-score"></span> points
         ul#rank-list
 

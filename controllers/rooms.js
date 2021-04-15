@@ -46,6 +46,7 @@ router.get('/:roomSlug', function (req, res, next) {
       roomName: room.getName(),
       roomSlug: room.getSlug(),
       playerName: currentPlayer.getNickname(),
+      playerColor: currentPlayer.getColor(),
       isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
       status: gameStatus,
       gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
@@ -85,6 +86,7 @@ io.on('connection', (socket) => {
     currentPlayer.resetData({ socketID: socket.id })
     io.to(socket.id).emit('player-connected', {
       nickName: playerNickName,
+      playerColor: currentPlayer.getColor(),
       playerID: currentPlayer.getPublicID(),
       sessionID: cookies['connect.sid'],
     })

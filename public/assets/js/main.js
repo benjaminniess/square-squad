@@ -28,8 +28,10 @@ socket.on('refreshPlayers', (data) => {
     Array.prototype.slice.call(playersLists).map((playersList) => {
       playersList.innerHTML = ''
       data.map((player) => {
+        console.log(player)
         var li = document.createElement('li')
         li.appendChild(document.createTextNode(player.nickname))
+        li.style.color = player.color
 
         // Flag the current user
         if (player.playerID === sessionData.playerID) {
