@@ -8,7 +8,9 @@ block content
     div#section-lobby.uk-section(style=status === "waiting" ? "" : "display:none;")
         div.uk-container.uk-container-small
           h1.uk-heading-large.uk-text-center Square Squad
-          p Hello #[a(href="/?action=edit-login" id="playerNameLabel") !{playerName} ]! your about to play
+          p
+            | Hello #[a(href="/?action=edit-login" id="playerNameLabel" style=`color:${playerColor};`) !{playerName} ]!
+            | you first need to select a room or create a new one
           h3 !{roomName}
           h4 Players
           ul.players
@@ -17,7 +19,7 @@ block content
               a#startButton.uk-button.uk-button-primary(href='#') play
           p
             a.uk-button.uk-button-default(href='/') back
-    div#section-play.uk-section(style=status === "playing" ? "" : "display:none;")
+    div#section-play(style=status === "playing" ? "" : "display:none;")
       div.uk-text-center.uk-grid
         div.uk-width-1-4
           div.uk-card.uk-card-default.uk-card-body
@@ -39,3 +41,5 @@ block content
 
     script(src='/assets/js/main.js')
     script(src=gameJS)
+
+block footer

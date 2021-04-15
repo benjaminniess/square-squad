@@ -281,7 +281,7 @@ class Panick_Attack extends MasterGame {
             playerData.y < obstacle.y + obstacle.height &&
             squareSize + playerData.y > obstacle.y
           ) {
-            this.killPlayer(playerID)
+            // this.killPlayer(playerID)
           }
         })
       }
