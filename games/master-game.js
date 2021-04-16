@@ -46,7 +46,11 @@ class MasterGame {
       color: playerSession.color,
     }
 
-    this.playersMoves[playerSession.id] = {
+    this.resetTouches(playerSession.id)
+  }
+
+  resetTouches(playerID) {
+    this.playersMoves[playerID] = {
       up: false,
       down: false,
       left: false,
