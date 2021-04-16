@@ -1,6 +1,7 @@
 'use strict'
 
 const helpers = require(__base + 'lib/helpers')
+const _ = require('lodash')
 
 class MasterGame {
   constructor(room) {
@@ -76,6 +77,15 @@ class MasterGame {
 
   addRoundScore(scoreData) {
     this.lastRoundRanking.push(scoreData)
+    let index = _.findIndex(this.ranking, { playerID: scoreData.playerID })
+
+    if (index === -1) {
+      this.ranking.push(scoreData)
+    } else {
+      this.ranking[index].score += scoreData.score
+    }
+
+    this.ranking = _.orderBy(this.ranking, ['score'], ['desc'])
   }
 
   getLastRoundRanking() {

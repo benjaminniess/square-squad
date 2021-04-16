@@ -12,6 +12,7 @@ const rankSection = document.getElementById('section-ranking')
 const winnerNickname = document.getElementById('winner-nickname')
 const winnerScore = document.getElementById('winner-score')
 const rankList = document.getElementById('rank-list')
+const roundRankList = document.getElementById('round-rank-list')
 
 const canvas = document.getElementById('gameCanvas')
 const ctx = canvas ? canvas.getContext('2d') : null
@@ -24,11 +25,9 @@ let sessionData
 socket.on('refreshPlayers', (data) => {
   // Check if the current page has a players list container
   if (playersLists) {
-    console.log(playersLists)
     Array.prototype.slice.call(playersLists).map((playersList) => {
       playersList.innerHTML = ''
       data.map((player) => {
-        console.log(player)
         var li = document.createElement('li')
         li.appendChild(document.createTextNode(player.nickname))
         li.style.color = player.color
@@ -98,10 +97,16 @@ socket.on('in-game-countdown-update', (data) => {
     winnerNickname.innerHTML = data.roundWinner.nickname
     winnerScore.innerHTML = data.roundWinner.score
     let ranking = ''
-    data.ranking.map((rank) => {
+    data.roundRanking.map((rank) => {
       ranking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
     })
-    rankList.innerHTML = ranking
+    roundRankList.innerHTML = ranking
+
+    let globalRanking = ''
+    data.ranking.map((rank) => {
+      globalRanking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
+    })
+    rankList.innerHTML = globalRanking
 
     let timeleft = 3
     let countdownTimer = setInterval(function () {

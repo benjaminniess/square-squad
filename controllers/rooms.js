@@ -132,56 +132,59 @@ io.on('connection', (socket) => {
     let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
 
     let room = helpers.getRoom(data.roomSlug)
-    let game = room.getGame()
-    if (room && room.getAdminPlayer() === currentPlayer.getPublicID()) {
-      room.getGame().setStatus('starting')
-      io.to(data.roomSlug).emit('game-is-starting')
+    if (room) {
+      let game = room.getGame()
+      if (room && room.getAdminPlayer() === currentPlayer.getPublicID()) {
+        game.setStatus('starting')
+        io.to(data.roomSlug).emit('game-is-starting')
 
-      let timeleft = 3
-      let countdownTimer = setInterval(function () {
-        if (timeleft <= 0) {
-          clearInterval(countdownTimer)
-          game.start()
+        let timeleft = 3
+        let countdownTimer = setInterval(function () {
+          if (timeleft <= 0) {
+            clearInterval(countdownTimer)
+            game.start()
 
-          if (game.getType() === 'countdown') {
-            let gameTimeleft = game.getDuration()
-            let gameTimer = setInterval(function () {
-              if (gameTimeleft <= 0) {
-                clearInterval(gameTimer)
-                game.setStatus('waiting')
-              }
-
-              io.to(data.roomSlug).emit('in-game-countdown-update', {
-                timeleft: gameTimeleft,
-              })
-
-              gameTimeleft -= 1
-            }, 1000)
-          } else {
-            let gameTimer = setInterval(function () {
-              game.countAlivePlayers().then((countAlive) => {
-                if (countAlive === 0) {
+            if (game.getType() === 'countdown') {
+              let gameTimeleft = game.getDuration()
+              let gameTimer = setInterval(function () {
+                if (gameTimeleft <= 0) {
                   clearInterval(gameTimer)
-                  game.setStatus('end-round')
-                  game.renewPlayers()
-                  io.to(data.roomSlug).emit('in-game-countdown-update', {
-                    timeleft: 0,
-                    roundWinner: game.getLastRoundWinner(),
-                    ranking: game.getLastRoundRanking(),
-                  })
+                  game.setStatus('waiting')
                 }
-              })
-            }, 1000)
+
+                io.to(data.roomSlug).emit('in-game-countdown-update', {
+                  timeleft: gameTimeleft,
+                })
+
+                gameTimeleft -= 1
+              }, 1000)
+            } else {
+              let gameTimer = setInterval(function () {
+                game.countAlivePlayers().then((countAlive) => {
+                  if (countAlive === 0) {
+                    clearInterval(gameTimer)
+                    game.setStatus('end-round')
+                    game.renewPlayers()
+                    io.to(data.roomSlug).emit('in-game-countdown-update', {
+                      timeleft: 0,
+                      roundWinner: game.getLastRoundWinner(),
+                      roundRanking: game.getLastRoundRanking(),
+                      ranking: game.getRanking(),
+                    })
+                  }
+                })
+              }, 1000)
+            }
           }
-        }
 
-        io.to(data.roomSlug).emit('countdown-update', {
-          timeleft: timeleft,
-          gameData: game.getBasicData(),
-        })
+          io.to(data.roomSlug).emit('countdown-update', {
+            timeleft: timeleft,
+            gameData: game.getBasicData(),
+          })
 
-        timeleft -= 1
-      }, 1000)
+          timeleft -= 1
+        }, 1000)
+      }
     }
   })
 
