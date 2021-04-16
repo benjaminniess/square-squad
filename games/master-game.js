@@ -79,6 +79,11 @@ class MasterGame {
     return this.ranking
   }
 
+  resetRanking() {
+    this.ranking = []
+    this.lastRoundRanking = []
+  }
+
   addRoundScore(scoreData) {
     this.lastRoundRanking.push(scoreData)
     let index = _.findIndex(this.ranking, { playerID: scoreData.playerID })

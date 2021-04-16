@@ -18,6 +18,7 @@ class Panick_Attack extends MasterGame {
     this.score = 0
     this.setStatus('playing')
     this.lastRoundRanking = []
+    this.resetRanking()
   }
 
   renewPlayers() {

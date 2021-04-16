@@ -13,6 +13,7 @@ const winnerNickname = document.getElementById('winner-nickname')
 const winnerScore = document.getElementById('winner-score')
 const rankList = document.getElementById('rank-list')
 const roundRankList = document.getElementById('round-rank-list')
+const backButton = document.getElementById('back-button')
 
 const canvas = document.getElementById('gameCanvas')
 const ctx = canvas ? canvas.getContext('2d') : null
@@ -57,9 +58,7 @@ socket.on('player-connected', (data) => {
 })
 
 socket.on('game-is-starting', (data) => {
-  lobbySection.style.display = 'none'
-  playSection.style.display = 'block'
-  rankSection.style.display = 'none'
+  show('play')
 })
 
 if (startButton) {
@@ -69,8 +68,31 @@ if (startButton) {
   }
 }
 
+if (backButton) {
+  backButton.onclick = function () {
+    show('lobby')
+    return false
+  }
+}
+
 document.addEventListener('keydown', keyDownHandler, false)
 document.addEventListener('keyup', keyUpHandler, false)
+
+function show(sectionID) {
+  if (sectionID === 'lobby') {
+    lobbySection.style.display = 'block'
+    playSection.style.display = 'none'
+    rankSection.style.display = 'none'
+  } else if (sectionID === 'play') {
+    lobbySection.style.display = 'none'
+    playSection.style.display = 'block'
+    rankSection.style.display = 'none'
+  } else if (sectionID === 'ranking') {
+    lobbySection.style.display = 'none'
+    playSection.style.display = 'none'
+    rankSection.style.display = 'block'
+  }
+}
 
 function keyDownHandler(e) {
   socket.emit('keyPressed', { key: e.keyCode })
@@ -91,9 +113,7 @@ socket.on('in-game-countdown-update', (data) => {
   countdownText.innerHTML = data.timeleft
   if (data.timeleft == 0) {
     countdownText.innerHTML = 'Game over'
-    lobbySection.style.display = 'none'
-    playSection.style.display = 'none'
-    rankSection.style.display = 'block'
+    show('ranking')
     winnerNickname.innerHTML = data.roundWinner.nickname
     winnerScore.innerHTML = data.roundWinner.score
     let ranking = ''
@@ -108,15 +128,20 @@ socket.on('in-game-countdown-update', (data) => {
     })
     rankList.innerHTML = globalRanking
 
-    let timeleft = 3
-    let countdownTimer = setInterval(function () {
-      if (timeleft <= 0) {
-        clearInterval(countdownTimer)
-        socket.emit('start-game', { roomSlug: roomSlug })
-        countdownText.innerHTML = 'Starting...'
-      }
+    if (data.gameOver) {
+      backButton.style.display = 'block'
+    } else {
+      backButton.style.display = 'none  '
+      let timeleft = 3
+      let countdownTimer = setInterval(function () {
+        if (timeleft <= 0) {
+          clearInterval(countdownTimer)
+          socket.emit('start-game', { roomSlug: roomSlug })
+          countdownText.innerHTML = 'Starting...'
+        }
 
-      timeleft -= 1
-    }, 1000)
+        timeleft -= 1
+      }, 1000)
+    }
   }
 })

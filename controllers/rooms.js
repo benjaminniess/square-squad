@@ -165,11 +165,14 @@ io.on('connection', (socket) => {
                     clearInterval(gameTimer)
                     game.setStatus('end-round')
                     game.renewPlayers()
+                    let globalRanking = game.getRanking()
+
                     io.to(data.roomSlug).emit('in-game-countdown-update', {
                       timeleft: 0,
                       roundWinner: game.getLastRoundWinner(),
                       roundRanking: game.getLastRoundRanking(),
-                      ranking: game.getRanking(),
+                      ranking: globalRanking,
+                      gameOver: globalRanking[0].score > 10,
                     })
                   }
                 })
