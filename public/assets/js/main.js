@@ -42,6 +42,10 @@ socket.on('refreshPlayers', (data) => {
           li.appendChild(document.createTextNode('[admin]'))
         }
 
+        if (!playersList.classList.contains('no-score')) {
+          li.appendChild(document.createTextNode('[' + player.score + ']'))
+        }
+
         playersList.appendChild(li)
       })
     })
@@ -58,6 +62,7 @@ socket.on('player-connected', (data) => {
 })
 
 socket.on('game-is-starting', (data) => {
+  pointsText.innerHTML = null
   show('play')
 })
 
@@ -114,6 +119,7 @@ socket.on('in-game-countdown-update', (data) => {
   if (data.timeleft == 0) {
     countdownText.innerHTML = 'Game over'
     show('ranking')
+
     winnerNickname.innerHTML = data.roundWinner.nickname
     winnerScore.innerHTML = data.roundWinner.score
     let ranking = ''
@@ -128,10 +134,10 @@ socket.on('in-game-countdown-update', (data) => {
     })
     rankList.innerHTML = globalRanking
 
-    if (data.gameOver) {
+    if (data.gameStatus === 'waiting') {
       backButton.style.display = 'block'
     } else {
-      backButton.style.display = 'none  '
+      backButton.style.display = 'none'
       let timeleft = 3
       let countdownTimer = setInterval(function () {
         if (timeleft <= 0) {

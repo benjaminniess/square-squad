@@ -18,7 +18,7 @@ class MasterGame {
   }
 
   getRoom() {
-    return this.room()
+    return this.room
   }
 
   getSlug() {
@@ -26,9 +26,10 @@ class MasterGame {
   }
 
   /**
-   * waiting : waiting for players to join the lobby
-   * starting : redirecting users to the play screen + launching the countdown
-   * playing : game has started
+   * waiting: waiting for players to join the lobby | game ended
+   * starting: redirecting users to the play screen + launching the countdown
+   * playing: game has started
+   * end-round: atfer a round but some more rounds are coming
    *
    * @returns
    */
@@ -77,6 +78,15 @@ class MasterGame {
 
   getRanking() {
     return this.ranking
+  }
+
+  getHighestScore() {
+    let globalRanking = this.getRanking()
+    if (globalRanking.length === 0) {
+      return 0
+    } else {
+      return globalRanking[0].score
+    }
   }
 
   resetRanking() {

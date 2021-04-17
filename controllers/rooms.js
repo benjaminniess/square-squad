@@ -105,9 +105,7 @@ io.on('connection', (socket) => {
         socketID: socket.id,
         isSpectator: room.getGame().getStatus() === 'playing',
       })
-      room.refreshPlayers().then((sessions) => {
-        io.in(room.getSlug()).emit('refreshPlayers', sessions)
-      })
+      room.refreshPlayers().then((sessions) => {})
     }
   })
 
@@ -120,9 +118,7 @@ io.on('connection', (socket) => {
         if (room.getAdminPlayer() === currentPlayer.playerID) {
           room.resetAdminPlayer()
         }
-        room.refreshPlayers(socket.id).then((sessions) => {
-          io.in(room.getSlug()).emit('refreshPlayers', sessions)
-        })
+        room.refreshPlayers(socket.id).then((sessions) => {})
       }
     })
   })
@@ -135,14 +131,23 @@ io.on('connection', (socket) => {
     if (room) {
       let game = room.getGame()
       if (room && room.getAdminPlayer() === currentPlayer.getPublicID()) {
-        game.setStatus('starting')
+        // first round of the game?
+        let gameStatus = game.getStatus()
+        if (gameStatus === 'waiting') {
+          game.initGame()
+        } else {
+          game.initRound()
+          game.setStatus('starting')
+        }
+
         io.to(data.roomSlug).emit('game-is-starting')
+        room.refreshPlayers()
 
         let timeleft = 3
         let countdownTimer = setInterval(function () {
           if (timeleft <= 0) {
             clearInterval(countdownTimer)
-            game.start()
+            game.setStatus('playing')
 
             if (game.getType() === 'countdown') {
               let gameTimeleft = game.getDuration()
@@ -165,14 +170,17 @@ io.on('connection', (socket) => {
                     clearInterval(gameTimer)
                     game.setStatus('end-round')
                     game.renewPlayers()
-                    let globalRanking = game.getRanking()
+
+                    if (game.getHighestScore() > 4) {
+                      game.setStatus('waiting')
+                    }
 
                     io.to(data.roomSlug).emit('in-game-countdown-update', {
                       timeleft: 0,
                       roundWinner: game.getLastRoundWinner(),
                       roundRanking: game.getLastRoundRanking(),
-                      ranking: globalRanking,
-                      gameOver: globalRanking[0].score > 10,
+                      ranking: game.getRanking(),
+                      gameStatus: game.getStatus(),
                     })
                   }
                 })
@@ -300,6 +308,7 @@ function refreshData() {
   for (const [roomSlug, room] of Object.entries(helpers.getRooms())) {
     let roomGame = room.getGame()
     let status = room.getGame().getStatus()
+
     if (roomGame && (status === 'playing' || status === 'starting')) {
       let gameData = roomGame.refreshData()
       io.to(roomSlug).emit('refreshCanvas', gameData)

@@ -5,20 +5,24 @@ const helpers = require(__base + '/lib/helpers')
 
 class Panick_Attack extends MasterGame {
   constructor(room) {
-    super()
+    super(room)
     this.speed = 4
     this.slug = 'panic-attack'
     this.obstacles = []
-    this.score = 1
+    this.score = null
     this.type = 'battle-royale'
   }
 
-  start() {
+  initGame() {
+    this.initRound()
+    this.resetRanking()
+    this.setStatus('starting')
+  }
+
+  initRound() {
     this.setObstacles([])
     this.score = 0
-    this.setStatus('playing')
     this.lastRoundRanking = []
-    this.resetRanking()
   }
 
   renewPlayers() {
@@ -38,7 +42,7 @@ class Panick_Attack extends MasterGame {
 
   killPlayer(playerID) {
     this.playersData[playerID].alive = false
-    this.playersData[playerID].score = this.getScore()
+    this.playersData[playerID].score = this.getScore() - 1
     this.addRoundScore({
       playerID: playerID,
       score: this.playersData[playerID].score,
@@ -58,7 +62,7 @@ class Panick_Attack extends MasterGame {
     let direction = helpers.getRandomInt(1, 5)
     let holeSize = helpers.getRandomInt(squareSize * 2, squareSize * 8)
     let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
-    let obstacleSpeed = this.getScore() / 5 + 1
+    let obstacleSpeed = this.getScore() / 5 + 3
     let obstacleSpot = helpers.getRandomInt(
       squareSize,
       canvasWidth - squareSize,
@@ -166,10 +170,12 @@ class Panick_Attack extends MasterGame {
     let obstacles = this.getObstacles()
     let updatedObstacles = []
     let increasePoints = false
+
     if (this.getStatus() === 'playing') {
       if (obstacles.length === 0) {
         this.initObstacle()
         this.increaseScore()
+        this.getRoom().refreshPlayers()
         increasePoints = this.getScore()
       } else {
         obstacles.map((obstacle) => {
@@ -284,6 +290,7 @@ class Panick_Attack extends MasterGame {
             squareSize + playerData.y > obstacle.y
           ) {
             this.killPlayer(playerID)
+            this.getRoom().refreshPlayers()
           }
         })
       }
@@ -292,7 +299,7 @@ class Panick_Attack extends MasterGame {
     return {
       players: this.playersData,
       obstacles: updatedObstacles,
-      increasePoints: increasePoints,
+      score: increasePoints > 0 ? increasePoints - 1 : null,
     }
   }
 }
