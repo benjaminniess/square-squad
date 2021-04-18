@@ -2,6 +2,7 @@
 
 const MasterGame = require(__base + '/games/master-game')
 const helpers = require(__base + '/lib/helpers')
+const _ = require('lodash')
 
 class Panick_Attack extends MasterGame {
   constructor(room) {
@@ -26,10 +27,10 @@ class Panick_Attack extends MasterGame {
   }
 
   renewPlayers() {
-    for (const [playerID, moves] of Object.entries(this.playersData)) {
+    _.forEach(this.playersData, (moves, playerID) => {
       this.playersData[playerID].alive = true
       this.resetTouches(playerID)
-    }
+    })
   }
 
   getObstacles() {
@@ -211,7 +212,7 @@ class Panick_Attack extends MasterGame {
       }
     }
 
-    for (const [playerID, moves] of Object.entries(this.playersMoves)) {
+    _.forEach(this.playersMoves, (moves, playerID) => {
       let playerData = this.playersData[playerID]
       if (playerData.alive) {
         if (moves.top) {
@@ -239,7 +240,7 @@ class Panick_Attack extends MasterGame {
           }
         }
 
-        for (const [playerBID, movesB] of Object.entries(this.playersMoves)) {
+        _.forEach(this.playersMoves, (movesB, playerBID) => {
           let playerBdata = this.playersData[playerBID]
           if (
             playerID !== playerBID &&
@@ -280,7 +281,7 @@ class Panick_Attack extends MasterGame {
               }
             }
           }
-        }
+        })
 
         updatedObstacles.map((obstacle) => {
           if (
@@ -294,7 +295,7 @@ class Panick_Attack extends MasterGame {
           }
         })
       }
-    }
+    })
 
     return {
       players: this.playersData,

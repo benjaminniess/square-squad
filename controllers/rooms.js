@@ -29,7 +29,7 @@ router.get('/', function (req, res, next) {
   let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let rooms = helpers.getRooms()
   res.render('rooms', {
-    rooms: Object.keys(rooms).length ? rooms : null,
+    rooms: _.size(rooms) ? rooms : null,
     playerName: currentPlayer.getNickname(),
     playerColor: currentPlayer.getColor(),
   })
@@ -41,7 +41,7 @@ router.get('/', function (req, res, next) {
 router.get('/:roomSlug', function (req, res, next) {
   let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let room = helpers.getRoom(req.params.roomSlug)
-  if (room !== null) {
+  if (room) {
     let gameStatus = room.getGame().getStatus()
     res.render('room', {
       roomName: room.getName(),
@@ -98,9 +98,7 @@ io.on('connection', (socket) => {
     let room = helpers.getRoom(data.roomSlug)
     let cookies = cookie.parse(socket.handshake.headers.cookie)
     let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
-    if (room === null) {
-      return
-    } else {
+    if (room) {
       socket.join(room.getSlug())
       currentPlayer.resetData({
         socketID: socket.id,
@@ -113,9 +111,7 @@ io.on('connection', (socket) => {
   socket.on('disconnecting', () => {
     socket.rooms.forEach((roomSlug) => {
       let room = helpers.getRoom(roomSlug)
-      if (room === null) {
-        return
-      } else {
+      if (room) {
         if (room.getAdminPlayer() === currentPlayer.playerID) {
           room.resetAdminPlayer()
         }
@@ -315,13 +311,13 @@ io.on('connection', (socket) => {
 setInterval(refreshData, 10)
 
 function refreshData() {
-  for (const [roomSlug, room] of Object.entries(helpers.getRooms())) {
+  _.forEach(helpers.getRooms(), (room) => {
     let roomGame = room.getGame()
     let status = room.getGame().getStatus()
 
     if (roomGame && (status === 'playing' || status === 'starting')) {
       let gameData = roomGame.refreshData()
-      io.to(roomSlug).emit('refreshCanvas', gameData)
+      io.to(room.getSlug()).emit('refreshCanvas', gameData)
     }
-  }
+  })
 }

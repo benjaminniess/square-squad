@@ -122,23 +122,23 @@ class MasterGame {
   }
 
   countPlayers() {
-    return Object.keys(this.playersData).length
+    return _.size(this.playersData)
   }
 
   countAlivePlayers() {
     return new Promise((resolve, reject) => {
       let alive = 0
       let countRows = 0
-      for (const [playerID, playerData] of Object.entries(this.playersData)) {
+      _.forEach(this.playersData, (playerData, playerID) => {
         countRows++
         if (playerData.alive) {
           alive++
         }
 
-        if (countRows >= Object.keys(this.playersData).length) {
+        if (countRows >= _.size(this.playersData)) {
           resolve(alive)
         }
-      }
+      })
     })
   }
 
@@ -151,7 +151,7 @@ class MasterGame {
   }
 
   refreshData() {
-    for (const [playerID, moves] of Object.entries(this.playersMoves)) {
+    _.forEach(this.playersMoves, (moves, playerID) => {
       if (moves.down) {
         this.playersData[playerID].y += this.speed
         if (this.playersData[playerID].y > canvasWidth - squareSize) {
@@ -176,7 +176,7 @@ class MasterGame {
           this.playersData[playerID].x = 0
         }
       }
-    }
+    })
 
     return { players: this.playersData }
   }
