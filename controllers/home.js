@@ -21,6 +21,7 @@ module.exports = function (app) {
       res.render('index', {
         nickName: currentPlayer.nickName,
         playerColor: currentPlayer.color,
+        appVersion: appVersion,
       })
     } else {
       res.redirect('/rooms')
@@ -39,6 +40,7 @@ module.exports = function (app) {
       playerObj.resetData({
         nickName: req.body.playerName,
         color: req.body.playerColor,
+        appVersion: appVersion,
       })
 
       res.redirect('/rooms')

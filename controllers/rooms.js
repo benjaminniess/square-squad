@@ -30,6 +30,7 @@ router.get('/', function (req, res, next) {
     rooms: _.size(rooms) ? rooms : null,
     playerName: currentPlayer.getNickname(),
     playerColor: currentPlayer.getColor(),
+    appVersion: appVersion,
   })
 })
 
@@ -49,6 +50,7 @@ router.get('/:roomSlug', function (req, res, next) {
       isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
       status: gameStatus,
       gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
+      appVersion: appVersion,
     })
   } else {
     res.render('error', { message: 'This room does not exist' })
