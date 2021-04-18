@@ -4,6 +4,7 @@ const express = require('express')
 const router = express.Router()
 const helpers = require('../lib/helpers')
 const cookie = require('cookie')
+const _ = require('lodash')
 
 module.exports = function (app) {
   app.use('/rooms', router)
@@ -40,8 +41,8 @@ router.get('/', function (req, res, next) {
 router.get('/:roomSlug', function (req, res, next) {
   let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let room = helpers.getRoom(req.params.roomSlug)
-  let gameStatus = room.getGame().getStatus()
   if (room !== null) {
+    let gameStatus = room.getGame().getStatus()
     res.render('room', {
       roomName: room.getName(),
       roomSlug: room.getSlug(),
@@ -199,7 +200,16 @@ io.on('connection', (socket) => {
     }
   })
 
-  socket.on('disconnect', function () {})
+  socket.on('disconnect', function () {
+    let rooms = helpers.getRooms()
+    if (rooms) {
+      _.forEach(rooms, (room) => {
+        if (room.getPlayers() === false) {
+          helpers.deleteRoom(room.getSlug())
+        }
+      })
+    }
+  })
 
   socket.on('keyPressed', function (socketData) {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
