@@ -10,7 +10,6 @@ block content
           h1.uk-heading-large.uk-text-center Square Squad
           p
             | Hello #[a(href="/?action=edit-login" id="playerNameLabel" style=`color:${playerColor};`) !{playerName} ]!
-            | you first need to select a room or create a new one
           h3 !{roomName}
           h4 Players
           ul.player-list.players.no-score
@@ -34,8 +33,12 @@ block content
       div.uk-container.uk-container-small
         h1.uk-heading-large.uk-text-center Square Squad
         h3 !{roomName}
-        h1 The winner is <span id="winner-nickname"></span> with <span id="winner-score"></span> points
+        h1#winner-announcement
+
+        h2 Round results
         ul#round-rank-list
+
+        h2 Global ranking
         ul#rank-list
         button#back-button.uk-button.uk-button-default Back
 

@@ -10,8 +10,7 @@ const lobbySection = document.getElementById('section-lobby')
 const playSection = document.getElementById('section-play')
 const rankSection = document.getElementById('section-ranking')
 
-const winnerNickname = document.getElementById('winner-nickname')
-const winnerScore = document.getElementById('winner-score')
+const winnerAnnouncement = document.getElementById('winner-announcement')
 const rankList = document.getElementById('rank-list')
 const roundRankList = document.getElementById('round-rank-list')
 const backButton = document.getElementById('back-button')
@@ -126,8 +125,12 @@ socket.on('in-game-countdown-update', (data) => {
     countdownText.innerHTML = 'Game over'
     show('ranking')
 
-    winnerNickname.innerHTML = data.roundWinner.nickname
-    winnerScore.innerHTML = data.roundWinner.score
+    winnerAnnouncement.innerHTML =
+      'The winner of the round is ' +
+      data.roundWinner.nickname +
+      ' with ' +
+      data.roundWinner.score +
+      ' point(s)'
     let ranking = ''
     data.roundRanking.map((rank) => {
       ranking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
