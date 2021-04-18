@@ -14,9 +14,8 @@ block content
           h3 !{roomName}
           h4 Players
           ul.player-list.players.no-score
-          if isAdmin && status=="waiting"
-            p
-              a#startButton.uk-button.uk-button-primary(href='#') play
+          p
+            a#startButton.uk-button.uk-button-primary(href='#' style="display:none") play
           p
             a.uk-button.uk-button-default(href='/') back
     div#section-play(style=status === "playing" ? "" : "display:none;")

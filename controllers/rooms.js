@@ -42,6 +42,7 @@ router.get('/:roomSlug', function (req, res, next) {
   let room = helpers.getRoom(req.params.roomSlug)
   if (room) {
     let gameStatus = room.getGame().getStatus()
+
     res.render('room', {
       roomName: room.getName(),
       roomSlug: room.getSlug(),
@@ -112,7 +113,7 @@ io.on('connection', (socket) => {
     socket.rooms.forEach((roomSlug) => {
       let room = helpers.getRoom(roomSlug)
       if (room) {
-        if (room.getAdminPlayer() === currentPlayer.playerID) {
+        if (room.getAdminPlayer() === currentPlayer.getPublicID()) {
           room.resetAdminPlayer()
         }
         room.refreshPlayers(socket.id).then((sessions) => {})

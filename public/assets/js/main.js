@@ -34,8 +34,12 @@ socket.on('refreshPlayers', (data) => {
         li.style.color = player.color
 
         // Flag the current user
-        if (player.playerID === sessionData.playerID) {
+        if (player.id === sessionData.playerID) {
           li.appendChild(document.createTextNode('(You)'))
+
+          if (player.isAdmin) {
+            startButton.style.display = 'block'
+          }
         }
 
         if (player.isAdmin) {
