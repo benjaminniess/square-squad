@@ -72,7 +72,7 @@ class Panick_Attack extends MasterGame {
     let direction = helpers.getRandomInt(1, 5)
     let holeSize = helpers.getRandomInt(squareSize * 2, squareSize * 8)
     let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
-    let obstacleSpeed = this.getScore() / 5 + 3
+    let obstacleSpeed = this.getScore() / 5 + 2
     let obstacleSpot = helpers.getRandomInt(
       squareSize,
       canvasWidth - squareSize,

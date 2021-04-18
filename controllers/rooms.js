@@ -204,7 +204,7 @@ io.on('connection', (socket) => {
     let rooms = helpers.getRooms()
     if (rooms) {
       _.forEach(rooms, (room) => {
-        if (room.getPlayers() === false) {
+        if (_.size(room.getPlayers()) === 0) {
           helpers.deleteRoom(room.getSlug())
         }
       })
