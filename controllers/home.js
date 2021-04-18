@@ -12,13 +12,17 @@ module.exports = function (app) {
    * The home URL
    */
   router.get('/', function (req, res, next) {
-    let sessionData = helpers.getPlayerFromSessionID(req.cookies['connect.sid'])
-    if (!sessionData) {
+    let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
+    if (!currentPlayer) {
       res.render('index')
-    } else if (req.query.action == 'edit-login') {
+    } else if (
+      req.query.action == 'edit-login' ||
+      !currentPlayer.nickName ||
+      !currentPlayer.color
+    ) {
       res.render('index', {
-        nickName: sessionData.nickName,
-        playerColor: sessionData.playerColor,
+        nickName: currentPlayer.nickName,
+        playerColor: currentPlayer.color,
       })
     } else {
       res.redirect('/rooms')
