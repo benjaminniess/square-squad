@@ -138,7 +138,10 @@ io.on('connection', (socket) => {
           game.setStatus('starting')
         }
 
-        io.to(data.roomSlug).emit('game-is-starting')
+        io.to(data.roomSlug).emit('game-is-starting', {
+          currentRound: game.getRoundNumber(),
+          totalRounds: game.getTotalRounds(),
+        })
         room.refreshPlayers()
 
         let timeleft = 3
@@ -169,7 +172,7 @@ io.on('connection', (socket) => {
                     game.setStatus('end-round')
                     game.renewPlayers()
 
-                    if (game.getHighestScore() > 4) {
+                    if (game.getRoundNumber() >= game.getTotalRounds()) {
                       game.setStatus('waiting')
                     }
 

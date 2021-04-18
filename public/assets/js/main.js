@@ -4,6 +4,7 @@ const startButton = document.getElementById('startButton')
 const roomSlug = document.body.getAttribute('data-roomSlug')
 const countdownText = document.getElementById('countdown-text')
 const pointsText = document.getElementById('points-text')
+const roundNumber = document.getElementById('round-number')
 
 const lobbySection = document.getElementById('section-lobby')
 const playSection = document.getElementById('section-play')
@@ -67,6 +68,7 @@ socket.on('player-connected', (data) => {
 
 socket.on('game-is-starting', (data) => {
   pointsText.innerHTML = null
+  roundNumber.innerHTML = 'Round ' + data.currentRound + '/' + data.totalRounds
   show('play')
 })
 

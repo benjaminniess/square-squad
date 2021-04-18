@@ -10,15 +10,18 @@ class Panick_Attack extends MasterGame {
     this.obstacles = []
     this.score = null
     this.type = 'battle-royale'
+    this.totalRounds = 3
   }
 
   initGame() {
+    this.roundNumber = 0
     this.initRound()
     this.resetRanking()
     this.setStatus('starting')
   }
 
   initRound() {
+    this.roundNumber++
     this.setObstacles([])
     this.score = 0
     this.lastRoundRanking = []
@@ -47,6 +50,14 @@ class Panick_Attack extends MasterGame {
       score: this.playersData[playerID].score,
       nickname: this.playersData[playerID].nickname,
     })
+  }
+
+  getRoundNumber() {
+    return this.roundNumber
+  }
+
+  getTotalRounds() {
+    return this.totalRounds
   }
 
   getScore() {
