@@ -61,7 +61,9 @@ class MasterGame {
   }
 
   updatePlayerButtonState(playerID, button, state) {
-    this.playersMoves[playerID][button] = state
+    if (this.playersMoves[playerID]) {
+      this.playersMoves[playerID][button] = state
+    }
   }
 
   getDuration() {
