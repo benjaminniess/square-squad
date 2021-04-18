@@ -1,8 +1,4 @@
 'use strict'
-
-const helpers = require(__base + 'lib/helpers')
-const _ = require('lodash')
-
 class MasterGame {
   constructor(room) {
     this.speed = 6

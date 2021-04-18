@@ -2,9 +2,7 @@
 
 const express = require('express')
 const router = express.Router()
-const helpers = require('../lib/helpers')
 const cookie = require('cookie')
-const _ = require('lodash')
 
 module.exports = function (app) {
   app.use('/rooms', router)

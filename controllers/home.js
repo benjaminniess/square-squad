@@ -3,8 +3,6 @@
 const express = require('express')
 const router = express.Router()
 
-const helpers = require('../lib/helpers')
-
 module.exports = function (app) {
   app.use('/', router)
 

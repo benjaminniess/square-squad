@@ -1,8 +1,6 @@
 'use strict'
 
 const MasterGame = require(__base + '/games/master-game')
-const helpers = require(__base + '/lib/helpers')
-const _ = require('lodash')
 
 class Panick_Attack extends MasterGame {
   constructor(room) {
