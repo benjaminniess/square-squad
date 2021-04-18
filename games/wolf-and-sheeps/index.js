@@ -3,9 +3,30 @@
 const MasterGame = require(__base + '/games/master-game')
 
 class Wolf_And_Sheep extends MasterGame {
-  constructor() {
-    this.slug = 'wolf-and-sheep'
+  constructor(room) {
+    super(room)
+    this.speed = 4
+    this.slug = 'wolf-and-sheeps'
+    this.type = 'timed'
     this.wolf = null
+  }
+
+  initGame() {
+    this.initRound()
+    this.resetRanking()
+    this.setStatus('starting')
+  }
+
+  initRound() {
+    this.score = 0
+    this.lastRoundRanking = []
+  }
+
+  renewPlayers() {
+    _.forEach(this.playersData, (moves, playerID) => {
+      this.playersData[playerID].alive = true
+      this.resetTouches(playerID)
+    })
   }
 
   initPlayer(playerSession) {
@@ -121,7 +142,9 @@ class Wolf_And_Sheep extends MasterGame {
         currentWolf && currentWolf === playerID ? true : false
     }
 
-    return this.playersData
+    return {
+      players: this.playersData,
+    }
   }
 
   setCatchable(playerID, catchable = true) {
