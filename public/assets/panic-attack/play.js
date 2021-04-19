@@ -12,6 +12,13 @@ socket.on('refreshCanvas', (data) => {
       ctx.fillStyle = player.color
       ctx.fill()
       ctx.closePath()
+    } else {
+      if (key === sessionData.playerID) {
+        ctx.font = '30px Arial'
+        ctx.textAlign = 'center'
+        ctx.fillStyle = '#000000'
+        ctx.fillText('You are DEAD!', canvas.width / 2, canvas.width / 2)
+      }
     }
   }
 
