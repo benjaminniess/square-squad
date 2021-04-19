@@ -34,6 +34,10 @@ class Panick_Attack extends MasterGame {
     })
   }
 
+  getPlayersData() {
+    return this.playersData
+  }
+
   getObstacles() {
     return this.obstacles
   }

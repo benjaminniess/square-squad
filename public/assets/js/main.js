@@ -46,6 +46,10 @@ socket.on('refreshPlayers', (data) => {
           li.appendChild(document.createTextNode('[admin]'))
         }
 
+        if (!player.alive && !playersList.classList.contains('no-score')) {
+          li.appendChild(document.createTextNode('[DEAD]'))
+        }
+
         if (!playersList.classList.contains('no-score')) {
           li.appendChild(document.createTextNode('[' + player.score + ']'))
         }
