@@ -35,15 +35,29 @@ class MasterGame {
 
   initPlayer(playerSession) {
     this.playersData[playerSession.id] = {
-      x: helpers.getRandomInt(50, 600),
-      y: 200,
+      x: -100,
+      y: canvasWidth / 2,
       nickname: playerSession.nickname,
       alive: true,
       score: 0,
       color: playerSession.color,
     }
 
+    this.resetPlayersPositions()
     this.resetTouches(playerSession.id)
+  }
+
+  resetPlayersPositions() {
+    let existingPlayers = _.size(this.playersData)
+    let i = 0
+    let playerRequiredWidth = squareSize * 1.3
+    _.forEach(this.playersData, (playerData, playerID) => {
+      this.playersData[playerID].x =
+        canvasWidth / 2 +
+        i * playerRequiredWidth -
+        (playerRequiredWidth * existingPlayers) / 2
+      i++
+    })
   }
 
   resetTouches(playerID) {
