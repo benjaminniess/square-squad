@@ -12,7 +12,11 @@ module.exports = function (app) {
   router.get('/', function (req, res, next) {
     let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
     if (!currentPlayer) {
-      res.render('index')
+      res.render('index', {
+        playerColor:
+          '#' +
+          (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+      })
     } else if (
       req.query.action == 'edit-login' ||
       !currentPlayer.nickName ||
