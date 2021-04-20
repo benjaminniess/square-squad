@@ -84,7 +84,7 @@ class Panick_Attack extends MasterGame {
       if (obstacles.length === 0) {
         obstacleManager.initObstacle()
         if (this.getScore() > 2 && helpers.getRandomInt(1, 3) === 2) {
-          //obstacleManager.initObstacle({ level: this.getScore() / 2 })
+          obstacleManager.initObstacle({ speedMultiplicator: 0.5 })
         }
         this.increaseScore()
         increasePoints = this.getScore()
