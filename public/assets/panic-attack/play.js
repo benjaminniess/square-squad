@@ -29,4 +29,12 @@ socket.on('refreshCanvas', (data) => {
     ctx.fill()
     ctx.closePath()
   })
+
+  data.bonusList.map((bonus) => {
+    ctx.beginPath()
+    ctx.rect(bonus.x, bonus.y, bonus.width, bonus.height)
+    ctx.fillStyle = '#00DD00'
+    ctx.fill()
+    ctx.closePath()
+  })
 })

@@ -89,6 +89,22 @@ if (backButton) {
   }
 }
 
+canvas.addEventListener(
+  'mousedown',
+  function (e) {
+    lastPos = getMousePos(canvas, e)
+    console.log(lastPos)
+  },
+  false,
+)
+
+function getMousePos(canvasDom, mouseEvent) {
+  var rect = canvasDom.getBoundingClientRect()
+  return {
+    x: mouseEvent.clientX - rect.left,
+    y: mouseEvent.clientY - rect.top,
+  }
+}
 document.addEventListener('keydown', keyDownHandler, false)
 document.addEventListener('keyup', keyUpHandler, false)
 

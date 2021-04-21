@@ -1,5 +1,7 @@
 'use strict'
 
+const BonusManager = require(__base + '/lib/bonus-manager')
+
 const ObstaclesManager = require(__base + '/lib/obstacles-manager')
 
 const MasterGame = require(__base + '/games/master-game')
@@ -13,11 +15,11 @@ class Panick_Attack extends MasterGame {
     this.score = null
     this.type = 'battle-royale'
     this.totalRounds = 3
-    this.obstaclesManager
   }
 
   initGame() {
     this.obstaclesManager = new ObstaclesManager()
+    this.bonusManager = new BonusManager()
     this.roundNumber = 0
     this.initRound()
     this.resetRanking()
@@ -44,6 +46,10 @@ class Panick_Attack extends MasterGame {
 
   getObstaclesManager() {
     return this.obstaclesManager
+  }
+
+  getBonusManager() {
+    return this.bonusManager
   }
 
   killPlayer(playerID) {
@@ -76,9 +82,13 @@ class Panick_Attack extends MasterGame {
     let obstacleManager = this.getObstaclesManager()
     let obstacles = obstacleManager.getObstacles()
 
+    let bonusManager = this.getBonusManager()
+    let bonusList = bonusManager.getBonus()
+
     let increasePoints = false
 
     let updatedObstacles = []
+    let updatedBonus = []
 
     if (this.getStatus() === 'playing') {
       if (obstacles.length === 0) {
@@ -93,6 +103,12 @@ class Panick_Attack extends MasterGame {
       } else {
         obstacleManager.updateObstacles()
       }
+
+      if (bonusList.length === 0) {
+        bonusManager.initBonus()
+      }
+
+      bonusManager.updateBonus()
     }
 
     _.forEach(this.playersMoves, (moves, playerID) => {
@@ -179,12 +195,26 @@ class Panick_Attack extends MasterGame {
             this.getRoom().refreshPlayers()
           }
         })
+
+        updatedBonus = bonusManager.getBonus()
+
+        updatedBonus.map((bonus) => {
+          if (
+            playerData.x < bonus.x + bonus.width &&
+            playerData.x + squareSize > bonus.x &&
+            playerData.y < bonus.y + bonus.height &&
+            squareSize + playerData.y > bonus.y
+          ) {
+            console.log('bonus triggered')
+          }
+        })
       }
     })
 
     return {
       players: this.playersData,
       obstacles: updatedObstacles,
+      bonusList: updatedBonus,
       score: increasePoints > 0 ? increasePoints - 1 : null,
     }
   }
