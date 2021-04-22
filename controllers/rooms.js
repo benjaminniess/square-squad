@@ -167,7 +167,10 @@ io.on('connection', (socket) => {
             } else {
               let gameTimer = setInterval(function () {
                 game.countAlivePlayers().then((countAlive) => {
-                  if (countAlive === 0) {
+                  if (
+                    countAlive === 0 ||
+                    (countAlive === 1 && game.countPlayers() > 1)
+                  ) {
                     clearInterval(gameTimer)
                     game.setStatus('end-round')
                     game.renewPlayers()
