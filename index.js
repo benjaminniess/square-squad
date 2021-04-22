@@ -32,6 +32,7 @@ global.globalPlayers = {}
 global.globalSessionStore = new InMemorySessionStore()
 global.canvasWidth = 700
 global.squareSize = 30
+global.bonusSize = 30
 global.helpers = require(__base + 'lib/helpers')
 global._ = require('lodash')
 

@@ -1,9 +1,29 @@
+var bonusImage = new Image()
+bonusImage.src = '/assets/images/bonus.png'
 socket.on('refreshCanvas', (data) => {
   if (Number.isInteger(data.score)) {
     pointsText.innerHTML = data.score
   }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  data.bonusList.map((bonus) => {
+    ctx.beginPath()
+    ctx.drawImage(
+      bonusImage,
+      bonus.imgX,
+      bonus.imgY,
+      100,
+      100,
+      bonus.x,
+      bonus.y,
+      bonus.width,
+      bonus.height,
+    )
+    ctx.fillStyle = '#00DD00'
+    ctx.fill()
+    ctx.closePath()
+  })
 
   for (const [key, player] of Object.entries(data.players)) {
     if (player.alive) {
@@ -26,14 +46,6 @@ socket.on('refreshCanvas', (data) => {
     ctx.beginPath()
     ctx.rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
     ctx.fillStyle = '#DD0000'
-    ctx.fill()
-    ctx.closePath()
-  })
-
-  data.bonusList.map((bonus) => {
-    ctx.beginPath()
-    ctx.rect(bonus.x, bonus.y, bonus.width, bonus.height)
-    ctx.fillStyle = '#00DD00'
     ctx.fill()
     ctx.closePath()
   })

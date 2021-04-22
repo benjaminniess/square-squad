@@ -39,6 +39,7 @@ class MasterGame {
       y: canvasWidth / 2,
       nickname: playerSession.nickname,
       alive: true,
+      speedMultiplicator: 1,
       score: 0,
       color: playerSession.color,
     }
@@ -152,6 +153,14 @@ class MasterGame {
         }
       })
     })
+  }
+
+  getPlayerData(playerID) {
+    return this.getPlayersData()[playerID]
+  }
+
+  setPlayerData(playerID, playerData) {
+    this.playersData[playerID] = playerData
   }
 
   getPlayersData() {
