@@ -1,0 +1,12 @@
+sass:
+  tasks:
+    public:
+      src:
+        - "assets/sass/**/*.scss"
+      dst: "public/assets/css"
+  settings:
+    sass:
+      errLogToConsole: true
+    inlineSVG:
+      path: "assets/"
+    purgeCSS: true
