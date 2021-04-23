@@ -3,13 +3,10 @@ html(lang='fr')
     block vars
         - var pageTitle='Square Squad Reloaded'
     head
+        link(rel='stylesheet', href='/assets/css/main.min.css')
         block title
             title #{pageTitle}
-        block styles
-            link(rel='stylesheet', href='/assets/css/main.min.css')
-        block scripts
-            script(src='/assets/js/dist/uikit/uikit.min.js')
-            script(src='/assets/js/dist/uikit/uikit-icons.min.js')
+        block extraStyles
 
         link(rel='apple-touch-icon' sizes='180x180' href='/assets/images/apple-touch-icon.png')
         link(rel='icon' type='image/png' sizes='32x32' href='/assets/images/favicon-32x32.png')
@@ -33,3 +30,7 @@ html(lang='fr')
             p.text-center Version #{appVersion}
               a(href='https://discord.com/channels/834826491602403409/834827272434221146' target="_blank")
                 img(src='/assets/images/discord.png' width="32px")
+
+    script(src='/assets/js/dist/uikit/uikit.min.js')
+    script(src='/assets/js/dist/uikit/uikit-icons.min.js')
+    block extraScripts
