@@ -38,7 +38,7 @@ socket.on('refreshPlayers', (data) => {
           li.appendChild(document.createTextNode('(You)'))
 
           if (player.isAdmin) {
-            startButton.style.display = 'block'
+            startButton.style.visibility = 'visible'
           }
         }
 
