@@ -6,8 +6,7 @@ html(lang='fr')
         block title
             title #{pageTitle}
         block styles
-            link(rel='stylesheet', href='/assets/css/dist/uikit/uikit.min.css')
-            link(rel='stylesheet', href='/assets/css/main.css')
+            link(rel='stylesheet', href='/assets/css/main.min.css')
         block scripts
             script(src='/assets/js/dist/uikit/uikit.min.js')
             script(src='/assets/js/dist/uikit/uikit-icons.min.js')
@@ -26,11 +25,11 @@ html(lang='fr')
         - var bodyClass = ''
 
     body(class=bodyClass)
+      div.super-wrapper
         block content
 
         block footer
-            footer.uk-section
-                div.uk-container.uk-container-small
-                    p.uk-text-center Version #{appVersion}
-                        a(href='https://discord.com/channels/834826491602403409/834827272434221146' target="_blank")
-                            img(src='/assets/images/discord.png' width="32px")
+          footer.footer
+            p.text-center Version #{appVersion}
+              a(href='https://discord.com/channels/834826491602403409/834827272434221146' target="_blank")
+                img(src='/assets/images/discord.png' width="32px")
