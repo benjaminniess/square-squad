@@ -18,9 +18,9 @@
     left: 0;
     width: 100%;
     height: 25%;
-    transition: transform .5s;
     transform: scaleX(0);
     transform-origin: left center;
+    transition: transform .5s;
     background-color: color(elm);
     will-change: transform;
   }

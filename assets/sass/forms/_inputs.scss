@@ -21,8 +21,8 @@
     border: 4px solid color(bottle);
 
     &:focus-within {
-      outline: 0;
       border-color: color(flame);
+      outline: 0;
     }
   }
 
