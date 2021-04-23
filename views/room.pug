@@ -12,7 +12,7 @@ block content
             | Hello #[a(href="/?action=edit-login" id="playerNameLabel" style=`color:${playerColor};`) !{playerName} ]!
           h3 !{roomName}
           h4 Players
-          ul.player-list.players.no-score
+          ul.players-list.players.no-score
           p
             a#startButton.uk-button.uk-button-primary(href='#' style="display:none") play
           p
@@ -24,7 +24,7 @@ block content
             h3 !{roomName}
             h4#round-number
             h4 Players
-            ul.player-list.players
+            ul.players-list.players
             h1#countdown-text
             h1#points-text
         div.uk-width-3-4
@@ -36,10 +36,10 @@ block content
         h1#winner-announcement
 
         h2 Round results
-        ul#round-rank-list
+        ul#round-rank-list.players-list
 
         h2 Global ranking
-        ul#rank-list
+        ul#rank-list.players-list
         button#back-button.uk-button.uk-button-default Back
 
     script(src='/assets/js/main.js')
