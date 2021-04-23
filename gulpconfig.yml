@@ -9,4 +9,6 @@ sass:
       errLogToConsole: true
     inlineSVG:
       path: "assets/"
-    purgeCSS: true
+    extractMQ: false
+    critical: false
+    purgeCSS: false
