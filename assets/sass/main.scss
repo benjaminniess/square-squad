@@ -11,6 +11,10 @@
 @import 'base/vars';
 @import 'base/rules';
 
+// Common
+@import 'common/footer';
+@import 'common/header';
+
 // Forms
 @import 'forms/inputs';
 
@@ -19,4 +23,5 @@
 
 // Components
 @import 'components/buttons';
+@import 'components/particles';
 @import 'components/players-list';
