@@ -23,3 +23,28 @@ body {
     margin: auto;
   }
 }
+
+.sqsq-logo {
+  max-width: 80%;
+  margin: 0 auto 40px;
+}
+
+.wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  padding: 40px;
+  border: 10px solid color(bottle);
+  background-color: color(white, null, null, .9);
+}
+
+.user-name {
+  display: inline-block;
+  margin: 0 .2em;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: color(bottle);
+  font-weight: 700;
+}

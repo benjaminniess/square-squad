@@ -33,6 +33,9 @@
         "sync": false
       }
     },
+    "line_linked": {
+      "enable": false
+    },
     "move": {
       "enable": true,
       "speed": 3,

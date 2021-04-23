@@ -1,8 +1,5 @@
 extends includes/base
 
-block scripts
-  script(src='/assets/js/dist/socket.io.js')
-
 block content
   body(data-roomSlug=roomSlug)
     div#section-lobby.uk-section(style=status === "waiting" ? "" : "display:none;")
@@ -46,3 +43,6 @@ block content
     script(src=gameJS)
 
 block footer
+
+block extraScripts
+  script(src='/assets/js/dist/socket.io.js')
