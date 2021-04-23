@@ -11,6 +11,12 @@
 @import 'base/vars';
 @import 'base/rules';
 
+// Forms
+@import 'forms/inputs';
+
 // Templates
+@import 'templates/index';
 
 // Components
+@import 'components/buttons';
+@import 'components/players-list';

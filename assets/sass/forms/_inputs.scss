@@ -1,0 +1,38 @@
+.input-field {
+  display: block;
+  width: 100%;
+
+  & + & {
+    margin-top: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: .2em;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    border: 4px solid color(bottle);
+
+    &:focus-within {
+      outline: 0;
+      border-color: color(flame);
+    }
+  }
+
+  [type='text'] {
+    padding: 10px;
+  }
+
+  [type='color'] {
+    height: 48px;
+    background-color: transparent;
+    cursor: pointer;
+  }
+}

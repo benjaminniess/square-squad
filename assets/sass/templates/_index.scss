@@ -1,0 +1,11 @@
+.index {
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
+  padding: 40px;
+  border: 10px solid color(bottle);
+
+  &__logo {
+    margin-bottom: 20px;
+  }
+}

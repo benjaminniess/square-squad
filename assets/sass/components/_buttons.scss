@@ -1,0 +1,42 @@
+.btn {
+  display: inline-block;
+  position: relative;
+  padding: 20px 20px 15px;
+  overflow: hidden;
+  border: 3px solid color(elm);
+  color: color(flame);
+  font-family: $zen;
+  font-size: 1.4rem;
+  line-height: 1;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    transition: transform .5s;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background-color: color(elm);
+    will-change: transform;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+
+  &:hover {
+    &::before,
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+}
