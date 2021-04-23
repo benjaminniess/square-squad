@@ -1,0 +1,32 @@
+.play-section {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  flex-flow: row wrap;
+  height: 100vh;
+  background-color: color(white);
+
+  &__infos {
+    flex: 0 1 30%;
+    padding: 30px;
+    background-color: color(white);
+  }
+
+  &__canvas {
+    position: relative;
+    flex: 0 0 700px;
+    width: 700px;
+    height: 700px;
+
+    canvas {
+      border: 4px solid color(bottle);
+    }
+  }
+
+  &__countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
