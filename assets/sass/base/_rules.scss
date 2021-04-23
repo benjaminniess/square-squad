@@ -7,13 +7,11 @@ body {
   line-height: 1.3;
 }
 
-canvas {
+[id='#gameCanvas'] {
   display: block;
   margin: 0 auto;
   background: #eee;
 }
-
-
 
 .super-wrapper {
   display: flex;
