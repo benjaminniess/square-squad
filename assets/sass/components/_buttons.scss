@@ -3,7 +3,7 @@
   position: relative;
   padding: 20px 20px 15px;
   overflow: hidden;
-  border: 3px solid color(elm);
+  border: 4px solid color(elm);
   color: color(flame);
   font-family: $zen;
   font-size: 1.4rem;
@@ -19,24 +19,25 @@
     width: 100%;
     height: 25%;
     transform: scaleX(0);
-    transform-origin: left center;
+    transform-origin: right center;
     transition: transform .5s;
     background-color: color(elm);
     will-change: transform;
   }
 
   &::before {
-    top: 0;
+    top: -1px;
   }
 
   &::after {
-    bottom: 0;
+    bottom: -1px;
   }
 
   &:hover {
     &::before,
     &::after {
       transform: scaleX(1);
+      transform-origin: left center;
     }
   }
 }
