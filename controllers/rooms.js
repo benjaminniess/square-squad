@@ -26,6 +26,22 @@ router.get('*', function (req, res, next) {
 router.get('/', function (req, res, next) {
   let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let rooms = helpers.getRooms()
+
+  // On dev mode, auto create a user and a room
+  if (
+    process.env.AUTO_CREATE_ROOM &&
+    process.env.AUTO_CREATE_ROOM === 'true' &&
+    !_.size(rooms)
+  ) {
+    let roomSlug = helpers.createRoom('TEST ROOM')
+
+    let room = helpers.getRoom(roomSlug)
+    room.setAdminPlayer(currentPlayer.getPublicID())
+    res.redirect(room.getLobbyURL())
+
+    return
+  }
+
   res.render('rooms', {
     rooms: _.size(rooms) ? rooms : null,
     playerName: currentPlayer.getNickname(),

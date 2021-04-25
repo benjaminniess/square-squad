@@ -10,6 +10,22 @@ module.exports = function (app) {
    * The home URL
    */
   router.get('/', function (req, res, next) {
+    // On dev mode, auto create a user and a room
+    if (
+      process.env.AUTO_CREATE_PLAYER &&
+      process.env.AUTO_CREATE_PLAYER === 'true'
+    ) {
+      let playerObj = helpers.getPlayer(req.cookies['connect.sid'])
+
+      playerObj.resetData({
+        nickName: 'Tester',
+        color: '228800',
+      })
+
+      res.redirect('/rooms')
+      return
+    }
+
     let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
     if (!currentPlayer) {
       res.render('index', {
@@ -47,7 +63,6 @@ module.exports = function (app) {
       playerObj.resetData({
         nickName: req.body.playerName,
         color: req.body.playerColor,
-        appVersion: appVersion,
       })
 
       res.redirect('/rooms')
