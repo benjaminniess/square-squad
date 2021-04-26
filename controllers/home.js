@@ -15,6 +15,10 @@ module.exports = function (app) {
       process.env.AUTO_CREATE_PLAYER &&
       process.env.AUTO_CREATE_PLAYER === 'true'
     ) {
+      if (!req.cookies['connect.sid']) {
+        res.redirect('/')
+        return
+      }
       let playerObj = helpers.getPlayer(req.cookies['connect.sid'])
 
       playerObj.resetData({
