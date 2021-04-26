@@ -44,6 +44,98 @@ class MasterGame {
     return this.status
   }
 
+  getPlayersData() {
+    return this.playersData
+  }
+
+  getObstaclesManager() {
+    return this.obstaclesManager
+  }
+
+  getBonusManager() {
+    return this.bonusManager
+  }
+
+  getRoundNumber() {
+    return this.roundNumber
+  }
+
+  getTotalRounds() {
+    return this.totalRounds
+  }
+
+  getScore() {
+    return this.score
+  }
+
+  getDuration() {
+    return this.duration
+  }
+
+  getType() {
+    return this.type
+  }
+
+  getRanking() {
+    return this.ranking
+  }
+
+  getHighestScore() {
+    let globalRanking = this.getRanking()
+    if (globalRanking.length === 0) {
+      return 0
+    } else {
+      return globalRanking[0].score
+    }
+  }
+
+  getLastRoundRanking() {
+    return JSON.parse(JSON.stringify(this.lastRoundRanking)).reverse()
+  }
+
+  getLastRoundWinner() {
+    return this.getLastRoundRanking()[0]
+  }
+
+  getBasicData() {
+    return {
+      squareSize: squareSize,
+    }
+  }
+
+  getPlayerData(playerID) {
+    return this.getPlayersData()[playerID]
+  }
+
+  setPlayerData(playerID, playerData) {
+    this.playersData[playerID] = playerData
+  }
+
+  getPlayersData() {
+    return this.playersData
+  }
+
+  countPlayers() {
+    return _.size(this.playersData)
+  }
+
+  countAlivePlayers() {
+    return new Promise((resolve, reject) => {
+      let alive = 0
+      let countRows = 0
+      _.forEach(this.playersData, (playerData, playerID) => {
+        countRows++
+        if (playerData.alive) {
+          alive++
+        }
+
+        if (countRows >= _.size(this.playersData)) {
+          resolve(alive)
+        }
+      })
+    })
+  }
+
   initGame() {
     this.engine = Engine.create()
     this.runner = Runner.create()
@@ -72,18 +164,6 @@ class MasterGame {
     })
   }
 
-  getPlayersData() {
-    return this.playersData
-  }
-
-  getObstaclesManager() {
-    return this.obstaclesManager
-  }
-
-  getBonusManager() {
-    return this.bonusManager
-  }
-
   killPlayer(playerID) {
     this.playersData[playerID].alive = false
     this.playersData[playerID].score = this.getScore() - 1
@@ -92,18 +172,6 @@ class MasterGame {
       score: this.playersData[playerID].score,
       nickname: this.playersData[playerID].nickname,
     })
-  }
-
-  getRoundNumber() {
-    return this.roundNumber
-  }
-
-  getTotalRounds() {
-    return this.totalRounds
-  }
-
-  getScore() {
-    return this.score
   }
 
   increaseScore() {
@@ -158,27 +226,6 @@ class MasterGame {
     }
   }
 
-  getDuration() {
-    return this.duration
-  }
-
-  getType() {
-    return this.type
-  }
-
-  getRanking() {
-    return this.ranking
-  }
-
-  getHighestScore() {
-    let globalRanking = this.getRanking()
-    if (globalRanking.length === 0) {
-      return 0
-    } else {
-      return globalRanking[0].score
-    }
-  }
-
   resetRanking() {
     this.ranking = []
     this.lastRoundRanking = []
@@ -195,53 +242,6 @@ class MasterGame {
     }
 
     this.ranking = _.orderBy(this.ranking, ['score'], ['desc'])
-  }
-
-  getLastRoundRanking() {
-    return JSON.parse(JSON.stringify(this.lastRoundRanking)).reverse()
-  }
-
-  getLastRoundWinner() {
-    return this.getLastRoundRanking()[0]
-  }
-
-  getBasicData() {
-    return {
-      squareSize: squareSize,
-    }
-  }
-
-  countPlayers() {
-    return _.size(this.playersData)
-  }
-
-  countAlivePlayers() {
-    return new Promise((resolve, reject) => {
-      let alive = 0
-      let countRows = 0
-      _.forEach(this.playersData, (playerData, playerID) => {
-        countRows++
-        if (playerData.alive) {
-          alive++
-        }
-
-        if (countRows >= _.size(this.playersData)) {
-          resolve(alive)
-        }
-      })
-    })
-  }
-
-  getPlayerData(playerID) {
-    return this.getPlayersData()[playerID]
-  }
-
-  setPlayerData(playerID, playerData) {
-    this.playersData[playerID] = playerData
-  }
-
-  getPlayersData() {
-    return this.playersData
   }
 
   setStatus(status) {
