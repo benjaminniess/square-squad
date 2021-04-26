@@ -22,12 +22,29 @@ class MasterGame {
     this.ranking = []
     this.lastRoundRanking = []
     this.lastWinner = {}
+    this.bonusManager = new BonusManager(this)
+    this.initEngine()
+  }
+
+  initEngine() {
     this.engine = Engine.create()
+    this.engine.world.gravity.y = 0
     this.runner = Runner.create()
     Runner.run(this.runner, this.engine)
     this.obstaclesManager = new ObstaclesManager(Composite.create('obstacles'))
     this.playersManager = new PlayersManager(this, Composite.create('players'))
-    this.bonusManager = new BonusManager(this)
+    let walls = Composite.create('walls')
+    Matter.Composite.add(walls, [
+      Matter.Bodies.rectangle(0, -10, 3000, 10, { isStatic: true }),
+      Matter.Bodies.rectangle(-10, 0, 3000, 10, { isStatic: true }),
+      Matter.Bodies.rectangle(canvasWidth, 0, 3000, 10, { isStatic: true }),
+      Matter.Bodies.rectangle(0, canvasWidth, 3000, 10, { isStatic: true }),
+    ])
+    Composite.add(this.engine.world, [
+      this.getPlayersManager().getComposite(),
+      this.getObstaclesManager().getComposite(),
+      walls,
+    ])
   }
 
   getRoom() {
@@ -72,6 +89,10 @@ class MasterGame {
 
   getScore() {
     return this.score
+  }
+
+  getSpeed() {
+    return this.speed
   }
 
   getDuration() {
