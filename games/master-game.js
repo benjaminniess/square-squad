@@ -1,4 +1,15 @@
 'use strict'
+
+const BonusManager = require(__base + '/lib/bonus-manager')
+const ObstaclesManager = require(__base + '/lib/obstacles-manager')
+const PlayersManager = require(__base + '/lib/players-manager')
+const Matter = require('matter-js')
+
+const Engine = Matter.Engine
+const Runner = Matter.Runner
+const Bodies = Matter.Bodies
+const Composite = Matter.Composite
+
 class MasterGame {
   constructor(room) {
     this.speed = 6
@@ -31,6 +42,72 @@ class MasterGame {
    */
   getStatus() {
     return this.status
+  }
+
+  initGame() {
+    this.engine = Engine.create()
+    this.runner = Runner.create()
+    Runner.run(this.runner, this.engine)
+    this.obstaclesManager = new ObstaclesManager(Composite.create('obstacles'))
+    this.playersManager = new PlayersManager(Composite.create('players'))
+    this.bonusManager = new BonusManager(this)
+    this.roundNumber = 0
+    this.initRound()
+    this.resetRanking()
+    this.setStatus('starting')
+  }
+
+  initRound() {
+    this.roundNumber++
+    this.score = 0
+    this.lastRoundRanking = []
+    this.getObstaclesManager().resetObstacles()
+    this.getBonusManager().resetBonus()
+  }
+
+  renewPlayers() {
+    _.forEach(this.playersData, (moves, playerID) => {
+      this.playersData[playerID].alive = true
+      this.resetTouches(playerID)
+    })
+  }
+
+  getPlayersData() {
+    return this.playersData
+  }
+
+  getObstaclesManager() {
+    return this.obstaclesManager
+  }
+
+  getBonusManager() {
+    return this.bonusManager
+  }
+
+  killPlayer(playerID) {
+    this.playersData[playerID].alive = false
+    this.playersData[playerID].score = this.getScore() - 1
+    this.addRoundScore({
+      playerID: playerID,
+      score: this.playersData[playerID].score,
+      nickname: this.playersData[playerID].nickname,
+    })
+  }
+
+  getRoundNumber() {
+    return this.roundNumber
+  }
+
+  getTotalRounds() {
+    return this.totalRounds
+  }
+
+  getScore() {
+    return this.score
+  }
+
+  increaseScore() {
+    this.score++
   }
 
   initPlayer(playerSession) {
@@ -171,36 +248,8 @@ class MasterGame {
     this.status = status
   }
 
-  refreshData() {
-    _.forEach(this.playersMoves, (moves, playerID) => {
-      if (moves.down) {
-        this.playersData[playerID].y += this.speed
-        if (this.playersData[playerID].y > canvasWidth - squareSize) {
-          this.playersData[playerID].y = canvasWidth - squareSize
-        }
-      }
-      if (moves.right) {
-        this.playersData[playerID].x += this.speed
-        if (this.playersData[playerID].x > canvasWidth - squareSize) {
-          this.playersData[playerID].x = canvasWidth - squareSize
-        }
-      }
-      if (moves.top) {
-        this.playersData[playerID].y -= this.speed
-        if (this.playersData[playerID].y < 0) {
-          this.playersData[playerID].y = 0
-        }
-      }
-      if (moves.left) {
-        this.playersData[playerID].x -= this.speed
-        if (this.playersData[playerID].x < 0) {
-          this.playersData[playerID].x = 0
-        }
-      }
-    })
-
-    return { players: this.playersData }
-  }
+  // Required method
+  refreshData() {}
 }
 
 module.exports = MasterGame

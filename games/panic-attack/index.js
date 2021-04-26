@@ -1,9 +1,5 @@
 'use strict'
 
-const BonusManager = require(__base + '/lib/bonus-manager')
-
-const ObstaclesManager = require(__base + '/lib/obstacles-manager')
-
 const MasterGame = require(__base + '/games/master-game')
 
 class Panick_Attack extends MasterGame {
@@ -11,72 +7,8 @@ class Panick_Attack extends MasterGame {
     super(room)
     this.speed = 4
     this.slug = 'panic-attack'
-    this.obstacles = []
-    this.score = null
     this.type = 'battle-royale'
     this.totalRounds = 3
-  }
-
-  initGame() {
-    this.obstaclesManager = new ObstaclesManager()
-    this.bonusManager = new BonusManager(this)
-    this.roundNumber = 0
-    this.initRound()
-    this.resetRanking()
-    this.setStatus('starting')
-  }
-
-  initRound() {
-    this.roundNumber++
-    this.score = 0
-    this.lastRoundRanking = []
-    this.getObstaclesManager().resetObstacles()
-    this.getBonusManager().resetBonus()
-  }
-
-  renewPlayers() {
-    _.forEach(this.playersData, (moves, playerID) => {
-      this.playersData[playerID].alive = true
-      this.resetTouches(playerID)
-    })
-  }
-
-  getPlayersData() {
-    return this.playersData
-  }
-
-  getObstaclesManager() {
-    return this.obstaclesManager
-  }
-
-  getBonusManager() {
-    return this.bonusManager
-  }
-
-  killPlayer(playerID) {
-    this.playersData[playerID].alive = false
-    this.playersData[playerID].score = this.getScore() - 1
-    this.addRoundScore({
-      playerID: playerID,
-      score: this.playersData[playerID].score,
-      nickname: this.playersData[playerID].nickname,
-    })
-  }
-
-  getRoundNumber() {
-    return this.roundNumber
-  }
-
-  getTotalRounds() {
-    return this.totalRounds
-  }
-
-  getScore() {
-    return this.score
-  }
-
-  increaseScore() {
-    this.score++
   }
 
   refreshData() {

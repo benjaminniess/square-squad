@@ -183,6 +183,7 @@ io.on('connection', (socket) => {
             } else {
               let gameTimer = setInterval(function () {
                 game.countAlivePlayers().then((countAlive) => {
+                  return
                   if (
                     countAlive === 0 ||
                     (countAlive === 1 && game.countPlayers() > 1)

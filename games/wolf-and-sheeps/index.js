@@ -11,43 +11,6 @@ class Wolf_And_Sheep extends MasterGame {
     this.wolf = null
   }
 
-  initGame() {
-    this.initRound()
-    this.resetRanking()
-    this.setStatus('starting')
-  }
-
-  initRound() {
-    this.score = 0
-    this.lastRoundRanking = []
-  }
-
-  renewPlayers() {
-    _.forEach(this.playersData, (moves, playerID) => {
-      this.playersData[playerID].alive = true
-      this.resetTouches(playerID)
-    })
-  }
-
-  initPlayer(playerSession) {
-    this.playersData[playerSession.playerID] = {
-      x: helpers.getRandomInt(50, 600),
-      y: 200,
-      name: playerSession.nickName,
-      isColliding: false,
-      isCatchable: true,
-    }
-
-    this.playersMoves[playerSession.playerID] = {
-      up: false,
-      down: false,
-      left: false,
-      right: false,
-    }
-
-    this.resetWolf()
-  }
-
   removePlayer(playerID) {
     delete this.playersData[playerID]
     delete this.playersMoves[playerID]
