@@ -182,32 +182,29 @@ io.on('connection', (socket) => {
               }, 1000)
             } else {
               let gameTimer = setInterval(function () {
-                game
-                  .getPlayersManager()
-                  .countAlivePlayers()
-                  .then((countAlive) => {
-                    if (
-                      countAlive === 0 ||
-                      (countAlive === 1 &&
-                        game.getPlayersManager().countPlayers() > 1)
-                    ) {
-                      clearInterval(gameTimer)
-                      game.setStatus('end-round')
-                      game.getPlayersManager().renewPlayers()
+                let countAlive = game.getPlayersManager().countAlivePlayers()
 
-                      if (game.getRoundNumber() >= game.getTotalRounds()) {
-                        game.setStatus('waiting')
-                      }
+                if (
+                  countAlive === 0 ||
+                  (countAlive === 1 &&
+                    game.getPlayersManager().countPlayers() > 1)
+                ) {
+                  clearInterval(gameTimer)
+                  game.setStatus('end-round')
+                  game.getPlayersManager().renewPlayers()
 
-                      io.to(data.roomSlug).emit('in-game-countdown-update', {
-                        timeleft: 0,
-                        roundWinner: game.getLastRoundWinner(),
-                        roundRanking: game.getLastRoundRanking(),
-                        ranking: game.getRanking(),
-                        gameStatus: game.getStatus(),
-                      })
-                    }
+                  if (game.getRoundNumber() >= game.getTotalRounds()) {
+                    game.setStatus('waiting')
+                  }
+
+                  io.to(data.roomSlug).emit('in-game-countdown-update', {
+                    timeleft: 0,
+                    roundWinner: game.getLastRoundWinner(),
+                    roundRanking: game.getLastRoundRanking(),
+                    ranking: game.getRanking(),
+                    gameStatus: game.getStatus(),
                   })
+                }
               }, 1000)
             }
           }
