@@ -42,40 +42,41 @@ class Panick_Attack extends MasterGame {
       }
     }
 
-    _.forEach(this.playersMoves, (moves, playerID) => {
-      let playerData = this.playersData[playerID]
+    let playersData = this.getPlayersManager().getPlayersData()
+    _.forEach(this.getPlayersManager().getPlayersMoves(), (moves, playerID) => {
+      let playerData = playersData[playerID]
       if (playerData.alive) {
         if (moves.top) {
-          this.playersData[playerID].y +=
-            this.speed * this.playersData[playerID].speedMultiplicator
-          if (this.playersData[playerID].y > canvasWidth - squareSize) {
-            this.playersData[playerID].y = canvasWidth - squareSize
+          playersData[playerID].y +=
+            this.speed * playersData[playerID].speedMultiplicator
+          if (playersData[playerID].y > canvasWidth - squareSize) {
+            playersData[playerID].y = canvasWidth - squareSize
           }
         }
         if (moves.right) {
-          this.playersData[playerID].x +=
-            this.speed * this.playersData[playerID].speedMultiplicator
-          if (this.playersData[playerID].x > canvasWidth - squareSize) {
-            this.playersData[playerID].x = canvasWidth - squareSize
+          playersData[playerID].x +=
+            this.speed * playersData[playerID].speedMultiplicator
+          if (playersData[playerID].x > canvasWidth - squareSize) {
+            playersData[playerID].x = canvasWidth - squareSize
           }
         }
         if (moves.down) {
-          this.playersData[playerID].y -=
-            this.speed * this.playersData[playerID].speedMultiplicator
-          if (this.playersData[playerID].y < 0) {
-            this.playersData[playerID].y = 0
+          playersData[playerID].y -=
+            this.speed * playersData[playerID].speedMultiplicator
+          if (playersData[playerID].y < 0) {
+            playersData[playerID].y = 0
           }
         }
         if (moves.left) {
-          this.playersData[playerID].x -=
-            this.speed * this.playersData[playerID].speedMultiplicator
-          if (this.playersData[playerID].x < 0) {
-            this.playersData[playerID].x = 0
+          playersData[playerID].x -=
+            this.speed * playersData[playerID].speedMultiplicator
+          if (playersData[playerID].x < 0) {
+            playersData[playerID].x = 0
           }
         }
 
         _.forEach(this.playersMoves, (movesB, playerBID) => {
-          let playerBdata = this.playersData[playerBID]
+          let playerBdata = playersData[playerBID]
           if (
             playerID !== playerBID &&
             playerData.x < playerBdata.x + squareSize &&
@@ -84,38 +85,36 @@ class Panick_Attack extends MasterGame {
             squareSize + playerData.y > playerBdata.y
           ) {
             if (moves.down && playerData.y < playerBdata.y + squareSize) {
-              this.playersData[playerBID].y -=
-                this.speed * this.playersData[playerID].speedMultiplicator
-              if (this.playersData[playerBID].y < 0) {
-                this.playersData[playerBID].y = 0
-                this.playersData[playerID].y = squareSize
+              playersData[playerBID].y -=
+                this.speed * playersData[playerID].speedMultiplicator
+              if (playersData[playerBID].y < 0) {
+                playersData[playerBID].y = 0
+                playersData[playerID].y = squareSize
               }
             } else if (moves.top && playerData.y > playerBdata.y - squareSize) {
-              this.playersData[playerBID].y +=
-                this.speed * this.playersData[playerID].speedMultiplicator
-              if (this.playersData[playerBID].y > canvasWidth - squareSize) {
-                this.playersData[playerBID].y = canvasWidth - squareSize
-                this.playersData[playerID].y =
-                  canvasWidth - squareSize - squareSize
+              playersData[playerBID].y +=
+                this.speed * playersData[playerID].speedMultiplicator
+              if (playersData[playerBID].y > canvasWidth - squareSize) {
+                playersData[playerBID].y = canvasWidth - squareSize
+                playersData[playerID].y = canvasWidth - squareSize - squareSize
               }
             }
             if (moves.left && playerData.x < playerBdata.x + squareSize) {
-              this.playersData[playerBID].x -=
-                this.speed * this.playersData[playerID].speedMultiplicator
-              if (this.playersData[playerBID].x < 0) {
-                this.playersData[playerBID].x = 0
-                this.playersData[playerID].x = squareSize
+              playersData[playerBID].x -=
+                this.speed * playersData[playerID].speedMultiplicator
+              if (playersData[playerBID].x < 0) {
+                playersData[playerBID].x = 0
+                playersData[playerID].x = squareSize
               }
             } else if (
               moves.right &&
               playerData.x > playerBdata.x - squareSize
             ) {
-              this.playersData[playerBID].x +=
-                this.speed * this.playersData[playerID].speedMultiplicator
-              if (this.playersData[playerBID].x > canvasWidth - squareSize) {
-                this.playersData[playerBID].x = canvasWidth - squareSize
-                this.playersData[playerID].x =
-                  canvasWidth - squareSize - squareSize
+              playersData[playerBID].x +=
+                this.speed * playersData[playerID].speedMultiplicator
+              if (playersData[playerBID].x > canvasWidth - squareSize) {
+                playersData[playerBID].x = canvasWidth - squareSize
+                playersData[playerID].x = canvasWidth - squareSize - squareSize
               }
             }
           }
@@ -130,7 +129,7 @@ class Panick_Attack extends MasterGame {
             playerData.y < obstacle.y + obstacle.height &&
             squareSize + playerData.y > obstacle.y
           ) {
-            this.killPlayer(playerID)
+            this.getPlayersManager().killPlayer(playerID)
             this.getRoom().refreshPlayers()
           }
         })
@@ -151,8 +150,10 @@ class Panick_Attack extends MasterGame {
       }
     })
 
+    this.getPlayersManager().setPlayersData(playersData)
+
     return {
-      players: this.playersData,
+      players: playersData,
       obstacles: updatedObstacles,
       bonusList: updatedBonus,
       score: increasePoints > 0 ? increasePoints - 1 : null,

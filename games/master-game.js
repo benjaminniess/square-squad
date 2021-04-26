@@ -22,6 +22,12 @@ class MasterGame {
     this.ranking = []
     this.lastRoundRanking = []
     this.lastWinner = {}
+    this.engine = Engine.create()
+    this.runner = Runner.create()
+    Runner.run(this.runner, this.engine)
+    this.obstaclesManager = new ObstaclesManager(Composite.create('obstacles'))
+    this.playersManager = new PlayersManager(this, Composite.create('players'))
+    this.bonusManager = new BonusManager(this)
   }
 
   getRoom() {
@@ -44,16 +50,16 @@ class MasterGame {
     return this.status
   }
 
-  getPlayersData() {
-    return this.playersData
-  }
-
   getObstaclesManager() {
     return this.obstaclesManager
   }
 
   getBonusManager() {
     return this.bonusManager
+  }
+
+  getPlayersManager() {
+    return this.playersManager
   }
 
   getRoundNumber() {
@@ -103,46 +109,7 @@ class MasterGame {
     }
   }
 
-  getPlayerData(playerID) {
-    return this.getPlayersData()[playerID]
-  }
-
-  setPlayerData(playerID, playerData) {
-    this.playersData[playerID] = playerData
-  }
-
-  getPlayersData() {
-    return this.playersData
-  }
-
-  countPlayers() {
-    return _.size(this.playersData)
-  }
-
-  countAlivePlayers() {
-    return new Promise((resolve, reject) => {
-      let alive = 0
-      let countRows = 0
-      _.forEach(this.playersData, (playerData, playerID) => {
-        countRows++
-        if (playerData.alive) {
-          alive++
-        }
-
-        if (countRows >= _.size(this.playersData)) {
-          resolve(alive)
-        }
-      })
-    })
-  }
-
   initGame() {
-    this.engine = Engine.create()
-    this.runner = Runner.create()
-    Runner.run(this.runner, this.engine)
-    this.obstaclesManager = new ObstaclesManager(Composite.create('obstacles'))
-    this.playersManager = new PlayersManager(Composite.create('players'))
-    this.bonusManager = new BonusManager(this)
     this.roundNumber = 0
     this.initRound()
     this.resetRanking()
@@ -157,73 +124,8 @@ class MasterGame {
     this.getBonusManager().resetBonus()
   }
 
-  renewPlayers() {
-    _.forEach(this.playersData, (moves, playerID) => {
-      this.playersData[playerID].alive = true
-      this.resetTouches(playerID)
-    })
-  }
-
-  killPlayer(playerID) {
-    this.playersData[playerID].alive = false
-    this.playersData[playerID].score = this.getScore() - 1
-    this.addRoundScore({
-      playerID: playerID,
-      score: this.playersData[playerID].score,
-      nickname: this.playersData[playerID].nickname,
-    })
-  }
-
   increaseScore() {
     this.score++
-  }
-
-  initPlayer(playerSession) {
-    this.playersData[playerSession.id] = {
-      x: -100,
-      y: canvasWidth / 2,
-      nickname: playerSession.nickname,
-      alive: true,
-      speedMultiplicator: 1,
-      score: 0,
-      color: playerSession.color,
-    }
-
-    this.resetPlayersPositions()
-    this.resetTouches(playerSession.id)
-  }
-
-  resetPlayersPositions() {
-    let existingPlayers = _.size(this.playersData)
-    let i = 0
-    let playerRequiredWidth = squareSize * 1.3
-    _.forEach(this.playersData, (playerData, playerID) => {
-      this.playersData[playerID].x =
-        canvasWidth / 2 +
-        i * playerRequiredWidth -
-        (playerRequiredWidth * existingPlayers) / 2
-      i++
-    })
-  }
-
-  resetTouches(playerID) {
-    this.playersMoves[playerID] = {
-      up: false,
-      down: false,
-      left: false,
-      right: false,
-    }
-  }
-
-  removePlayer(playerID) {
-    delete this.playersData[playerID]
-    delete this.playersMoves[playerID]
-  }
-
-  updatePlayerButtonState(playerID, button, state) {
-    if (this.playersMoves[playerID]) {
-      this.playersMoves[playerID][button] = state
-    }
   }
 
   resetRanking() {
