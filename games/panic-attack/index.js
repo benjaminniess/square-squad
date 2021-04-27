@@ -71,6 +71,11 @@ class Panick_Attack extends MasterGame {
           playerMoveVector.x = -1
         }
 
+        if (playerMoveVector.x !== 0 && playerMoveVector.y !== 0 ) {
+          playerMoveVector.x = playerMoveVector.x * 0.7
+          playerMoveVector.y = playerMoveVector.y * 0.7
+        }
+
         playersMovesRequests[playerID] = playerMoveVector
 
         updatedObstacles.map((obstacle) => {
