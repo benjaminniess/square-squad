@@ -23,7 +23,6 @@ class Panick_Attack extends MasterGame {
     let updatedObstacles = []
     let updatedBonus = []
 
-    /**
     if (this.getStatus() === 'playing') {
       if (obstacles.length === 0) {
         obstacleManager.initObstacle()
@@ -42,7 +41,6 @@ class Panick_Attack extends MasterGame {
         bonusManager.maybeInitBonus()
       }
     }
-    */
 
     let playersManager = this.getPlayersManager()
     let playersData = playersManager.getPlayersData()
