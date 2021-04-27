@@ -24,21 +24,26 @@ class Panick_Attack extends MasterGame {
     let updatedBonus = []
 
     if (this.getStatus() === 'playing') {
-      if (obstacles.length === 0) {
-        obstacleManager.initObstacle()
-        if (this.getScore() > 2 && helpers.getRandomInt(1, 3) === 2) {
-          obstacleManager.initObstacle({ speedMultiplicator: 0.5 })
+      if (
+        !process.env.DISABLE_OBSTACLES ||
+        process.env.DISABLE_OBSTACLES !== 'true'
+      ) {
+        if (obstacles.length === 0) {
+          obstacleManager.initObstacle()
+          if (this.getScore() > 2 && helpers.getRandomInt(1, 3) === 2) {
+            obstacleManager.initObstacle({ speedMultiplicator: 0.5 })
+          }
+          this.increaseScore()
+          increasePoints = this.getScore()
+          this.obstaclesManager.setLevel(increasePoints)
+          this.getRoom().refreshPlayers()
+        } else {
+          obstacleManager.updateObstacles()
         }
-        this.increaseScore()
-        increasePoints = this.getScore()
-        this.obstaclesManager.setLevel(increasePoints)
-        this.getRoom().refreshPlayers()
-      } else {
-        obstacleManager.updateObstacles()
-      }
 
-      if (bonusList.length === 0) {
-        bonusManager.maybeInitBonus()
+        if (bonusList.length === 0) {
+          bonusManager.maybeInitBonus()
+        }
       }
     }
 
