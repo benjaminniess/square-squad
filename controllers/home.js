@@ -20,10 +20,9 @@ module.exports = function (app) {
         return
       }
       let playerObj = helpers.getPlayer(req.cookies['connect.sid'])
-
       playerObj.resetData({
         nickName: 'Tester',
-        color: '228800',
+        color: '#222288',
       })
 
       res.redirect('/rooms')
