@@ -80,7 +80,8 @@ class Panick_Attack extends MasterGame {
             playerData.y < obstacle.y + obstacle.height &&
             squareSize + playerData.y > obstacle.y
           ) {
-            this.getPlayersManager().killPlayer(playerID)
+            playersManager.killPlayer(playerID)
+            playersManager.saveScore(playerID)
             this.getRoom().refreshPlayers()
           }
         })

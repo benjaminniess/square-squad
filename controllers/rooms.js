@@ -144,6 +144,7 @@ io.on('connection', (socket) => {
     let room = helpers.getRoom(data.roomSlug)
     if (room) {
       let game = room.getGame()
+      let playersManager = game.getPlayersManager()
       if (room && room.getAdminPlayer() === currentPlayer.getPublicID()) {
         // first round of the game?
         let gameStatus = game.getStatus()
@@ -182,14 +183,24 @@ io.on('connection', (socket) => {
               }, 1000)
             } else {
               let gameTimer = setInterval(function () {
-                let countAlive = game.getPlayersManager().countAlivePlayers()
+                let countAlive = playersManager.countAlivePlayers()
 
                 if (
                   countAlive === 0 ||
-                  (countAlive === 1 &&
-                    game.getPlayersManager().countPlayers() > 1)
+                  (countAlive === 1 && playersManager.countPlayers() > 1)
                 ) {
                   clearInterval(gameTimer)
+                  if (countAlive) {
+                    _.forEach(
+                      playersManager.getPlayersData(),
+                      (playerData, playerID) => {
+                        if (playerData.alive) {
+                          playersManager.saveScore(playerID, true)
+                        }
+                      },
+                    )
+                  }
+
                   game.setStatus('end-round')
                   game.getPlayersManager().renewPlayers()
 
