@@ -28,7 +28,8 @@ block content
 
     .page-rooms__intro
       p.text-center
-        | Hello #[a.user-name(href="/?action=edit-login" id="playerNameLabel" style=`color:${playerColor};`) !{playerName} ]! <br>
+        a.user-name(href="/?action=edit-login" id="playerNameLabel" style=`color:${playerColor};`)
+          span !{playerName}
       p You first need to select a room or create a new one
 
     div#roomsList.rooms-list
