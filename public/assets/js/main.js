@@ -118,13 +118,17 @@ function keyUpHandler(e) {
 socket.on('countdown-update', (data) => {
   gameData = data.gameData
   countdownText.innerHTML = data.timeleft
+  countdownText.style.opacity = 1
+
   if (data.timeleft == 0) {
     countdownText.innerHTML = ''
+    countdownText.style.opacity = 0
   }
 })
 
 socket.on('in-game-countdown-update', (data) => {
   countdownText.innerHTML = data.timeleft
+
   if (data.timeleft == 0) {
     countdownText.innerHTML = 'Game over'
     show('ranking')

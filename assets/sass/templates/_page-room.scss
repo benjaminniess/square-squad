@@ -24,9 +24,28 @@
   }
 
   &__countdown {
+    display: flex;
     position: absolute;
     top: 50%;
     left: 50%;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    min-height: 200px;
+    padding: 40px;
     transform: translate(-50%, -50%);
+    transition: opacity .3s;
+    border: 10px solid color(elm);
+    opacity: 0;
+    background-color: color(white, null, null, .8);
+    color: color(elm);
+    font-family: $zen;
+    font-size: 10rem;
+    line-height: 1;
+    text-align: center;
   }
+}
+
+[id='winner-announcement'] {
+  margin-bottom: 1em;
 }
