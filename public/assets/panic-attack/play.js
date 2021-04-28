@@ -25,6 +25,14 @@ socket.on('refreshCanvas', (data) => {
     ctx.closePath()
   })
 
+  data.obstacles.map((obstacle) => {
+    ctx.beginPath()
+    ctx.rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
+    ctx.fillStyle = '#DD0000'
+    ctx.fill()
+    ctx.closePath()
+  })
+
   for (const [key, player] of Object.entries(data.players)) {
     if (player.alive) {
       ctx.beginPath()
@@ -34,19 +42,11 @@ socket.on('refreshCanvas', (data) => {
       ctx.closePath()
     } else {
       if (key === sessionData.playerID) {
-        ctx.font = '30px Arial'
+        ctx.font = "30px 'Zen Dots', cursive"
         ctx.textAlign = 'center'
-        ctx.fillStyle = '#000000'
+        ctx.fillStyle = '#de564a'
         ctx.fillText('You are DEAD!', canvas.width / 2, canvas.width / 2)
       }
     }
   }
-
-  data.obstacles.map((obstacle) => {
-    ctx.beginPath()
-    ctx.rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
-    ctx.fillStyle = '#DD0000'
-    ctx.fill()
-    ctx.closePath()
-  })
 })
