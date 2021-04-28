@@ -133,12 +133,12 @@ socket.on('in-game-countdown-update', (data) => {
     countdownText.innerHTML = 'Game over'
     show('ranking')
 
+    const playerColor = '' // TODO : Rajouter la couleur du player
+
     winnerAnnouncement.innerHTML =
-      'The winner of the round is ' +
-      data.roundWinner.nickname +
-      ' with ' +
-      data.roundWinner.score +
-      ' point(s)'
+      '<tbody><tr><td>Winner</td>' +
+      '<td><span class="user-name" style="color: ' + playerColor +'"><span>' + data.roundWinner.nickname + '</span></span></td></tr>' +
+      '<tr><td>Point(s)</td>' + '<td><p>' + data.roundWinner.score + ' pts</p></td></tr></tbody>'
     let ranking = ''
     data.roundRanking.map((rank) => {
       ranking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
