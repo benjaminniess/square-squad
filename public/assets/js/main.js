@@ -200,13 +200,15 @@ if (typeof userColor !== 'undefined') {
 
 var playerNameField = document.getElementById('playerName')
 if (playerNameField) {
-  document.getElementById('playerName').value = window.localStorage.getItem(
-    'nickame',
-  )
+  let localNickname = window.localStorage.getItem('nickame')
+  if (localNickname) {
+    document.getElementById('playerName').value = localNickname
+  }
 }
 var playerColorField = document.getElementById('playerColor')
 if (playerColorField) {
-  document.getElementById('playerColor').value = window.localStorage.getItem(
-    'color',
-  )
+  let localColor = window.localStorage.getItem('color')
+  if (localColor) {
+    document.getElementById('playerColor').value = localColor
+  }
 }
