@@ -3,6 +3,7 @@
 const express = require('express')
 const router = express.Router()
 const cookie = require('cookie')
+const validator = require('validator')
 
 module.exports = function (app) {
   app.use('/rooms', router)
@@ -79,7 +80,7 @@ router.get('/:roomSlug', function (req, res, next) {
  */
 router.post('/', function (req, res, next) {
   let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
-  let roomName = req.body['new-room']
+  let roomName = validator.blacklist(req.body['new-room'], "<>\\/'")
   let roomSlug = helpers.createRoom(roomName)
   if (!currentPlayer) {
     res.redirect('/')

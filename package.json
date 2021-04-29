@@ -21,7 +21,8 @@
     "matter-js": "^0.17.1",
     "mocha": "^8.3.0",
     "pug": "^3.0.2",
-    "socket.io": "^3.1.2"
+    "socket.io": "^3.1.2",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "gulpfile.js": "3.2.5"

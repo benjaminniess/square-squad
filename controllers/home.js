@@ -2,6 +2,7 @@
 
 const express = require('express')
 const router = express.Router()
+const validator = require('validator')
 
 module.exports = function (app) {
   app.use('/', router)
@@ -64,8 +65,8 @@ module.exports = function (app) {
       let playerObj = helpers.getPlayer(req.cookies['connect.sid'])
 
       playerObj.resetData({
-        nickName: req.body.playerName,
-        color: req.body.playerColor,
+        nickName: validator.blacklist(req.body.playerName, "<>\\/'"),
+        color: validator.blacklist(req.body.playerColor, "<>\\/'"),
       })
 
       res.redirect('/rooms')
