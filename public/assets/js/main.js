@@ -148,13 +148,27 @@ socket.on('in-game-countdown-update', (data) => {
       ' pts</p></td></tr></tbody>'
     let ranking = ''
     data.roundRanking.map((rank) => {
-      ranking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
+      ranking +=
+        '<li style="color:' +
+        rank.color +
+        '">' +
+        rank.nickname +
+        ' (' +
+        rank.score +
+        ' points)'
     })
     roundRankList.innerHTML = ranking
 
     let globalRanking = ''
     data.ranking.map((rank) => {
-      globalRanking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
+      globalRanking +=
+        '<li style="color:' +
+        rank.color +
+        '">' +
+        rank.nickname +
+        ' (' +
+        rank.score +
+        ' points)'
     })
     rankList.innerHTML = globalRanking
 

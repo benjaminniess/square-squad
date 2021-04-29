@@ -175,7 +175,10 @@ class MasterGame {
 
   addRoundScore(scoreData) {
     this.lastRoundRanking.push(scoreData)
-    let index = _.findIndex(this.ranking, { playerID: scoreData.playerID })
+    let index = _.findIndex(this.ranking, {
+      playerID: scoreData.playerID,
+      color: scoreData.color,
+    })
 
     if (index === -1) {
       this.ranking.push(scoreData)
