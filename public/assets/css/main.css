@@ -580,8 +580,8 @@ body {
   content: "";
   display: block;
   position: absolute;
-  left: 0;
-  width: 100%;
+  right: -2px;
+  left: -2px;
   height: 25%;
   transform: scaleX(0);
   transform-origin: right center;
@@ -593,11 +593,11 @@ body {
 }
 
 .btn:before {
-  top: -1px;
+  top: -2px;
 }
 
 .btn:after {
-  bottom: -1px;
+  bottom: -2px;
 }
 
 .btn:hover:before, .btn:hover:after {
