@@ -35,14 +35,17 @@ class MasterGame {
     this.playersManager = new PlayersManager(this, Composite.create('players'))
     let walls = Composite.create('walls')
     Matter.Composite.add(walls, [
+      // Top
       Matter.Bodies.rectangle(canvasWidth / 2, -20, canvasWidth, 10, {
         isStatic: true,
       }),
+      // Left
       Matter.Bodies.rectangle(-20, canvasWidth / 2, 10, canvasWidth, {
         isStatic: true,
       }),
+      // Right
       Matter.Bodies.rectangle(
-        canvasWidth - 10,
+        canvasWidth - 20,
         canvasWidth / 2,
         10,
         canvasWidth,
@@ -50,7 +53,7 @@ class MasterGame {
       ),
       Matter.Bodies.rectangle(
         canvasWidth / 2,
-        canvasWidth - 10,
+        canvasWidth - 20,
         canvasWidth,
         10,
         { isStatic: true },
