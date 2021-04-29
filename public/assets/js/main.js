@@ -15,6 +15,8 @@ const rankList = document.getElementById('rank-list')
 const roundRankList = document.getElementById('round-rank-list')
 const backButton = document.getElementById('back-button')
 
+const roomsList = document.querySelector('roomsList ul')
+
 const canvas = document.getElementById('gameCanvas')
 const ctx = canvas ? canvas.getContext('2d') : null
 let gameData = {}
@@ -133,7 +135,7 @@ socket.on('in-game-countdown-update', (data) => {
     countdownText.innerHTML = 'Game over'
     show('ranking')
 
-    const playerColor = '' // TODO : Rajouter la couleur du player
+    const playerColor = data.roundWinner.color
 
     winnerAnnouncement.innerHTML =
       '<tbody><tr><td>Winner</td>' +
