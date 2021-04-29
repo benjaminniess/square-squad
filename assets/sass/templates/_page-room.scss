@@ -4,8 +4,8 @@
   z-index: 1;
   flex-flow: row wrap;
   align-items: center;
+  justify-content: center;
   height: 100vh;
-  padding: 0 5vw;
   background-color: color(white);
 
   &__infos {
@@ -17,10 +17,11 @@
 
   &__canvas {
     position: relative;
-    flex: 0 0 700px;
-    width: 700px;
-    height: 700px;
-    border: 4px solid color(bottle);
+
+    canvas {
+      display: block;
+      border: 4px solid color(bottle);
+    }
   }
 
   &__countdown {
