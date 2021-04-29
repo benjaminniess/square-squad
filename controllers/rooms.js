@@ -116,11 +116,20 @@ io.on('connection', (socket) => {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
     let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
     if (room) {
+      let game = room.getGame()
+      let gameStatus = game.getStatus()
       socket.join(room.getSlug())
       currentPlayer.resetData({
         socketID: socket.id,
-        isSpectator: room.getGame().getStatus() === 'playing',
+        isSpectator: gameStatus === 'playing',
       })
+      if (gameStatus === 'playing') {
+        io.to(socket.id).emit('countdown-update', {
+          timeleft: 0,
+          gameData: game.getBasicData(),
+        })
+      }
+
       room.refreshPlayers().then((sessions) => {})
     }
   })
