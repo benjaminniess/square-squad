@@ -1,5 +1,8 @@
 extends includes/base
 
+block extraStyles
+  script(src='/assets/js/dist/socket.io.js')
+
 block title
   title=`Rooms - ${pageTitle}`
 
@@ -63,5 +66,10 @@ block content
           | Create room
 
 block extraScripts
+  script(type="text/javascript").
+    var userNickname = "!{playerName}"
+    var userColor = "!{playerColor}"
   script(src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.js")
   script(src="/assets/js/particles.js")
+  script(src='/assets/js/main.js')
+

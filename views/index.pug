@@ -1,5 +1,8 @@
 extends includes/base
 
+block extraStyles
+  script(src='/assets/js/dist/socket.io.js')
+
 block title
   title="Square Squad"
 
@@ -53,6 +56,7 @@ block content
           | Let's play!
 
 block extraScripts
+  script(src='/assets/js/main.js')
   script(src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.js")
   script(src="/assets/js/particles.js")
 

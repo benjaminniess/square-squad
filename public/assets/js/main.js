@@ -137,8 +137,15 @@ socket.on('in-game-countdown-update', (data) => {
 
     winnerAnnouncement.innerHTML =
       '<tbody><tr><td>Winner</td>' +
-      '<td><span class="user-name" style="color: ' + playerColor +'"><span>' + data.roundWinner.nickname + '</span></span></td></tr>' +
-      '<tr><td>Point(s)</td>' + '<td><p>' + data.roundWinner.score + ' pts</p></td></tr></tbody>'
+      '<td><span class="user-name" style="color: ' +
+      playerColor +
+      '"><span>' +
+      data.roundWinner.nickname +
+      '</span></span></td></tr>' +
+      '<tr><td>Point(s)</td>' +
+      '<td><p>' +
+      data.roundWinner.score +
+      ' pts</p></td></tr></tbody>'
     let ranking = ''
     data.roundRanking.map((rank) => {
       ranking += '<li>' + rank.nickname + ' (' + rank.score + ' points)'
@@ -168,3 +175,24 @@ socket.on('in-game-countdown-update', (data) => {
     }
   }
 })
+
+// Save user data to local storage for next time
+if (typeof userNickname !== 'undefined') {
+  window.localStorage.setItem('nickame', userNickname)
+}
+if (typeof userColor !== 'undefined') {
+  window.localStorage.setItem('color', userColor)
+}
+
+var playerNameField = document.getElementById('playerName')
+if (playerNameField) {
+  document.getElementById('playerName').value = window.localStorage.getItem(
+    'nickame',
+  )
+}
+var playerColorField = document.getElementById('playerColor')
+if (playerColorField) {
+  document.getElementById('playerColor').value = window.localStorage.getItem(
+    'color',
+  )
+}
