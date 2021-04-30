@@ -487,9 +487,7 @@ body {
   flex-flow: column;
   width: 100%;
   height: calc(100vh - 40px);
-  transition-property: visibility, opacity;
-  transition-duration: 1s;
-  transition-delay: 0s;
+  transition: opacity 1s;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   opacity: 1;
 }
@@ -497,28 +495,21 @@ body {
 .room-section.is-hidden {
   visibility: hidden;
   z-index: 0;
-  transition-property: visibility, opacity;
-  transition-duration: 1s;
-  transition-delay: 0s, 1s;
+  transition: opacity 1s, visibility 1s 1s;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   opacity: 0;
 }
 
-.play-section {
-  display: flex;
-  z-index: 1;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: white;
-}
-
 .play-section__wrapper {
   display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  margin: auto;
 }
 
 .play-section__aside {
+  flex: 0 1 350px;
   margin-right: 40px;
 }
 
