@@ -96,17 +96,17 @@ document.addEventListener('keyup', keyUpHandler, false)
 
 function show(sectionID) {
   if (sectionID === 'lobby') {
-    lobbySection.style.display = 'block'
-    playSection.style.display = 'none'
-    rankSection.style.display = 'none'
+    lobbySection.classList.remove('is-hidden')
+    playSection.classList.add('is-hidden')
+    rankSection.classList.add('is-hidden')
   } else if (sectionID === 'play') {
-    lobbySection.style.display = 'none'
-    playSection.style.display = 'block'
-    rankSection.style.display = 'none'
+    lobbySection.classList.add('is-hidden')
+    playSection.classList.remove('is-hidden')
+    rankSection.classList.add('is-hidden')
   } else if (sectionID === 'ranking') {
-    lobbySection.style.display = 'none'
-    playSection.style.display = 'none'
-    rankSection.style.display = 'block'
+    lobbySection.classList.add('is-hidden')
+    playSection.classList.add('is-hidden')
+    rankSection.classList.remove('is-hidden')
   }
 }
 

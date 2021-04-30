@@ -6,15 +6,17 @@ block extraStyles
 block content
   body(data-roomSlug=roomSlug)
     #particles-js.particles-js
-    section.wrapper#section-lobby.section-lobby(style=status === "waiting" ? "" : "display:none;")
-      include includes/sqsq-logo.pug
+    #pageTransition.page-transition
+    section#section-lobby.room-section.lobby-section(class=status === "waiting" ? "" : "is-hidden")
+      .wrapper
+        include includes/sqsq-logo.pug
 
-      h3.rooms-list__title Room: !{roomName}
-      ul.players-list.players.no-score
-      a#startButton.btn(href='#' style="visibility: hidden;") play
-      a.btn(href='/') back
-    section#section-play(style=status === "playing" ? "" : "display:none;")
-      div.play-section
+        h3.rooms-list__title Room: !{roomName}
+        ul.players-list.players.no-score
+        a#startButton.btn(href='#' style="visibility: hidden;") play
+        a.btn(href='/') back
+    section#section-play.room-section.play-section(class=status === "playing" ? "" : "is-hidden")
+      div.play-section__wrapper
         aside.play-section__aside
           include includes/sqsq-logo.pug
 
@@ -26,22 +28,21 @@ block content
         div.play-section__canvas
           h1#countdown-text.play-section__countdown
           canvas#gameCanvas(width='700' height='700')
-    section.wrapper#section-ranking.section-ranking(style=status === "end-round" ? "" : "display:none;")
-      include includes/sqsq-logo.pug
+    section#section-ranking.room-section.ranking-section(class=status === "end-round" ? "" : "is-hidden")
+      .wrapper
+        include includes/sqsq-logo.pug
 
-      .text-center
-        h3.rooms-list__title Room: !{roomName}
+        .text-center
+          h3.rooms-list__title Room: !{roomName}
 
-      table#winner-announcement.winner-annoucement
+        table#winner-announcement.winner-annoucement
 
-      h3 Round results
-      ul#round-rank-list.players-list
+        h3 Round results
+        ul#round-rank-list.players-list
 
-      h3 Global ranking
-      ul#rank-list.players-list
-      button#back-button.btn Back
-
-block footer
+        h3 Global ranking
+        ul#rank-list.players-list
+        button#back-button.btn Back
 
 block extraScripts
   script(src='/assets/js/main.js')

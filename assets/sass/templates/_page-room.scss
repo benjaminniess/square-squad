@@ -1,12 +1,42 @@
+.room-section {
+  display: flex;
+  visibility: visible;
+  position: fixed;
+  z-index: 1;
+  flex-flow: column;
+  width: 100%;
+  height: calc(100vh - #{$footer-height});
+  transition: {
+    property: visibility, opacity;
+    duration: 1s;
+    delay: 0s;
+  }
+  opacity: 1;
+
+  &.is-hidden {
+    visibility: hidden;
+    z-index: 0;
+    transition: {
+      property: visibility, opacity;
+      duration: 1s;
+      delay: 0s, 1s;
+    }
+    opacity: 0;
+  }
+}
+
 .play-section {
   display: flex;
-  position: relative;
   z-index: 1;
   flex-flow: row wrap;
   align-items: center;
   justify-content: center;
   height: 100vh;
   background-color: color(white);
+
+  &__wrapper {
+    display: flex;
+  }
 
   &__aside {
     margin-right: 40px;
@@ -50,7 +80,7 @@
   }
 }
 
-.section-ranking {
+.ranking-section {
   .winner-annoucement {
     width: 100%;
     margin: 1em 0;
