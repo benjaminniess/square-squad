@@ -151,7 +151,7 @@ socket.on('rooms-refresh-result', (rooms) => {
   })
   innerHTML += '</ul>'
 
-  roomsHolder.innerHTML += innerHTML
+  roomsHolder.innerHTML = innerHTML
 })
 
 socket.on('countdown-update', (data) => {
