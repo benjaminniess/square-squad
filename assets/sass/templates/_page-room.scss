@@ -6,39 +6,28 @@
   flex-flow: column;
   width: 100%;
   height: calc(100vh - #{$footer-height});
-  transition: {
-    property: visibility, opacity;
-    duration: 1s;
-    delay: 0s;
-  }
+  transition: opacity 1s;
   opacity: 1;
 
   &.is-hidden {
     visibility: hidden;
     z-index: 0;
-    transition: {
-      property: visibility, opacity;
-      duration: 1s;
-      delay: 0s, 1s;
-    }
+    transition: opacity 1s, visibility 1s 1s;
     opacity: 0;
   }
 }
 
 .play-section {
-  display: flex;
-  z-index: 1;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: color(white);
-
   &__wrapper {
     display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    margin: auto;
   }
 
   &__aside {
+    flex: 0 1 350px;
     margin-right: 40px;
   }
 
