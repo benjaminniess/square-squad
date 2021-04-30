@@ -9,6 +9,7 @@ const roundNumber = document.getElementById('round-number')
 const lobbySection = document.getElementById('section-lobby')
 const playSection = document.getElementById('section-play')
 const rankSection = document.getElementById('section-ranking')
+const particles = document.getElementById('particles-js')
 
 const winnerAnnouncement = document.getElementById('winner-announcement')
 const rankList = document.getElementById('rank-list')
@@ -99,14 +100,17 @@ function show(sectionID) {
     lobbySection.classList.remove('is-hidden')
     playSection.classList.add('is-hidden')
     rankSection.classList.add('is-hidden')
+    particles.style.display = 'block'
   } else if (sectionID === 'play') {
     lobbySection.classList.add('is-hidden')
     playSection.classList.remove('is-hidden')
     rankSection.classList.add('is-hidden')
+    particles.style.display = 'none'
   } else if (sectionID === 'ranking') {
     lobbySection.classList.add('is-hidden')
     playSection.classList.add('is-hidden')
     rankSection.classList.remove('is-hidden')
+    particles.style.display = 'block'
   }
 }
 
