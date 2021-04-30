@@ -489,8 +489,11 @@ body {
   background-color: white;
 }
 
-.play-section__infos {
+.play-section__aside {
   margin-right: 40px;
+}
+
+.play-section__infos {
   padding: 30px;
   border: 4px solid #0b3737;
   background-color: white;
