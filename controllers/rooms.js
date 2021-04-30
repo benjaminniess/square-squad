@@ -252,6 +252,10 @@ io.on('connection', (socket) => {
     }
   })
 
+  socket.on('rooms-refresh', function () {
+    io.to(socket.id).emit('rooms-refresh-result', helpers.getRoomsData())
+  })
+
   socket.on('keyPressed', function (socketData) {
     let cookies = cookie.parse(socket.handshake.headers.cookie)
     let currentPlayer = helpers.getPlayer(cookies['connect.sid'])

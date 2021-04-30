@@ -16,8 +16,6 @@ const rankList = document.getElementById('rank-list')
 const roundRankList = document.getElementById('round-rank-list')
 const backButton = document.getElementById('back-button')
 
-const roomsList = document.querySelector('roomsList ul')
-
 const canvas = document.getElementById('gameCanvas')
 const ctx = canvas ? canvas.getContext('2d') : null
 let gameData = {}
@@ -120,6 +118,41 @@ function keyDownHandler(e) {
 function keyUpHandler(e) {
   socket.emit('keyUp', { key: e.keyCode })
 }
+
+var refreshLink = document.getElementById('rooms-refresh')
+socket.emit('rooms-refresh')
+if (refreshLink) {
+  refreshLink.onclick = (e) => {
+    socket.emit('rooms-refresh')
+  }
+}
+
+const roomsHolder = document.getElementById('rooms-holder')
+socket.on('rooms-refresh-result', (rooms) => {
+  if (!roomsHolder) {
+    return
+  }
+
+  if (rooms.length < 1) {
+    roomsHolder.innerHTML =
+      '<p class="rooms-list__no-rooms">No rooms yet :( </p>'
+    return
+  }
+
+  let innerHTML = '<ul class="rooms-list__list">'
+
+  rooms.map((room) => {
+    innerHTML +=
+      '<li class="rooms-list__item"><a class="rooms-list__link" href="' +
+      room.url +
+      '">' +
+      room.name +
+      '</a></li>'
+  })
+  innerHTML += '</ul>'
+
+  roomsHolder.innerHTML += innerHTML
+})
 
 socket.on('countdown-update', (data) => {
   gameData = data.gameData
