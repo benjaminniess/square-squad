@@ -205,11 +205,19 @@ io.on('connection', (socket) => {
                       playersManager.getPlayersData(),
                       (playerData, playerID) => {
                         if (playerData.alive) {
-                          playersManager.saveScore(playerID, true)
+                          playersManager.addPoints(playerID, 3)
                         }
                       },
                     )
                   }
+
+                  game.syncScores()
+                  game.saveRoundScores()
+
+                  let lastRoundWinner = game.getLastRoundWinner()
+                  let lastRoundRanking = game.getLastRoundRanking()
+                  game.resetLastRoundRanking()
+                  room.refreshPlayers()
 
                   game.setStatus('end-round')
                   game.getPlayersManager().renewPlayers()
@@ -220,8 +228,8 @@ io.on('connection', (socket) => {
 
                   io.to(data.roomSlug).emit('in-game-countdown-update', {
                     timeleft: 0,
-                    roundWinner: game.getLastRoundWinner(),
-                    roundRanking: game.getLastRoundRanking(),
+                    roundWinner: lastRoundWinner,
+                    roundRanking: lastRoundRanking,
                     ranking: game.getRanking(),
                     gameStatus: game.getStatus(),
                   })

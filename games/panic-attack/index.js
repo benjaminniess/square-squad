@@ -9,6 +9,17 @@ class Panick_Attack extends MasterGame {
     this.slug = 'panic-attack'
     this.type = 'battle-royale'
     this.totalRounds = 3
+    this.eventSubscriptions()
+  }
+
+  eventSubscriptions() {
+    this.getObstaclesManager()
+      .getEventEmmitter()
+      .on('obstacleOver', (data) => {
+        this.getPlayersManager().addPlayersPoints()
+        this.syncScores()
+        this.getRoom().refreshPlayers()
+      })
   }
 
   refreshData() {
@@ -17,6 +28,8 @@ class Panick_Attack extends MasterGame {
 
     let bonusManager = this.getBonusManager()
     let bonusList = bonusManager.getActiveBonus()
+
+    let room = this.getRoom()
 
     let increasePoints = false
 
@@ -71,7 +84,7 @@ class Panick_Attack extends MasterGame {
           playerMoveVector.x = -1
         }
 
-        if (playerMoveVector.x !== 0 && playerMoveVector.y !== 0 ) {
+        if (playerMoveVector.x !== 0 && playerMoveVector.y !== 0) {
           playerMoveVector.x = playerMoveVector.x * 0.7
           playerMoveVector.y = playerMoveVector.y * 0.7
         }
@@ -86,8 +99,7 @@ class Panick_Attack extends MasterGame {
             squareSize + playerData.y > obstacle.y
           ) {
             playersManager.killPlayer(playerID)
-            playersManager.saveScore(playerID)
-            this.getRoom().refreshPlayers()
+            room.refreshPlayers()
           }
         })
 

@@ -31,7 +31,10 @@ class MasterGame {
     this.engine.world.gravity.y = 0
     this.runner = Runner.create()
     Runner.run(this.runner, this.engine)
-    this.obstaclesManager = new ObstaclesManager(Composite.create('obstacles'))
+    this.obstaclesManager = new ObstaclesManager(
+      this,
+      Composite.create('obstacles'),
+    )
     this.playersManager = new PlayersManager(this, Composite.create('players'))
     let walls = Composite.create('walls')
     Matter.Composite.add(walls, [
@@ -136,7 +139,7 @@ class MasterGame {
   }
 
   getLastRoundRanking() {
-    return JSON.parse(JSON.stringify(this.lastRoundRanking)).reverse()
+    return this.lastRoundRanking
   }
 
   getLastRoundWinner() {
@@ -153,6 +156,7 @@ class MasterGame {
     this.roundNumber = 0
     this.initRound()
     this.resetRanking()
+    this.resetLastRoundRanking()
     this.setStatus('starting')
   }
 
@@ -170,21 +174,45 @@ class MasterGame {
 
   resetRanking() {
     this.ranking = []
+  }
+
+  resetLastRoundRanking() {
     this.lastRoundRanking = []
   }
 
-  addRoundScore(scoreData) {
-    this.lastRoundRanking.push(scoreData)
-    let index = _.findIndex(this.ranking, {
-      playerID: scoreData.playerID,
-      color: scoreData.color,
+  syncScores() {
+    let playersData = this.getPlayersManager().getPlayersData()
+    this.lastRoundRanking = []
+    _.forEach(playersData, (playerData, playerID) => {
+      this.lastRoundRanking.push({
+        playerID: playerID,
+        score: playerData.score,
+      })
     })
 
-    if (index === -1) {
-      this.ranking.push(scoreData)
-    } else {
-      this.ranking[index].score += scoreData.score
-    }
+    this.lastRoundRanking = _.orderBy(
+      this.lastRoundRanking,
+      ['score'],
+      ['desc'],
+    )
+  }
+
+  saveRoundScores() {
+    let lastRoundRanking = this.getLastRoundRanking()
+    _.forEach(lastRoundRanking, (lastRoundResult) => {
+      let index = _.findIndex(this.ranking, {
+        playerID: lastRoundResult.playerID,
+      })
+
+      if (index === -1) {
+        this.ranking.push({
+          playerID: lastRoundResult.playerID,
+          score: lastRoundResult.score,
+        })
+      } else {
+        this.ranking[index].score += lastRoundResult.score
+      }
+    })
 
     this.ranking = _.orderBy(this.ranking, ['score'], ['desc'])
   }

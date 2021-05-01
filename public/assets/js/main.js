@@ -23,6 +23,8 @@ let gameData = {}
 // Prepare the variable that'll recieve connection data
 let sessionData
 
+let playersData = {}
+
 // When recieving players in current room
 socket.on('refreshPlayers', (data) => {
   // Check if the current page has a players list container
@@ -30,6 +32,7 @@ socket.on('refreshPlayers', (data) => {
     Array.prototype.slice.call(playersLists).map((playersList) => {
       playersList.innerHTML = ''
       data.map((player) => {
+        playersData[player.id] = player
         var li = document.createElement('li')
         li.appendChild(document.createTextNode(player.nickname))
         li.style.color = player.color
@@ -172,14 +175,12 @@ socket.on('in-game-countdown-update', (data) => {
     countdownText.innerHTML = 'Game over'
     show('ranking')
 
-    const playerColor = data.roundWinner.color
-
     winnerAnnouncement.innerHTML =
       '<tbody><tr><td>Winner</td>' +
       '<td><span class="user-name" style="color: ' +
-      playerColor +
+      playersData[data.roundWinner.playerID].color +
       '"><span>' +
-      data.roundWinner.nickname +
+      playersData[data.roundWinner.playerID].nickname +
       '</span></span></td></tr>' +
       '<tr><td>Point(s)</td>' +
       '<td><p>' +
@@ -189,9 +190,9 @@ socket.on('in-game-countdown-update', (data) => {
     data.roundRanking.map((rank) => {
       ranking +=
         '<li style="color:' +
-        rank.color +
+        playersData[rank.playerID].color +
         '">' +
-        rank.nickname +
+        playersData[rank.playerID].nickname +
         ' (' +
         rank.score +
         ' points)'
@@ -202,9 +203,9 @@ socket.on('in-game-countdown-update', (data) => {
     data.ranking.map((rank) => {
       globalRanking +=
         '<li style="color:' +
-        rank.color +
+        playersData[rank.playerID].color +
         '">' +
-        rank.nickname +
+        playersData[rank.playerID].nickname +
         ' (' +
         rank.score +
         ' points)'
