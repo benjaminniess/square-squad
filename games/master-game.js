@@ -48,15 +48,18 @@ class MasterGame {
       }),
       // Right
       Matter.Bodies.rectangle(
-        canvasWidth - 20,
+        canvasWidth - 10,
         canvasWidth / 2,
         10,
         canvasWidth,
-        { isStatic: true },
+        {
+          isStatic: true,
+        },
       ),
+      // Bottom
       Matter.Bodies.rectangle(
         canvasWidth / 2,
-        canvasWidth - 20,
+        canvasWidth - 10,
         canvasWidth,
         10,
         { isStatic: true },
@@ -165,6 +168,7 @@ class MasterGame {
     this.score = 0
     this.lastRoundRanking = []
     this.getObstaclesManager().resetObstacles()
+    this.getObstaclesManager().setLevel(1)
     this.getBonusManager().resetBonus()
   }
 
