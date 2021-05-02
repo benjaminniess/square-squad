@@ -81,6 +81,10 @@ socket.on('game-is-starting', (data) => {
 
 if (startButton) {
   startButton.onclick = function () {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'Start Game')
+    }
+
     socket.emit('start-game', { roomSlug: roomSlug })
     return false
   }
@@ -113,6 +117,10 @@ function show(sectionID) {
     rankSection.classList.remove('is-hidden')
     particles.style.display = 'block'
   }
+
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'Status update', { event_label: sectionID })
+  }
 }
 
 function keyDownHandler(e) {
@@ -126,6 +134,9 @@ var refreshLink = document.getElementById('rooms-refresh')
 socket.emit('rooms-refresh')
 if (refreshLink) {
   refreshLink.onclick = (e) => {
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'Refresh rooms')
+    }
     socket.emit('rooms-refresh')
   }
 }
@@ -220,6 +231,9 @@ socket.on('in-game-countdown-update', (data) => {
       let countdownTimer = setInterval(function () {
         if (timeleft <= 0) {
           clearInterval(countdownTimer)
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'Start new round')
+          }
           socket.emit('start-game', { roomSlug: roomSlug })
           countdownText.innerHTML = 'Starting...'
         }

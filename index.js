@@ -50,6 +50,8 @@ global.io = require('socket.io')(server)
 
 app.use((req, res, next) => {
   res.locals.appVersion = appVersion
+  res.locals.gaTag =
+    process.env.GA_ID && process.env.GA_ID !== '' ? process.env.GA_ID : null
   next()
 })
 
