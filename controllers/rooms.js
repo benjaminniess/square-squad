@@ -44,7 +44,6 @@ router.get('/', function (req, res, next) {
   }
 
   res.render('rooms', {
-    rooms: _.size(rooms) ? rooms : null,
     playerName: currentPlayer.getNickname(),
     playerColor: currentPlayer.getColor(),
     appVersion: appVersion,
@@ -57,22 +56,24 @@ router.get('/', function (req, res, next) {
 router.get('/:roomSlug', function (req, res, next) {
   let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
   let room = helpers.getRoom(req.params.roomSlug)
-  if (room) {
-    let gameStatus = room.getGame().getStatus()
-
-    res.render('room', {
-      roomName: room.getName(),
-      roomSlug: room.getSlug(),
-      playerName: currentPlayer.getNickname(),
-      playerColor: currentPlayer.getColor(),
-      isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
-      status: gameStatus,
-      gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
-      appVersion: appVersion,
-    })
-  } else {
+  if (!room) {
     res.render('error', { message: 'This room does not exist' })
+    return
+    
   }
+
+  let gameStatus = room.getGame().getStatus()
+
+  res.render('room', {
+    roomName: room.getName(),
+    roomSlug: room.getSlug(),
+    playerName: currentPlayer.getNickname(),
+    playerColor: currentPlayer.getColor(),
+    isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
+    status: gameStatus,
+    gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
+    appVersion: appVersion,
+  })
 })
 
 /**
@@ -84,15 +85,17 @@ router.post('/', function (req, res, next) {
   let roomSlug = helpers.createRoom(roomName)
   if (!currentPlayer) {
     res.redirect('/')
-  } else {
-    if (!roomSlug) {
-      res.render('error', { message: 'This name is already taken' })
-    } else {
-      let room = helpers.getRoom(roomSlug)
-      room.setAdminPlayer(currentPlayer.getPublicID())
-      res.redirect(room.getLobbyURL())
-    }
+    return
   }
+
+  if (!roomSlug) {
+    res.render('error', { message: 'This name is already taken' })
+    return
+  }
+
+  let room = helpers.getRoom(roomSlug)
+  room.setAdminPlayer(currentPlayer.getPublicID())
+  res.redirect(room.getLobbyURL())
 })
 
 io.on('connection', (socket) => {
@@ -381,8 +384,7 @@ function refreshData() {
     let status = room.getGame().getStatus()
 
     if (roomGame && (status === 'playing' || status === 'starting')) {
-      let gameData = roomGame.refreshData()
-      io.to(room.getSlug()).emit('refreshCanvas', gameData)
+      io.to(room.getSlug()).emit('refreshCanvas', roomGame.refreshData())
     }
   })
 }
