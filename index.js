@@ -48,6 +48,11 @@ global._ = require('lodash')
 
 global.io = require('socket.io')(server)
 
+app.use((req, res, next) => {
+  res.locals.appVersion = appVersion
+  next()
+})
+
 const PORT = process.env.PORT || 8080
 server.listen(PORT)
 

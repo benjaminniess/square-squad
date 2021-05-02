@@ -48,7 +48,6 @@ module.exports = function (app) {
           ? currentPlayer.color
           : '#' +
             (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
-        appVersion: appVersion,
       })
     } else {
       res.redirect('/rooms')
