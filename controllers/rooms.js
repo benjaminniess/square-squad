@@ -152,101 +152,128 @@ io.on('connection', (socket) => {
     let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
 
     let room = helpers.getRoom(data.roomSlug)
-    if (room) {
-      let game = room.getGame()
-      let playersManager = game.getPlayersManager()
-      if (room && room.getAdminPlayer() === currentPlayer.getPublicID()) {
-        // first round of the game?
-        let gameStatus = game.getStatus()
-        if (gameStatus === 'waiting') {
-          game.initGame()
-        } else {
-          game.initRound()
-          game.setStatus('starting')
-        }
-
-        io.to(data.roomSlug).emit('game-is-starting', {
-          currentRound: game.getRoundNumber(),
-          totalRounds: game.getTotalRounds(),
-        })
-        room.refreshPlayers()
-
-        let timeleft = 3
-        let countdownTimer = setInterval(function () {
-          if (timeleft <= 0) {
-            clearInterval(countdownTimer)
-            game.setStatus('playing')
-
-            if (game.getType() === 'countdown') {
-              let gameTimeleft = game.getDuration()
-              let gameTimer = setInterval(function () {
-                if (gameTimeleft <= 0) {
-                  clearInterval(gameTimer)
-                  game.setStatus('waiting')
-                }
-
-                io.to(data.roomSlug).emit('in-game-countdown-update', {
-                  timeleft: gameTimeleft,
-                })
-
-                gameTimeleft -= 1
-              }, 1000)
-            } else {
-              let gameTimer = setInterval(function () {
-                let countAlive = playersManager.countAlivePlayers()
-
-                if (
-                  countAlive === 0 ||
-                  (countAlive === 1 && playersManager.countPlayers() > 1)
-                ) {
-                  clearInterval(gameTimer)
-                  if (countAlive) {
-                    _.forEach(
-                      playersManager.getPlayersData(),
-                      (playerData, playerID) => {
-                        if (playerData.alive) {
-                          playersManager.addPoints(playerID, 3)
-                        }
-                      },
-                    )
-                  }
-
-                  game.syncScores()
-                  game.saveRoundScores()
-
-                  let lastRoundWinner = game.getLastRoundWinner()
-                  let lastRoundRanking = game.getLastRoundRanking()
-                  game.resetLastRoundRanking()
-                  room.refreshPlayers()
-
-                  game.setStatus('end-round')
-                  game.getPlayersManager().renewPlayers()
-
-                  if (game.getRoundNumber() >= game.getTotalRounds()) {
-                    game.setStatus('waiting')
-                  }
-
-                  io.to(data.roomSlug).emit('in-game-countdown-update', {
-                    timeleft: 0,
-                    roundWinner: lastRoundWinner,
-                    roundRanking: lastRoundRanking,
-                    ranking: game.getRanking(),
-                    gameStatus: game.getStatus(),
-                  })
-                }
-              }, 1000)
-            }
-          }
-
-          io.to(data.roomSlug).emit('countdown-update', {
-            timeleft: timeleft,
-            gameData: game.getBasicData(),
-          })
-
-          timeleft -= 1
-        }, 1000)
-      }
+    if (!room) {
+      return
     }
+
+    let game = room.getGame()
+    let playersManager = game.getPlayersManager()
+    if (room.getAdminPlayer() !== currentPlayer.getPublicID()) {
+      return
+    }
+
+    // first round of the game?
+    let gameStatus = game.getStatus()
+    if (gameStatus === 'waiting') {
+      let roundsNumber =
+        data.roundsNumber &&
+        parseInt(data.roundsNumber) > 0 &&
+        parseInt(data.roundsNumber) <= 100
+          ? parseInt(data.roundsNumber)
+          : 3
+
+      let obstaclesStartSpeed =
+        data.obstaclesSpeed &&
+        parseInt(data.obstaclesSpeed) > 0 &&
+        parseInt(data.obstaclesSpeed) <= 30
+          ? parseInt(data.obstaclesSpeed)
+          : 5
+
+      let bonusFrequency =
+        data.bonusFrequency &&
+        parseInt(data.bonusFrequency) >= 0 &&
+        parseInt(data.bonusFrequency) <= 10
+          ? parseInt(data.bonusFrequency)
+          : 5
+      game.setTotalRounds(roundsNumber)
+      game.getObstaclesManager().setStartLevel(obstaclesStartSpeed)
+      game.setBonusFrequency(bonusFrequency)
+      game.initGame()
+    } else {
+      game.initRound()
+      game.setStatus('starting')
+    }
+
+    io.to(data.roomSlug).emit('game-is-starting', {
+      currentRound: game.getRoundNumber(),
+      totalRounds: game.getTotalRounds(),
+    })
+    room.refreshPlayers()
+
+    let timeleft = 3
+    let countdownTimer = setInterval(function () {
+      if (timeleft <= 0) {
+        clearInterval(countdownTimer)
+        game.setStatus('playing')
+
+        if (game.getType() === 'countdown') {
+          let gameTimeleft = game.getDuration()
+          let gameTimer = setInterval(function () {
+            if (gameTimeleft <= 0) {
+              clearInterval(gameTimer)
+              game.setStatus('waiting')
+            }
+
+            io.to(data.roomSlug).emit('in-game-countdown-update', {
+              timeleft: gameTimeleft,
+            })
+
+            gameTimeleft -= 1
+          }, 1000)
+        } else {
+          let gameTimer = setInterval(function () {
+            let countAlive = playersManager.countAlivePlayers()
+
+            if (
+              countAlive === 0 ||
+              (countAlive === 1 && playersManager.countPlayers() > 1)
+            ) {
+              clearInterval(gameTimer)
+              if (countAlive) {
+                _.forEach(
+                  playersManager.getPlayersData(),
+                  (playerData, playerID) => {
+                    if (playerData.alive) {
+                      playersManager.addPoints(playerID, 3)
+                    }
+                  },
+                )
+              }
+
+              game.syncScores()
+              game.saveRoundScores()
+
+              let lastRoundWinner = game.getLastRoundWinner()
+              let lastRoundRanking = game.getLastRoundRanking()
+              game.resetLastRoundRanking()
+              room.refreshPlayers()
+
+              game.setStatus('end-round')
+              game.getPlayersManager().renewPlayers()
+
+              if (game.getRoundNumber() >= game.getTotalRounds()) {
+                game.setStatus('waiting')
+              }
+
+              io.to(data.roomSlug).emit('in-game-countdown-update', {
+                timeleft: 0,
+                roundWinner: lastRoundWinner,
+                roundRanking: lastRoundRanking,
+                ranking: game.getRanking(),
+                gameStatus: game.getStatus(),
+              })
+            }
+          }, 1000)
+        }
+      }
+
+      io.to(data.roomSlug).emit('countdown-update', {
+        timeleft: timeleft,
+        gameData: game.getBasicData(),
+      })
+
+      timeleft -= 1
+    }, 1000)
   })
 
   socket.on('disconnect', function () {

@@ -1,6 +1,7 @@
 const socket = io()
 const playersLists = document.getElementsByClassName('players')
 const startButton = document.getElementById('startButton')
+const adminSection = document.getElementById('admin-section')
 const roomSlug = document.body.getAttribute('data-roomSlug')
 const countdownText = document.getElementById('countdown-text')
 const pointsText = document.getElementById('points-text')
@@ -42,7 +43,7 @@ socket.on('refreshPlayers', (data) => {
           li.appendChild(document.createTextNode('(You)'))
 
           if (player.isAdmin) {
-            startButton.style.visibility = 'visible'
+            adminSection.style.visibility = 'visible'
           }
         }
 
@@ -85,7 +86,12 @@ if (startButton) {
       gtag('event', 'Start Game')
     }
 
-    socket.emit('start-game', { roomSlug: roomSlug })
+    socket.emit('start-game', {
+      roomSlug: roomSlug,
+      roundsNumber: document.getElementById('rounds-number').value,
+      obstaclesSpeed: document.getElementById('obstacles-speed').value,
+      bonusFrequency: document.getElementById('bonus-frequency').value,
+    })
     return false
   }
 }

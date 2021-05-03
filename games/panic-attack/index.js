@@ -8,7 +8,6 @@ class Panick_Attack extends MasterGame {
     this.speed = 2
     this.slug = 'panic-attack'
     this.type = 'battle-royale'
-    this.totalRounds = 3
     this.eventSubscriptions()
   }
 
@@ -54,7 +53,7 @@ class Panick_Attack extends MasterGame {
           obstacleManager.updateObstacles()
         }
 
-        if (bonusList.length === 0) {
+        if (bonusList.length < bonusManager.getFrequency()) {
           bonusManager.maybeInitBonus()
         }
       }

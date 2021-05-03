@@ -22,6 +22,8 @@ class MasterGame {
     this.ranking = []
     this.lastRoundRanking = []
     this.lastWinner = {}
+    this.totalRounds = 3
+    this.bonusFrequency = 5
     this.bonusManager = new BonusManager(this)
     this.initEngine()
   }
@@ -112,6 +114,10 @@ class MasterGame {
     return this.totalRounds
   }
 
+  getBonusFrequency() {
+    return this.bonusFrequency
+  }
+
   getScore() {
     return this.score
   }
@@ -168,8 +174,17 @@ class MasterGame {
     this.score = 0
     this.lastRoundRanking = []
     this.getObstaclesManager().resetObstacles()
-    this.getObstaclesManager().setLevel(1)
+
+    this.getBonusManager().setFrequency(this.getBonusFrequency())
     this.getBonusManager().resetBonus()
+  }
+
+  setTotalRounds(roundsNumber) {
+    this.totalRounds = roundsNumber
+  }
+
+  setBonusFrequency(frequency) {
+    this.bonusFrequency = frequency
   }
 
   increaseScore() {
