@@ -106,6 +106,41 @@ if (backButton) {
 document.addEventListener('keydown', keyDownHandler, false)
 document.addEventListener('keyup', keyUpHandler, false)
 
+if (canvas) {
+  canvas.addEventListener("touchstart", function (e) {
+    mousePos = getTouchPos(canvas, e);
+    if ( mousePos.x < canvas.width / 3 ) {
+      socket.emit('keyPressed', { key: 37 })
+    }
+    if ( mousePos.x > 2 * canvas.width / 3 ) {
+      socket.emit('keyPressed', { key: 39 })
+    }
+    if ( mousePos.y < canvas.width / 3 ) {
+      socket.emit('keyPressed', { key: 38 })
+    }
+    if ( mousePos.y > 2 * canvas.width / 3 ) {
+      socket.emit('keyPressed', { key: 40 })
+    }
+    
+  }, false);
+
+  canvas.addEventListener("touchend", function (e) {
+    socket.emit('keyUp')
+  }, false);
+  canvas.addEventListener("touchmove", function (e) {
+    
+  }, false);
+}
+
+function getTouchPos(canvasDom, touchEvent) {
+  var rect = canvasDom.getBoundingClientRect();
+  return {
+    x: touchEvent.touches[0].clientX - rect.left,
+    y: touchEvent.touches[0].clientY - rect.top
+  };
+}
+
+
 function show(sectionID) {
   if (sectionID === 'lobby') {
     lobbySection.classList.remove('is-hidden')
