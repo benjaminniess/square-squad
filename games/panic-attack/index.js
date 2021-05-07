@@ -22,6 +22,7 @@ class Panick_Attack extends MasterGame {
   }
 
   refreshData() {
+    //console.log(this.getDebugMatterTree())
     let obstacleManager = this.getObstaclesManager()
     let obstacles = obstacleManager.getObstacles()
 

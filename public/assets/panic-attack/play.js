@@ -27,8 +27,15 @@ socket.on('refreshCanvas', (data) => {
 
   data.obstacles.map((obstacle) => {
     ctx.beginPath()
-    ctx.rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
     ctx.fillStyle = '#DD0000'
+    obstacle.map((vertice, i) => {
+      if (i === 0) {
+        ctx.moveTo(vertice.x, vertice.y)
+      } else {
+        ctx.lineTo(vertice.x, vertice.y)
+      }
+    })
+
     ctx.fill()
     ctx.closePath()
   })
