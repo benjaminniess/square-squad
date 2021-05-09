@@ -44,7 +44,26 @@ class MasterGame {
   }
 
   getDebugMatterTree() {
-    return Matter.Composite.allComposites(this.engine.world)
+    let worldComposites = Matter.Composite.allComposites(this.engine.world)
+    let worldBodies = Matter.Composite.allBodies(this.engine.world)
+
+    let tree = [
+      {
+        label: 'world',
+        composites: _.size(worldComposites),
+        bodies: _.size(worldBodies),
+      },
+    ]
+
+    _.forEach(worldComposites, (composite) => {
+      tree.push({
+        label: composite.label,
+        composites: _.size(Matter.Composite.allComposites(composite)),
+        bodies: _.size(Matter.Composite.allBodies(composite)),
+      })
+    })
+
+    return tree
   }
 
   getRoom() {
