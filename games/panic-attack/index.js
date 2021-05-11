@@ -114,10 +114,10 @@ class Panick_Attack extends MasterGame {
         bonusList.map((bonus) => {
           let bonusData = bonus.getData()
           if (
-            playerData.x < bonusData.x + bonusData.width &&
-            playerData.x + squareSize > bonusData.x &&
-            playerData.y < bonusData.y + bonusData.height &&
-            squareSize + playerData.y > bonusData.y
+            playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
+            playerData.x - squareSize / 2 + squareSize > bonusData.x &&
+            playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
+            squareSize + playerData.y - squareSize / 2 > bonusData.y
           ) {
             bonus.trigger(playerID)
           } else {
