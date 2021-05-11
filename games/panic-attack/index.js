@@ -1,6 +1,7 @@
 'use strict'
 
 const MasterGame = require(__base + '/games/master-game')
+const Matter = require('matter-js')
 
 class Panick_Attack extends MasterGame {
   constructor(room) {
@@ -19,6 +20,27 @@ class Panick_Attack extends MasterGame {
         this.syncScores()
         this.getRoom().refreshPlayers()
       })
+
+    Matter.Events.on(this.getEngine(), 'collisionStart', (event) => {
+      let player
+      let otherBody
+      if (event.pairs[0].bodyA.gamePlayerID) {
+        player = event.pairs[0].bodyA
+        otherBody = event.pairs[0].bodyB
+      } else if (event.pairs[0].bodyB.gamePlayerID) {
+        player = event.pairs[0].bodyB
+        otherBody = event.pairs[0].bodyA
+      } else {
+        return
+      }
+
+      if (!otherBody.isSensor) {
+        return
+      }
+
+      this.getPlayersManager().killPlayer(player.gamePlayerID)
+      this.getRoom().refreshPlayers()
+    })
   }
 
   refreshData() {
@@ -28,8 +50,6 @@ class Panick_Attack extends MasterGame {
 
     let bonusManager = this.getBonusManager()
     let bonusList = bonusManager.getActiveBonus()
-
-    let room = this.getRoom()
 
     let increasePoints = false
 
@@ -90,18 +110,6 @@ class Panick_Attack extends MasterGame {
         }
 
         playersMovesRequests[playerID] = playerMoveVector
-
-        updatedObstacles.map((obstacle) => {
-          if (
-            playerData.x < obstacle.x + obstacle.width &&
-            playerData.x + squareSize > obstacle.x &&
-            playerData.y < obstacle.y + obstacle.height &&
-            squareSize + playerData.y > obstacle.y
-          ) {
-            playersManager.killPlayer(playerID)
-            room.refreshPlayers()
-          }
-        })
 
         bonusList.map((bonus) => {
           let bonusData = bonus.getData()

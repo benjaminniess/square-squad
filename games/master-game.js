@@ -66,6 +66,10 @@ class MasterGame {
     return tree
   }
 
+  getEngine() {
+    return this.engine
+  }
+
   getRoom() {
     return this.room
   }

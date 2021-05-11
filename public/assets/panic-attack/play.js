@@ -43,7 +43,12 @@ socket.on('refreshCanvas', (data) => {
   for (const [key, player] of Object.entries(data.players)) {
     if (player.alive) {
       ctx.beginPath()
-      ctx.rect(player.x, player.y, gameData.squareSize, gameData.squareSize)
+      ctx.rect(
+        player.x - gameData.squareSize / 2,
+        player.y - gameData.squareSize / 2,
+        gameData.squareSize,
+        gameData.squareSize,
+      )
       ctx.fillStyle = player.color
       ctx.fill()
       ctx.closePath()
