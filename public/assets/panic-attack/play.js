@@ -25,6 +25,16 @@ socket.on('refreshCanvas', (data) => {
     ctx.closePath()
   })
 
+  if (data.debugBodies.length > 0) {
+    data.debugBodies.map((vertice, i) => {
+      ctx.beginPath()
+      ctx.rect(vertice.x, vertice.y, 10, 10)
+      ctx.fillStyle = '#DDDD00'
+      ctx.fill()
+      ctx.closePath()
+    })
+  }
+
   data.obstacles.map((obstacle) => {
     ctx.beginPath()
     ctx.fillStyle = '#DD0000'

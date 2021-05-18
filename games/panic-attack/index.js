@@ -129,9 +129,20 @@ class Panick_Attack extends MasterGame {
 
     playersManager.processPlayersRequests(playersMovesRequests)
 
+    let wbs = []
+    if (process.env.MATTER_DEBUG && process.env.MATTER_DEBUG === 'true') {
+      let worldBodies = Matter.Composite.allBodies(this.engine.world)
+      _.forEach(worldBodies, (wb) => {
+        _.forEach(wb.vertices, (vertice) => {
+          wbs.push({ x: vertice.x, y: vertice.y })
+        })
+      })
+    }
+
     return {
       players: playersData,
       obstacles: updatedObstacles,
+      debugBodies: wbs,
       bonusList: updatedBonus,
       score: increasePoints > 0 ? increasePoints - 1 : null,
     }
