@@ -34,7 +34,7 @@ class Panick_Attack extends MasterGame {
         return
       }
 
-      if (!otherBody.isSensor) {
+      if (otherBody.customType !== 'obstacle') {
         return
       }
 
