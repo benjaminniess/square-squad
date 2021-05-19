@@ -22,6 +22,32 @@ class Panick_Attack extends MasterGame {
       })
 
     Matter.Events.on(this.getEngine(), 'collisionStart', (event) => {
+      if (event.pairs[0].bodyA.enableCustomCollisionManagement === true) {
+        let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
+          event.pairs[0].bodyA.id,
+        )
+
+        if (targetObstacle) {
+          targetObstacle.onCollisionStart(
+            event.pairs[0].bodyA,
+            event.pairs[0].bodyB,
+          )
+        }
+      }
+
+      if (event.pairs[0].bodyB.enableCustomCollisionManagement === true) {
+        let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
+          event.pairs[0].bodyB.id,
+        )
+
+        if (targetObstacle) {
+          targetObstacle.onCollisionStart(
+            event.pairs[0].bodyB,
+            event.pairs[0].bodyA,
+          )
+        }
+      }
+
       let player
       let otherBody
       if (event.pairs[0].bodyA.gamePlayerID) {
