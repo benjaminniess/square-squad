@@ -44,9 +44,29 @@ global.canvasWidth = 700
 global.squareSize = 30
 global.bonusSize = 30
 global.helpers = require(__base + 'lib/helpers')
+global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')
 
 global.io = require('socket.io')(server)
+
+// Force HTTPS + redirect multiple domains/subdomains
+app.use((req, res, next) => {
+  if (!req.secure && useSSL) {
+    res.redirect('https://' + req.headers.host)
+    return
+  }
+
+  if (
+    process.env.FORCE_DOMAIN &&
+    process.env.FORCE_DOMAIN !== 'false' &&
+    process.env.FORCE_DOMAIN !== req.headers.host
+  ) {
+    res.redirect((useSSL ? 'https://' : 'http://') + process.env.FORCE_DOMAIN)
+    return
+  }
+
+  next()
+})
 
 app.use((req, res, next) => {
   res.locals.appVersion = appVersion
