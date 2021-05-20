@@ -71,4 +71,11 @@ module.exports = function (app) {
       res.redirect('/rooms')
     }
   })
+
+  /**
+   * The about page
+   */
+  router.get('/about-us', function (req, res, next) {
+    res.render('about', {})
+  })
 }
