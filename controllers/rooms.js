@@ -201,6 +201,10 @@ io.on('connection', (socket) => {
     room.refreshPlayers()
 
     let timeleft = 3
+    if (process.env.COUNTDOWN) {
+      timeleft = process.env.COUNTDOWN
+    }
+
     let countdownTimer = setInterval(function () {
       if (timeleft <= 0) {
         clearInterval(countdownTimer)
