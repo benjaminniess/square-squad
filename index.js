@@ -46,6 +46,7 @@ global.bonusSize = 30
 global.helpers = require(__base + 'lib/helpers')
 global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')
+global.Matter = require('matter-js')
 
 global.io = require('socket.io')(server)
 

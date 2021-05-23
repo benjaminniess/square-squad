@@ -3,7 +3,6 @@
 const BonusManager = require(__base + '/lib/bonus-manager')
 const ObstaclesManager = require(__base + '/lib/obstacles-manager')
 const PlayersManager = require(__base + '/lib/players-manager')
-const Matter = require('matter-js')
 
 const Engine = Matter.Engine
 const Runner = Matter.Runner

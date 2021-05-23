@@ -1,7 +1,6 @@
 'use strict'
 
 const MasterGame = require(__base + '/games/master-game')
-const Matter = require('matter-js')
 
 class Panick_Attack extends MasterGame {
   constructor(room) {
