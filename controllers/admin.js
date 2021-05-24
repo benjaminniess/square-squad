@@ -14,6 +14,7 @@ module.exports = function (app) {
       req.query.pwd != process.env.ADMIN_PASSWORD
     ) {
       res.send('Nop')
+      return
     }
 
     next()
