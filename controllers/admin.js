@@ -43,7 +43,7 @@ module.exports = function (app) {
     const v8 = require('v8')
     const snapshotStream = v8.getHeapSnapshot()
     const localPath = `${process.cwd()}/public/`
-    const fileName = `${Date.now()}.headsnapshot`
+    const fileName = `${Date.now()}.heapsnapshot`
 
     const fileStream = fs.createWriteStream(localPath + fileName)
     snapshotStream.pipe(fileStream)
