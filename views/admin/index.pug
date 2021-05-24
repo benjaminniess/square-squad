@@ -1,0 +1,33 @@
+extends includes/base
+
+block extraStyles
+
+block title
+  title="Square Squad"
+
+block bodyClass
+  - var bodyClass = 'page-index'
+
+block content
+  #particles-js.particles-js
+  section.wrapper
+    include includes/sqsq-logo.pug
+
+    p Players: !{playersCount}
+    p Rooms: !{roomsCount}
+    p Memory RSS: !{memoryRSS}
+    p Memory heapTotal: !{memoryheapTotal}
+    p Memory heapUsed: !{memoryheapUsed}
+    p Memory external: !{memoryexternal}
+    p Memory array buffers: !{memoryarrayBuffers}
+
+    p
+      a(href="/admin/snapshot") Generate heapsnap 
+
+
+    
+
+block extraScripts
+  script(src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.js")
+  script(src="/assets/js/particles.js")
+

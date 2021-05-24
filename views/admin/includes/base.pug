@@ -1,0 +1,51 @@
+doctype html
+html(lang='fr')
+    block vars
+        - var pageTitle='Square Squad'
+    head
+        meta(http-equiv='Content-Type' content='text/html; charset=UTF-8')
+        meta(http-equiv='X-UA-Compatible' content='IE=edge')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+
+        link(rel='stylesheet', href='/assets/css/main.min.css')
+        block title
+            title #{pageTitle}
+        block extraStyles
+
+        link(rel='apple-touch-icon' sizes='180x180' href='/assets/images/apple-touch-icon.png')
+        link(rel='icon' type='image/png' sizes='32x32' href='/assets/images/favicon-32x32.png')
+        link(rel='icon' type='image/png' sizes='16x16' href='/assets/images/favicon-16x16.png')
+        link(rel='mask-icon' href='/assets/images/safari-pinned-tab.svg' color='#1e9294')
+        meta(name='msapplication-TileColor' content='#1e9294')
+        meta(name='theme-color' content='#1e9294')
+        meta(name='description' content="Square Squad is an online multiplayer game that you can play within your browser")
+
+        link(rel='preconnect' href='https://fonts.gstatic.com')
+        link(href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Zen+Dots&display=swap' rel='stylesheet')
+
+        if gaTag
+          script( async src="https://www.googletagmanager.com/gtag/js?id=#{gaTag}")
+          script.
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', '#{gaTag}');
+
+    block bodyClass
+        - var bodyClass = ''
+
+    body(class=bodyClass)
+      div.super-wrapper
+        block content
+
+        block footer
+          footer.footer
+            p.text-center Version #{appVersion}
+              
+              // a(href='/about-us') About us
+              a(href='https://discord.gg/zGZ2TVw6e4' target="_blank")
+                img(src='/assets/images/discord.png' width="32px")
+              
+
+    block extraScripts
