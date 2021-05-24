@@ -26,6 +26,7 @@ module.exports = function (app) {
     let memoryUsage = process.memoryUsage()
 
     res.render('admin/index', {
+      snapUrl: '/admin/snapshot?pwd=' + process.env.ADMIN_PASSWORD,
       playersCount: _.size(Helpers.getPlayers()),
       roomsCount: _.size(Helpers.getRooms()),
       memoryRSS: Math.round(memoryUsage.rss / 1024 / 1024) + 'Mb',
