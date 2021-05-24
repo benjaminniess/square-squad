@@ -78,4 +78,16 @@ module.exports = function (app) {
   router.get('/about-us', function (req, res, next) {
     res.render('about', {})
   })
+
+  router.get('/snapshots', function (req, res, next) {
+    const fs = require('fs')
+    const v8 = require('v8')
+    const snapshotStream = v8.getHeapSnapshot()
+    const fileName = `${process.cwd()}/public/${Date.now()}.headsnapshot`
+
+    const fileStream = fs.createWriteStream(fileName)
+    snapshotStream.pipe(fileStream)
+
+    res.send(fileName)
+  })
 }
