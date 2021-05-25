@@ -62,6 +62,24 @@ socket.on('refreshCanvas', (data) => {
       ctx.fillStyle = player.color
       ctx.fill()
       ctx.closePath()
+
+      if (player.bonus) {
+        ctx.beginPath()
+        ctx.drawImage(
+          bonusImage,
+          player.bonus.imgX,
+          player.bonus.imgY,
+          100,
+          100,
+          player.x + gameData.squareSize / 2,
+          player.y + gameData.squareSize / 2,
+          (player.bonus.width * 2) / 3,
+          (player.bonus.height * 2) / 3,
+        )
+        ctx.fillStyle = '#00DD00'
+        ctx.fill()
+        ctx.closePath()
+      }
     } else {
       if (key === sessionData.playerID) {
         ctx.font = "30px 'Zen Dots', cursive"

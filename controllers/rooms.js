@@ -358,15 +358,13 @@ io.on('connection', (socket) => {
         let room = helpers.getRoom(roomSlug)
         if (room && room.getGame().getStatus() === 'playing') {
           if (roomSlug != socket.id) {
-            if ( typeof socketData === 'undefined' || ! socketData.key ) {
+            if (typeof socketData === 'undefined' || !socketData.key) {
               rooms[roomSlug]
                 .getGame()
                 .getPlayersManager()
-                .resetTouches(
-                  currentPlayer.getPublicID()
-                )
+                .resetTouches(currentPlayer.getPublicID())
 
-                return
+              return
             }
             if (socketData.key == 39) {
               rooms[roomSlug]
