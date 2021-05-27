@@ -132,73 +132,34 @@ class Panick_Attack extends MasterGame {
         }
       }
 
-      let playersMovesRequests = {}
-
       _.forEach(playersManager.getPlayersMoves(), (moves, playerID) => {
         let playerData = playersData[playerID]
-        if (playerData.alive) {
-          let playerMoveVector = { x: 0, y: 0 }
-          if (moves.top) {
-            playerMoveVector.y = 1
+
+        bonusList.map((bonus) => {
+          let bonusData = bonus.getData()
+          if (
+            playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
+            playerData.x - squareSize / 2 + squareSize > bonusData.x &&
+            playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
+            squareSize + playerData.y - squareSize / 2 > bonusData.y
+          ) {
+            playersManager.uptadePlayerSingleData(playerID, 'bonus', bonusData)
+            bonus.trigger(playerID).then(() => {
+              playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
+            })
+          } else {
+            updatedBonus.push(bonusData)
           }
-
-          if (moves.right) {
-            playerMoveVector.x = 1
-          }
-          if (moves.down) {
-            playerMoveVector.y = -1
-          }
-          if (moves.left) {
-            playerMoveVector.x = -1
-          }
-
-          if (playerMoveVector.x !== 0 && playerMoveVector.y !== 0) {
-            playerMoveVector.x = playerMoveVector.x * 0.7
-            playerMoveVector.y = playerMoveVector.y * 0.7
-          }
-
-          playersMovesRequests[playerID] = playerMoveVector
-
-          bonusList.map((bonus) => {
-            let bonusData = bonus.getData()
-            if (
-              playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
-              playerData.x - squareSize / 2 + squareSize > bonusData.x &&
-              playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
-              squareSize + playerData.y - squareSize / 2 > bonusData.y
-            ) {
-              playersManager.uptadePlayerSingleData(
-                playerID,
-                'bonus',
-                bonusData,
-              )
-              bonus.trigger(playerID).then(() => {
-                playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
-              })
-            } else {
-              updatedBonus.push(bonusData)
-            }
-          })
-        }
-      })
-
-      playersManager.processPlayersRequests(playersMovesRequests)
-    }
-
-    let debugBodies = []
-    if (process.env.MATTER_DEBUG && process.env.MATTER_DEBUG === 'true') {
-      let worldBodies = Matter.Composite.allBodies(this.engine.world)
-      _.forEach(worldBodies, (wb) => {
-        _.forEach(wb.vertices, (vertice) => {
-          debugBodies.push({ x: vertice.x, y: vertice.y })
         })
       })
+
+      playersManager.processPlayersRequests()
     }
 
     return {
       players: playersData,
       obstacles: obstacleManager.getObstaclesParts(),
-      debugBodies: debugBodies,
+      debugBodies: this.getDebugBodies(),
       bonusList: updatedBonus,
       score: increasePoints > 0 ? increasePoints - 1 : null,
     }

@@ -65,6 +65,20 @@ class MasterGame {
     return tree
   }
 
+  getDebugBodies() {
+    let debugBodies = []
+    if (process.env.MATTER_DEBUG && process.env.MATTER_DEBUG === 'true') {
+      let worldBodies = Matter.Composite.allBodies(this.engine.world)
+      _.forEach(worldBodies, (wb) => {
+        _.forEach(wb.vertices, (vertice) => {
+          debugBodies.push({ x: vertice.x, y: vertice.y })
+        })
+      })
+    }
+
+    return debugBodies
+  }
+
   getEngine() {
     return this.engine
   }
