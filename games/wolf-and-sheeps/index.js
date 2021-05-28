@@ -9,15 +9,82 @@ class Wolf_And_Sheep extends MasterGame {
     this.slug = 'wolf-and-sheeps'
     this.type = 'timed'
     this.wolf = null
+    this.eventSubscriptions()
   }
 
-  removePlayer(playerID) {
-    delete this.playersData[playerID]
-    delete this.playersMoves[playerID]
+  eventSubscriptions() {
+    this.getEventEmmitter().on('initRound', () => {
+      let playersData = this.getPlayersManager().getPlayersData()
+      _.shuffle(_.keys(playersData))
+      this.setWolf(Object.keys(playersData)[0])
+    })
 
-    let wolf = this.getWolf()
-    if (wolf && wolf.playerID === playerID) {
-      this.resetWolf()
+    Matter.Events.on(this.getEngine(), 'collisionStart', (event) => {
+      if (
+        !event.pairs[0].bodyA.gamePlayerID ||
+        !event.pairs[0].bodyB.gamePlayerID
+      ) {
+        return
+      }
+
+      if (event.pairs[0].bodyA.isWolf === true) {
+        this.setWolf(event.pairs[0].bodyB.gamePlayerID)
+      } else if (event.pairs[0].bodyB.isWolf === true) {
+        this.setWolf(event.pairs[0].bodyA.gamePlayerID)
+      }
+
+      console.log('collide')
+
+      //this.getPlayersManager().killPlayer(player.gamePlayerID)
+      //this.getRoom().refreshPlayers()
+    })
+  }
+
+  refreshData() {
+    //console.log(this.getDebugMatterTree())
+
+    let bonusManager = this.getBonusManager()
+    let bonusList = bonusManager.getActiveBonus()
+    let playersManager = this.getPlayersManager()
+    let playersData = playersManager.getPlayersData()
+
+    let updatedBonus = []
+
+    if (this.getStatus() === 'playing') {
+      if (bonusList.length < bonusManager.getFrequency()) {
+        bonusManager.maybeInitBonus()
+      }
+
+      _.forEach(playersManager.getPlayersMoves(), (moves, playerID) => {
+        let playerData = playersData[playerID]
+
+        playersData[playerID].isWolf = playerID === this.getWolf()
+
+        bonusList.map((bonus) => {
+          let bonusData = bonus.getData()
+          if (
+            playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
+            playerData.x - squareSize / 2 + squareSize > bonusData.x &&
+            playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
+            squareSize + playerData.y - squareSize / 2 > bonusData.y
+          ) {
+            playersManager.uptadePlayerSingleData(playerID, 'bonus', bonusData)
+            bonus.trigger(playerID).then(() => {
+              playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
+            })
+          } else {
+            updatedBonus.push(bonusData)
+          }
+        })
+      })
+
+      playersManager.processPlayersRequests()
+    }
+
+    return {
+      players: playersData,
+      debugBodies: this.getDebugBodies(),
+      bonusList: updatedBonus,
     }
   }
 
@@ -25,89 +92,9 @@ class Wolf_And_Sheep extends MasterGame {
     return this.wolf
   }
 
-  setWolf(wolf) {
-    this.wolf = wolf
-  }
-
-  resetWolf() {
-    let wolf = this.getWolf()
-    if (!wolf) {
-      for (const [playerID, moves] of Object.entries(this.playersMoves)) {
-        this.setWolf(playerID)
-      }
-    }
-  }
-
-  refreshData() {
-    let currentWolf = this.getWolf()
-
-    firstfor: for (const [playerIDA, playerPosA] of Object.entries(
-      this.playersData,
-    )) {
-      for (const [playerIDB, playerPosB] of Object.entries(this.playersData)) {
-        if (
-          playerIDA !== playerIDB &&
-          playerPosA.x < playerPosB.x + squareSize &&
-          playerPosA.x + squareSize > playerPosB.x &&
-          playerPosA.y < playerPosB.y + squareSize &&
-          squareSize + playerPosA.y > playerPosB.y
-        ) {
-          if (!playerPosA.isColliding && !playerPosB.isColliding) {
-            if (currentWolf === playerIDA && this.isCatchable(playerIDB)) {
-              this.setWolf(playerIDB)
-              this.setCatchable(playerIDA, false)
-              playerPosA.isColliding = true
-              playerPosB.isColliding = true
-              break firstfor
-            } else if (
-              currentWolf === playerIDB &&
-              this.isCatchable(playerIDA)
-            ) {
-              this.setWolf(playerIDA)
-              playerPosA.isColliding = true
-              playerPosB.isColliding = true
-              break firstfor
-            }
-          }
-        } else {
-          playerPosA.isColliding = false
-          playerPosB.isColliding = false
-        }
-      }
-    }
-    for (const [playerID, moves] of Object.entries(this.playersMoves)) {
-      if (moves.top) {
-        this.playersData[playerID].y += this.speed
-        if (this.playersData[playerID].y > canvasWidth - squareSize) {
-          this.playersData[playerID].y = canvasWidth - squareSize
-        }
-      }
-      if (moves.right) {
-        this.playersData[playerID].x += this.speed
-        if (this.playersData[playerID].x > canvasWidth - squareSize) {
-          this.playersData[playerID].x = canvasWidth - squareSize
-        }
-      }
-      if (moves.down) {
-        this.playersData[playerID].y -= this.speed
-        if (this.playersData[playerID].y < 0) {
-          this.playersData[playerID].y = 0
-        }
-      }
-      if (moves.left) {
-        this.playersData[playerID].x -= this.speed
-        if (this.playersData[playerID].x < 0) {
-          this.playersData[playerID].x = 0
-        }
-      }
-
-      this.playersData[playerID].isWolf =
-        currentWolf && currentWolf === playerID ? true : false
-    }
-
-    return {
-      players: this.playersData,
-    }
+  setWolf(playerID) {
+    console.log(playerID)
+    this.wolf = playerID
   }
 
   setCatchable(playerID, catchable = true) {
