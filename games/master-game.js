@@ -3,6 +3,7 @@
 const BonusManager = require(__base + '/lib/bonus-manager')
 const ObstaclesManager = require(__base + '/lib/obstacles-manager')
 const PlayersManager = require(__base + '/lib/players-manager')
+const { EventEmitter } = require('events')
 
 const Engine = Matter.Engine
 const Runner = Matter.Runner
@@ -24,6 +25,7 @@ class MasterGame {
     this.totalRounds = 3
     this.bonusFrequency = 5
     this.bonusManager = new BonusManager(this)
+    this.eventEmitter = new EventEmitter()
     this.initEngine()
   }
 
@@ -115,6 +117,10 @@ class MasterGame {
     return this.playersManager
   }
 
+  getEventEmmitter() {
+    return this.eventEmitter
+  }
+
   getRoundNumber() {
     return this.roundNumber
   }
@@ -176,6 +182,7 @@ class MasterGame {
     this.resetRanking()
     this.resetLastRoundRanking()
     this.setStatus('starting')
+    this.getEventEmmitter().emit('initGame')
   }
 
   initRound() {
@@ -186,6 +193,7 @@ class MasterGame {
 
     this.getBonusManager().setFrequency(this.getBonusFrequency())
     this.getBonusManager().resetBonus()
+    this.getEventEmmitter().emit('initRound')
   }
 
   setTotalRounds(roundsNumber) {
