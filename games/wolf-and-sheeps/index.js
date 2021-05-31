@@ -27,13 +27,20 @@ class Wolf_And_Sheep extends MasterGame {
         return
       }
 
-      if (event.pairs[0].bodyA.isWolf === true) {
+      let currentWolf = this.getWolf()
+      if (
+        event.pairs[0].bodyA.gamePlayerID === currentWolf &&
+        this.isCatchable(event.pairs[0].bodyB.gamePlayerID)
+      ) {
+        this.setCatchable(event.pairs[0].bodyA.gamePlayerID, false)
         this.setWolf(event.pairs[0].bodyB.gamePlayerID)
-      } else if (event.pairs[0].bodyB.isWolf === true) {
+      } else if (
+        event.pairs[0].bodyB.gamePlayerID === currentWolf &&
+        this.isCatchable(event.pairs[0].bodyA.gamePlayerID)
+      ) {
+        this.setCatchable(event.pairs[0].bodyB.gamePlayerID, false)
         this.setWolf(event.pairs[0].bodyA.gamePlayerID)
       }
-
-      console.log('collide')
 
       //this.getPlayersManager().killPlayer(player.gamePlayerID)
       //this.getRoom().refreshPlayers()
@@ -93,23 +100,23 @@ class Wolf_And_Sheep extends MasterGame {
   }
 
   setWolf(playerID) {
-    console.log(playerID)
     this.wolf = playerID
   }
 
   setCatchable(playerID, catchable = true) {
-    this.playersData[playerID].isCatchable = catchable
+    let playersManager = this.getPlayersManager()
+    playersManager.uptadePlayerSingleData(playerID, 'catchable', catchable)
     if (!catchable) {
       let currentClass = this
       let notCatchableTimer = setInterval(function () {
         clearInterval(notCatchableTimer)
-        currentClass.setCatchable(playerID, true)
+        playersManager.uptadePlayerSingleData(playerID, 'catchable', true)
       }, 1000)
     }
   }
 
   isCatchable(playerID) {
-    return this.playersData[playerID].isCatchable
+    return this.getPlayersManager().getPlayerData(playerID).catchable
   }
 }
 
