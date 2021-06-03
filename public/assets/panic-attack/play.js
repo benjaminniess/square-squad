@@ -1,6 +1,16 @@
 var bonusImage = new Image()
 bonusImage.src = '/assets/images/bonus.png'
+
+var currentTime = Date.now()
+var blinkOn = true
 socket.on('refreshCanvas', (data) => {
+  // Blink ON/OFF system for bonus about to end
+  var loopTime = Date.now()
+  if (loopTime - currentTime > 200) {
+    blinkOn = !blinkOn
+    currentTime = loopTime
+  }
+
   if (Number.isInteger(data.score)) {
     pointsText.innerHTML = data.score
   }
@@ -63,7 +73,7 @@ socket.on('refreshCanvas', (data) => {
       ctx.fill()
       ctx.closePath()
 
-      if (player.bonus) {
+      if (player.bonus && (!player.bonusBlinking || blinkOn)) {
         ctx.beginPath()
         ctx.drawImage(
           bonusImage,
