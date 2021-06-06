@@ -7,29 +7,8 @@ block content
   body(data-roomSlug=roomSlug)
     #particles-js.particles-js
     #pageTransition.page-transition
-    section#section-lobby.room-section.lobby-section(class=status === "waiting" ? "" : "is-hidden")
-      .wrapper
-        include includes/sqsq-logo.pug
+    div#app
 
-        h3.rooms-list__title Room: !{roomName}
-        ul.players-list.players.no-score
-        div#admin-section(style="visibility: hidden;")
-          h4 Rounds number
-          p
-            input#rounds-number(type="number" value="3" min="1" max="100")
-
-          h4 Obstacles speed 
-          p Slow
-            input#obstacles-speed(type="range" min="1" max="30" value="10")
-            | fast
-
-          h4 Bonus frequency
-          p No bonus
-            input#bonus-frequency(type="range" min="1" max="10" value="5")
-            | Too many bonus
-
-          a#startButton.btn(href='#') play
-        a.btn(href='/') back
     section#section-play.room-section.play-section(class=status === "playing" ? "" : "is-hidden")
       div.play-section__wrapper
         aside.play-section__aside
@@ -60,6 +39,8 @@ block content
         button#back-button.btn Back
 
 block extraScripts
+  script(src='https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js')
+  script(src='/assets/js/vue.js')
   script(src='/assets/js/main.js')
   script(src=gameJS)
   script(src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.js")

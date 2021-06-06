@@ -124,6 +124,12 @@ io.on('connection', (socket) => {
         socketID: socket.id,
         isSpectator: gameStatus === 'playing',
       })
+      io.to(socket.id).emit('room-joined', {
+        roomName: room.getName(),
+        isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
+        currentPlayer: currentPlayer.getPublicID(),
+        gameStatus: gameStatus,
+      })
       if (gameStatus === 'playing') {
         io.to(socket.id).emit('countdown-update', {
           timeleft: 0,

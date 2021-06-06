@@ -26,8 +26,47 @@ let sessionData
 
 let playersData = {}
 
+if (typeof Vue !== 'undefined') {
+  window.vueApp = new Vue({
+    el: '#app',
+    data() {
+      return {
+        name: null,
+        isAdmin: null,
+        currentPlayer: null,
+        players: null,
+        status: null,
+      }
+    },
+    template: `
+    <div id="vue-app">
+      <lobby-section :roomName="name" :isAdmin="isAdmin" :players="players" :currentPlayer="currentPlayer" :status="status"></lobby-section>
+    </div>`,
+    methods: {
+      playGame() {
+        this.status = 'playing'
+      },
+
+      refreshPlayers(players) {
+        this.players = players
+        players.map((player) => {
+          if (player.isAdmin && player.id === this.currentPlayer) {
+            this.isAdmin = true
+          }
+        })
+      },
+    },
+  })
+}
+
+function getVueApp() {
+  return window.vueApp
+}
+
 // When recieving players in current room
 socket.on('refreshPlayers', (data) => {
+  getVueApp().refreshPlayers(data)
+  /**
   // Check if the current page has a players list container
   if (playersLists) {
     Array.prototype.slice.call(playersLists).map((playersList) => {
@@ -62,7 +101,9 @@ socket.on('refreshPlayers', (data) => {
         playersList.appendChild(li)
       })
     })
+    
   }
+  */
 })
 
 // Once the connection is set, save data in the sessionData variable and ask for joining the room
@@ -72,6 +113,14 @@ socket.on('player-connected', (data) => {
   if (roomSlug) {
     socket.emit('room-join', { roomSlug: roomSlug })
   }
+})
+
+socket.on('room-joined', (data) => {
+  window.vueApp.name = data.roomName
+  window.vueApp.isAdmin = data.isAdmin
+  window.vueApp.players = data.players
+  window.vueApp.status = data.gameStatus
+  window.vueApp.currentPlayer = data.currentPlayer
 })
 
 socket.on('game-is-starting', (data) => {
@@ -107,39 +156,43 @@ document.addEventListener('keydown', keyDownHandler, false)
 document.addEventListener('keyup', keyUpHandler, false)
 
 if (canvas) {
-  canvas.addEventListener("touchstart", function (e) {
-    mousePos = getTouchPos(canvas, e);
-    if ( mousePos.x < canvas.width / 3 ) {
-      socket.emit('keyPressed', { key: 37 })
-    }
-    if ( mousePos.x > 2 * canvas.width / 3 ) {
-      socket.emit('keyPressed', { key: 39 })
-    }
-    if ( mousePos.y < canvas.width / 3 ) {
-      socket.emit('keyPressed', { key: 38 })
-    }
-    if ( mousePos.y > 2 * canvas.width / 3 ) {
-      socket.emit('keyPressed', { key: 40 })
-    }
-    
-  }, false);
+  canvas.addEventListener(
+    'touchstart',
+    function (e) {
+      mousePos = getTouchPos(canvas, e)
+      if (mousePos.x < canvas.width / 3) {
+        socket.emit('keyPressed', { key: 37 })
+      }
+      if (mousePos.x > (2 * canvas.width) / 3) {
+        socket.emit('keyPressed', { key: 39 })
+      }
+      if (mousePos.y < canvas.width / 3) {
+        socket.emit('keyPressed', { key: 38 })
+      }
+      if (mousePos.y > (2 * canvas.width) / 3) {
+        socket.emit('keyPressed', { key: 40 })
+      }
+    },
+    false,
+  )
 
-  canvas.addEventListener("touchend", function (e) {
-    socket.emit('keyUp')
-  }, false);
-  canvas.addEventListener("touchmove", function (e) {
-    
-  }, false);
+  canvas.addEventListener(
+    'touchend',
+    function (e) {
+      socket.emit('keyUp')
+    },
+    false,
+  )
+  canvas.addEventListener('touchmove', function (e) {}, false)
 }
 
 function getTouchPos(canvasDom, touchEvent) {
-  var rect = canvasDom.getBoundingClientRect();
+  var rect = canvasDom.getBoundingClientRect()
   return {
     x: touchEvent.touches[0].clientX - rect.left,
-    y: touchEvent.touches[0].clientY - rect.top
-  };
+    y: touchEvent.touches[0].clientY - rect.top,
+  }
 }
-
 
 function show(sectionID) {
   if (sectionID === 'lobby') {
