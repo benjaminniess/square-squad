@@ -125,6 +125,7 @@ io.on('connection', (socket) => {
         isSpectator: gameStatus === 'playing',
       })
       io.to(socket.id).emit('room-joined', {
+        roomSlug: room.getSlug(),
         roomName: room.getName(),
         isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
         currentPlayer: currentPlayer.getPublicID(),

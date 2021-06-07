@@ -26,33 +26,68 @@ let sessionData
 
 let playersData = {}
 
+let store
+
 if (typeof Vue !== 'undefined') {
+  Vue.use(Vuex)
+
+  store = new Vuex.Store({
+    state: {
+      status: 'waiting',
+      roomName: null,
+      roomSlug: null,
+      players: {},
+      isAdmin: false,
+      currentPlayer: null,
+    },
+    mutations: {
+      roomJoined(state, roomData) {
+        state.players = roomData.players
+        state.currentPlayer = roomData.currentPlayer
+        state.isAdmin = roomData.isAdmin
+        state.status = roomData.status
+        state.roomName = roomData.roomName
+        state.roomSlug = roomData.roomSlug
+      },
+      refreshPlayers(state, refreshedPlayers) {
+        state.players = refreshedPlayers
+        refreshedPlayers.map((player) => {
+          if (player.isAdmin && player.id === state.currentPlayer) {
+            state.isAdmin = true
+          }
+        })
+      },
+      setGameStatus(state, gameStatus) {
+        state.status = gameStatus
+      },
+    },
+  })
+
   window.vueApp = new Vue({
     el: '#app',
-    data() {
-      return {
-        name: null,
-        isAdmin: null,
-        currentPlayer: null,
-        players: null,
-        status: null,
-      }
+    store: store,
+    computed: {
+      status() {
+        return store.state.status
+      },
     },
     template: `
     <div id="vue-app">
-      <lobby-section :roomName="name" :isAdmin="isAdmin" :players="players" :currentPlayer="currentPlayer" :status="status"></lobby-section>
+      <lobby-section v-show="status == 'waiting'"></lobby-section>
+      <game-section v-show="status == 'playing'" ></game-section>
+      <rank-section v-show="status == 'end-round'"></rank-section>
     </div>`,
     methods: {
-      playGame() {
-        this.status = 'playing'
-      },
+      startGame() {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'Start Game')
+        }
 
-      refreshPlayers(players) {
-        this.players = players
-        players.map((player) => {
-          if (player.isAdmin && player.id === this.currentPlayer) {
-            this.isAdmin = true
-          }
+        socket.emit('start-game', {
+          roomSlug: store.state.roomSlug,
+          roundsNumber: document.getElementById('rounds-number').value,
+          obstaclesSpeed: document.getElementById('obstacles-speed').value,
+          bonusFrequency: document.getElementById('bonus-frequency').value,
         })
       },
     },
@@ -65,7 +100,7 @@ function getVueApp() {
 
 // When recieving players in current room
 socket.on('refreshPlayers', (data) => {
-  getVueApp().refreshPlayers(data)
+  store.commit('refreshPlayers', data)
   /**
   // Check if the current page has a players list container
   if (playersLists) {
@@ -116,34 +151,22 @@ socket.on('player-connected', (data) => {
 })
 
 socket.on('room-joined', (data) => {
-  window.vueApp.name = data.roomName
-  window.vueApp.isAdmin = data.isAdmin
-  window.vueApp.players = data.players
-  window.vueApp.status = data.gameStatus
-  window.vueApp.currentPlayer = data.currentPlayer
+  store.commit('roomJoined', {
+    roomName: data.roomName,
+    roomSlug: data.roomSlug,
+    isAdmin: data.isAdmin,
+    players: data.players,
+    status: data.gameStatus,
+    currentPlayer: data.currentPlayer,
+  })
 })
 
 socket.on('game-is-starting', (data) => {
-  pointsText.innerHTML = null
-  roundNumber.innerHTML = 'Round ' + data.currentRound + '/' + data.totalRounds
-  show('play')
+  console.log(data)
+  store.commit('setGameStatus', 'playing')
+  //pointsText.innerHTML = null
+  //roundNumber.innerHTML = 'Round ' + data.currentRound + '/' + data.totalRounds
 })
-
-if (startButton) {
-  startButton.onclick = function () {
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'Start Game')
-    }
-
-    socket.emit('start-game', {
-      roomSlug: roomSlug,
-      roundsNumber: document.getElementById('rounds-number').value,
-      obstaclesSpeed: document.getElementById('obstacles-speed').value,
-      bonusFrequency: document.getElementById('bonus-frequency').value,
-    })
-    return false
-  }
-}
 
 if (backButton) {
   backButton.onclick = function () {
@@ -278,7 +301,7 @@ socket.on('in-game-countdown-update', (data) => {
 
   if (data.timeleft == 0) {
     countdownText.innerHTML = 'Game over'
-    show('ranking')
+    store.commit('setGameStatus', 'end-round')
 
     winnerAnnouncement.innerHTML =
       '<tbody><tr><td>Winner</td>' +
