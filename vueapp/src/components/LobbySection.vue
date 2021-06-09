@@ -1,7 +1,7 @@
 <template>
   <section class="room-section lobby-section" id="section-lobby">
     <div class="wrapper">
-      <logo></logo>
+      <!--<logo></logo>-->
       <h3 class="rooms-list__title">Room: {{ roomName }}</h3>
 
       <ul v-if="players" class="players-list players no-score">

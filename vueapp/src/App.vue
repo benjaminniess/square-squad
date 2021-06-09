@@ -1,18 +1,22 @@
 <template>
   <div id="vue-app">
-    <lobby-section v-show="status == 'waiting'"></lobby-section>
-    <game-section v-show="status == 'playing'"></game-section>
-    <rank-section v-show="status == 'end-round'"></rank-section>
+    <LobbySection v-show="status == 'waiting'"></LobbySection>
+    <GameSection v-show="status == 'playing'"></GameSection>
+    <RankSection v-show="status == 'end-round'"></RankSection>
   </div>
 </template>
 
 <script>
 import LobbySection from './components/LobbySection'
+import GameSection from './components/GameSection'
+import RankSection from './components/RankSection'
 
 export default {
   name: 'App',
   components: {
     LobbySection,
+    GameSection,
+    RankSection,
   },
   methods: {
     startGame() {
@@ -21,11 +25,16 @@ export default {
       }
 
       socket.emit('start-game', {
-        roomSlug: store.state.roomSlug,
+        roomSlug: this.$store.state.roomSlug,
         roundsNumber: document.getElementById('rounds-number').value,
         obstaclesSpeed: document.getElementById('obstacles-speed').value,
         bonusFrequency: document.getElementById('bonus-frequency').value,
       })
+    },
+  },
+  computed: {
+    status() {
+      return this.$store.state.status
     },
   },
 }
