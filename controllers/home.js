@@ -23,7 +23,7 @@ module.exports = function (app) {
       let playerObj = helpers.getPlayer(req.cookies['connect.sid'])
       playerObj.resetData({
         nickName: 'Tester',
-        color: '#222288',
+        color: '#222288'
       })
 
       res.redirect('/rooms')
@@ -34,8 +34,7 @@ module.exports = function (app) {
     if (!currentPlayer) {
       res.render('index', {
         playerColor:
-          '#' +
-          (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+          '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6)
       })
     } else if (
       req.query.action == 'edit-login' ||
@@ -47,7 +46,7 @@ module.exports = function (app) {
         playerColor: currentPlayer.color
           ? currentPlayer.color
           : '#' +
-            (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+            (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6)
       })
     } else {
       res.redirect('/rooms')
@@ -65,7 +64,7 @@ module.exports = function (app) {
 
       playerObj.resetData({
         nickName: validator.blacklist(req.body.playerName, "<>\\/'"),
-        color: validator.blacklist(req.body.playerColor, "<>\\/'"),
+        color: validator.blacklist(req.body.playerColor, "<>\\/'")
       })
 
       res.redirect('/rooms')

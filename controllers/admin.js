@@ -35,7 +35,7 @@ module.exports = function (app) {
       memoryheapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024) + 'Mb',
       memoryexternal: Math.round(memoryUsage.external / 1024 / 1024) + 'Mb',
       memoryarrayBuffers:
-        Math.round(memoryUsage.arrayBuffers / 1024 / 1024) + 'Mb',
+        Math.round(memoryUsage.arrayBuffers / 1024 / 1024) + 'Mb'
     })
   })
 

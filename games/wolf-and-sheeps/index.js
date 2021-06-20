@@ -91,7 +91,7 @@ class Wolf_And_Sheep extends MasterGame {
     return {
       players: playersData,
       debugBodies: this.getDebugBodies(),
-      bonusList: updatedBonus,
+      bonusList: updatedBonus
     }
   }
 

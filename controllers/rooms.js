@@ -45,7 +45,7 @@ router.get('/', function (req, res, next) {
 
   res.render('rooms', {
     playerName: currentPlayer.getNickname(),
-    playerColor: currentPlayer.getColor(),
+    playerColor: currentPlayer.getColor()
   })
 })
 
@@ -69,7 +69,7 @@ router.get('/:roomSlug', function (req, res, next) {
     playerColor: currentPlayer.getColor(),
     isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
     status: gameStatus,
-    gameJS: '/assets/' + room.getGame().getSlug() + '/play.js',
+    gameJS: '/assets/' + room.getGame().getSlug() + '/play.js'
   })
 })
 
@@ -107,7 +107,7 @@ io.on('connection', (socket) => {
       nickName: playerNickName,
       playerColor: currentPlayer.getColor(),
       playerID: currentPlayer.getPublicID(),
-      sessionID: cookies['connect.sid'],
+      sessionID: cookies['connect.sid']
     })
   }
 
@@ -122,19 +122,19 @@ io.on('connection', (socket) => {
       socket.join(room.getSlug())
       currentPlayer.resetData({
         socketID: socket.id,
-        isSpectator: gameStatus === 'playing',
+        isSpectator: gameStatus === 'playing'
       })
       io.to(socket.id).emit('room-joined', {
         roomSlug: room.getSlug(),
         roomName: room.getName(),
         isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
         currentPlayer: currentPlayer.getPublicID(),
-        gameStatus: gameStatus,
+        gameStatus: gameStatus
       })
       if (gameStatus === 'playing') {
         io.to(socket.id).emit('countdown-update', {
           timeleft: 0,
-          gameData: game.getBasicData(),
+          gameData: game.getBasicData()
         })
       }
 
@@ -203,7 +203,7 @@ io.on('connection', (socket) => {
 
     io.to(data.roomSlug).emit('game-is-starting', {
       currentRound: game.getRoundNumber(),
-      totalRounds: game.getTotalRounds(),
+      totalRounds: game.getTotalRounds()
     })
     room.refreshPlayers()
 
@@ -226,7 +226,7 @@ io.on('connection', (socket) => {
             }
 
             io.to(data.roomSlug).emit('in-game-countdown-update', {
-              timeleft: gameTimeleft,
+              timeleft: gameTimeleft
             })
 
             gameTimeleft -= 1
@@ -247,7 +247,7 @@ io.on('connection', (socket) => {
                     if (playerData.alive) {
                       playersManager.addPoints(playerID, 3)
                     }
-                  },
+                  }
                 )
               }
 
@@ -271,7 +271,7 @@ io.on('connection', (socket) => {
                 roundWinner: lastRoundWinner,
                 roundRanking: lastRoundRanking,
                 ranking: game.getRanking(),
-                gameStatus: game.getStatus(),
+                gameStatus: game.getStatus()
               })
             }
           }, 1000)
@@ -280,7 +280,7 @@ io.on('connection', (socket) => {
 
       io.to(data.roomSlug).emit('countdown-update', {
         timeleft: timeleft,
-        gameData: game.getBasicData(),
+        gameData: game.getBasicData()
       })
 
       timeleft -= 1
@@ -319,7 +319,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'right',
-                  true,
+                  true
                 )
             } else if (socketData.key == 37) {
               rooms[roomSlug]
@@ -328,7 +328,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'left',
-                  true,
+                  true
                 )
             }
 
@@ -339,7 +339,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'top',
-                  true,
+                  true
                 )
             } else if (socketData.key == 38) {
               rooms[roomSlug]
@@ -348,7 +348,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'down',
-                  true,
+                  true
                 )
             }
           }
@@ -380,7 +380,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'right',
-                  false,
+                  false
                 )
             } else if (socketData.key == 37) {
               rooms[roomSlug]
@@ -389,7 +389,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'left',
-                  false,
+                  false
                 )
             }
 
@@ -400,7 +400,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'top',
-                  false,
+                  false
                 )
             } else if (socketData.key == 38) {
               rooms[roomSlug]
@@ -409,7 +409,7 @@ io.on('connection', (socket) => {
                 .updatePlayerButtonState(
                   currentPlayer.getPublicID(),
                   'down',
-                  false,
+                  false
                 )
             }
           }

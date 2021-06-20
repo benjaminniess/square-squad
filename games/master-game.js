@@ -40,7 +40,7 @@ class MasterGame {
     Composite.add(this.engine.world, [
       this.getPlayersManager().getComposite(),
       this.getObstaclesManager().getComposite(),
-      this.getObstaclesManager().getWallsComposite(),
+      this.getObstaclesManager().getWallsComposite()
     ])
   }
 
@@ -52,15 +52,15 @@ class MasterGame {
       {
         label: 'world',
         composites: _.size(worldComposites),
-        bodies: _.size(worldBodies),
-      },
+        bodies: _.size(worldBodies)
+      }
     ]
 
     _.forEach(worldComposites, (composite) => {
       tree.push({
         label: composite.label,
         composites: _.size(Matter.Composite.allComposites(composite)),
-        bodies: _.size(Matter.Composite.allBodies(composite)),
+        bodies: _.size(Matter.Composite.allBodies(composite))
       })
     })
 
@@ -172,7 +172,7 @@ class MasterGame {
 
   getBasicData() {
     return {
-      squareSize: squareSize,
+      squareSize: squareSize
     }
   }
 
@@ -222,14 +222,14 @@ class MasterGame {
     _.forEach(playersData, (playerData, playerID) => {
       this.lastRoundRanking.push({
         playerID: playerID,
-        score: playerData.score,
+        score: playerData.score
       })
     })
 
     this.lastRoundRanking = _.orderBy(
       this.lastRoundRanking,
       ['score'],
-      ['desc'],
+      ['desc']
     )
   }
 
@@ -237,13 +237,13 @@ class MasterGame {
     let lastRoundRanking = this.getLastRoundRanking()
     _.forEach(lastRoundRanking, (lastRoundResult) => {
       let index = _.findIndex(this.ranking, {
-        playerID: lastRoundResult.playerID,
+        playerID: lastRoundResult.playerID
       })
 
       if (index === -1) {
         this.ranking.push({
           playerID: lastRoundResult.playerID,
-          score: lastRoundResult.score,
+          score: lastRoundResult.score
         })
       } else {
         this.ranking[index].score += lastRoundResult.score
