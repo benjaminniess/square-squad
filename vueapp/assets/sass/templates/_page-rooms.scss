@@ -1,0 +1,13 @@
+.page-rooms {
+  &__intro {
+    margin-bottom: 1em;
+
+    p {
+      & + p {
+        margin-top: 1em;
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+    }
+  }
+}

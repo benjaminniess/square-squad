@@ -1,0 +1,77 @@
+@mixin breakpoint($name) {
+  @if $name == supersmall {
+    @media screen and (max-width: 500px) {
+      @content;
+    }
+  } @else if $name == small {
+    @media screen and (max-width: 767px) {
+      @content;
+    }
+  } @else if $name == medium {
+    @media screen and (max-width: 1024px) {
+      @content;
+    }
+  } @else if $name == large {
+    @media screen and (min-width: 1244px) {
+      @content;
+    }
+  }
+}
+
+// Display items with timeout
+@mixin ffffff($children, $initime, $increment, $reverse, $animation) {
+  @for $i from 1 to $children+1 {
+    @if $reverse {
+      &:nth-last-child(#{$i}) {
+        @if $animation {
+          animation-delay: #{$initime}s;
+        } @else {
+          transition-delay: #{$initime}s;
+        }
+      }
+    } @else {
+      &:nth-child(#{$i}) {
+        @if $animation {
+          animation-delay: #{$initime}s;
+        } @else {
+          transition-delay: #{$initime}s;
+        }
+      }
+    }
+
+    $initime: $initime + $increment;
+  }
+}
+
+// A simple little SCSS mixin for creating scrim gradients
+// Inspired by Andreas Larson - https://github.com/larsenwork
+// https://css-tricks.com/easing-linear-gradients/
+@mixin scrim-gradient($start-color: #000, $direction: 'to bottom') {
+  $scrim-coordinates: (
+    0: 1,
+    19: .738,
+    34: .541,
+    47: .382,
+    56.5: .278,
+    65: .194,
+    73: .126,
+    80.2: .075,
+    86.1: .042,
+    91: .021,
+    95.2: .008,
+    98.2: .002,
+    100: 0
+  );
+
+  $hue: hue($start-color);
+  $saturation: saturation($start-color);
+  $lightness: lightness($start-color);
+  $stops: ();
+
+  @each $color-stop, $alpha-value in $scrim-coordinates {
+    $stop: hsla($hue, $saturation, $lightness, $alpha-value) percentage($color-stop/100);
+    $stops: append($stops, $stop, comma);
+  }
+
+  background: linear-gradient(unquote($direction), $stops);
+}

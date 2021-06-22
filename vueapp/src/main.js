@@ -4,6 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import Vuex from 'vuex'
 
+import { io } from 'socket.io-client'
+const socket = io('http://localhost:8080/socket.io/socket.io.js')
+
 Vue.config.productionTip = false
 
 Vue.use(Vuex)
@@ -15,7 +18,7 @@ const store = new Vuex.Store({
     roomSlug: null,
     players: {},
     isAdmin: false,
-    currentPlayer: null,
+    currentPlayer: null
   },
   mutations: {
     roomJoined(state, roomData) {
@@ -41,8 +44,8 @@ const store = new Vuex.Store({
         particles.style.display = 'block'
       }
       state.status = gameStatus
-    },
-  },
+    }
+  }
 })
 
 /* eslint-disable no-new */
@@ -50,5 +53,5 @@ new Vue({
   el: '#app',
   store: store,
   components: { App },
-  template: '<App/>',
+  template: '<App/>'
 })
