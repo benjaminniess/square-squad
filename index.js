@@ -15,14 +15,15 @@ const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const { InMemorySessionStore } = require('./lib/sessionStore')
 const packageJson = require('./package.json')
+const cors = require('cors')
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(
   session({
     secret: 'we will see later!',
     resave: false,
-    saveUninitialized: true,
-  }),
+    saveUninitialized: true
+  })
 )
 
 app.use(cookieParser())
@@ -49,7 +50,12 @@ global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')
 global.Matter = require('matter-js')
 
-global.io = require('socket.io')(server)
+global.io = require('socket.io')(server, {
+  cors: {
+    origin: 'http://localhost:1080',
+    methods: ['GET', 'POST']
+  }
+})
 
 // Force HTTPS + redirect multiple domains/subdomains
 app.use((req, res, next) => {
