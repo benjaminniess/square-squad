@@ -4,12 +4,19 @@ import Vue from 'vue'
 import App from './App'
 import Vuex from 'vuex'
 
+import VueRouter from 'vue-router'
+
+import Home from './components/Home.vue'
+import Room from './components/Room.vue'
+import Page404 from './components/Page404.vue'
+
 import { io } from 'socket.io-client'
 const socket = io('http://localhost:8080/socket.io/socket.io.js')
 
 Vue.config.productionTip = false
 
 Vue.use(Vuex)
+Vue.use(VueRouter)
 
 const store = new Vuex.Store({
   state: {
@@ -48,10 +55,24 @@ const store = new Vuex.Store({
   }
 })
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  store: store,
-  components: { App },
-  template: '<App/>'
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/',
+      component: Home,
+    },
+    {
+      path: '/room/:id',
+      component: Room,
+    },
+    {
+      path: '*',
+      component: Page404,
+    },
+  ],
 })
+
+new Vue({
+  router: router,
+  render: (h) => h(App),
+}).$mount('#app')

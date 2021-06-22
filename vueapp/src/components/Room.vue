@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import LobbySection from './components/LobbySection'
-import GameSection from './components/GameSection'
-import RankSection from './components/RankSection'
+import LobbySection from './LobbySection'
+import GameSection from './GameSection'
+import RankSection from './RankSection'
 
 export default {
   name: 'App',
