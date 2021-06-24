@@ -33,7 +33,7 @@ app.set('view engine', 'pug')
 app.set('views', './views')
 
 app.use(express.static(__dirname + '/public'))
-app.use(express.static(__dirname + '/vueapp/dist/static'))
+app.use(express.static(__dirname + '/vueapp/dist'))
 
 const server = require('http').Server(app)
 
