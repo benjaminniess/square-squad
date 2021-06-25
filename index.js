@@ -34,6 +34,7 @@ app.set('views', './views')
 
 app.use(express.static(__dirname + '/public'))
 app.use(express.static(__dirname + '/vueapp/dist'))
+app.use(express.static(__dirname + '/vueapp/static'))
 
 const server = require('http').Server(app)
 
