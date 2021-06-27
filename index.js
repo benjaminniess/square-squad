@@ -22,13 +22,14 @@ app.use(
   session({
     secret: 'we will see later!',
     resave: false,
-    saveUninitialized: true
-  })
+    saveUninitialized: true,
+  }),
 )
 
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors)
 app.set('view engine', 'pug')
 app.set('views', './views')
 
@@ -54,8 +55,8 @@ global.Matter = require('matter-js')
 global.io = require('socket.io')(server, {
   cors: {
     origin: 'http://localhost:1080',
-    methods: ['GET', 'POST']
-  }
+    methods: ['GET', 'POST'],
+  },
 })
 
 // Force HTTPS + redirect multiple domains/subdomains
