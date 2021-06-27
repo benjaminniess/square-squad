@@ -11,7 +11,12 @@ import Room from './components/Room.vue'
 import Page404 from './components/Page404.vue'
 
 import { io } from 'socket.io-client'
-const socket = io('http://localhost:8080/socket.io/socket.io.js')
+
+const homeUrl =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : ''
+const socket = io(homeUrl + '/socket.io/socket.io.js')
+
+const packageJson = require('../../package.json')
 
 Vue.config.productionTip = false
 
@@ -20,6 +25,8 @@ Vue.use(VueRouter)
 
 const store = new Vuex.Store({
   state: {
+    version: packageJson.version,
+    homeUrl,
     status: 'waiting',
     roomName: null,
     roomSlug: null,
@@ -59,20 +66,21 @@ const router = new VueRouter({
   routes: [
     {
       path: '/',
-      component: Home,
+      component: Home
     },
     {
       path: '/room/:id',
-      component: Room,
+      component: Room
     },
     {
       path: '*',
-      component: Page404,
-    },
-  ],
+      component: Page404
+    }
+  ]
 })
 
 new Vue({
-  router: router,
-  render: (h) => h(App),
+  router,
+  store,
+  render: (h) => h(App)
 }).$mount('#app')

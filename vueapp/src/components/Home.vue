@@ -1,5 +1,4 @@
 <template>
-
   <div class="super-wrapper">
     <div class="particles-js" id="particles-js"></div>
     <section class="wrapper">
@@ -28,9 +27,8 @@
     </section>
     <footer class="footer">
       <p class="text-center">
-        Version 1.1.2<a
-          href="https://discord.gg/zGZ2TVw6e4"
-          target="_blank"
+        Version {{ version
+        }}<a href="https://discord.gg/zGZ2TVw6e4" target="_blank"
           ><img :src="'/static/assets/images/discord.png'" width="32px"
         /></a>
       </p>
@@ -47,6 +45,11 @@ export default {
   },
   methods: {
     submit() {}
+  },
+  computed: {
+    version() {
+      return this.$store.state.version
+    }
   }
 }
 </script>

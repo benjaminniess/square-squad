@@ -5,11 +5,20 @@
 </template>
 
 <script>
+/**
+
+*/
 export default {
-  name: 'App',
+  created() {
+    particlesJS.load(
+      'particles-js',
+      this.$store.state.homeUrl + '/assets/js/particles.json'
+    )
+  },
+  name: 'App'
 }
 </script>
 
 <style>
-  @import '../static/assets/css/main.css';
+@import '../static/assets/css/main.css';
 </style>
