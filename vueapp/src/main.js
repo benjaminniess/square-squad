@@ -8,6 +8,7 @@ import VueRouter from 'vue-router'
 
 import Home from './components/Home.vue'
 import Room from './components/Room.vue'
+import Rooms from './components/Rooms.vue'
 import Page404 from './components/Page404.vue'
 
 import { io } from 'socket.io-client'
@@ -67,6 +68,10 @@ const router = new VueRouter({
     {
       path: '/',
       component: Home
+    },
+    {
+      path: '/rooms',
+      component: Rooms
     },
     {
       path: '/room/:id',

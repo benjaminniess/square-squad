@@ -2,9 +2,8 @@
   <div class="super-wrapper">
     <div class="particles-js" id="particles-js"></div>
     <section class="wrapper">
-      <h1 class="sqsq-logo" title="Square Squad">
-        <Logo />
-      </h1>
+      <Logo />
+
       <form
         class="sq-form"
         id="pre-home-form"
@@ -38,19 +37,13 @@
         </div>
       </form>
     </section>
-    <footer class="footer">
-      <p class="text-center">
-        Version {{ version
-        }}<a href="https://discord.gg/zGZ2TVw6e4" target="_blank"
-          ><img :src="'/static/assets/images/discord.png'" width="32px"
-        /></a>
-      </p>
-    </footer>
+    <Footer />
   </div>
 </template>
 
 <script>
 import Logo from './common/Logo'
+import Footer from './common/Footer'
 export default {
   data() {
     return {
@@ -62,18 +55,16 @@ export default {
   },
   name: 'Home',
   components: {
-    Logo
+    Logo,
+    Footer
   },
   methods: {
     checkForm(e) {
       e.preventDefault()
       localStorage.playerName = this.playerName
       localStorage.playerColor = this.playerColor
-    }
-  },
-  computed: {
-    version() {
-      return this.$store.state.version
+
+      this.$router.push('/rooms')
     }
   }
 }
