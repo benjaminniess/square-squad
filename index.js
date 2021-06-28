@@ -17,19 +17,33 @@ const { InMemorySessionStore } = require('./lib/sessionStore')
 const packageJson = require('./package.json')
 const cors = require('cors')
 
+let corsOption =
+  process.env.NODE_ENV !== 'development'
+    ? {
+        cors: {
+          origin: 'http://localhost:1080',
+          methods: ['GET', 'POST']
+        }
+      }
+    : {}
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors(corsOption))
+}
+
 app.set('trust proxy', 1) // trust first proxy
 app.use(
   session({
     secret: 'we will see later!',
     resave: false,
-    saveUninitialized: true,
-  }),
+    saveUninitialized: true
+  })
 )
 
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cors)
+
 app.set('view engine', 'pug')
 app.set('views', './views')
 
@@ -51,13 +65,7 @@ global.helpers = require(__base + 'lib/helpers')
 global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')
 global.Matter = require('matter-js')
-
-global.io = require('socket.io')(server, {
-  cors: {
-    origin: 'http://localhost:1080',
-    methods: ['GET', 'POST'],
-  },
-})
+global.io = require('socket.io')(server, corsOption)
 
 // Force HTTPS + redirect multiple domains/subdomains
 app.use((req, res, next) => {
