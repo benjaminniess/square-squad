@@ -15,7 +15,8 @@ import { io } from 'socket.io-client'
 
 const homeUrl =
   process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : ''
-const socket = io(homeUrl + '/socket.io/socket.io.js')
+
+const socket = io(homeUrl, { transports: ['websocket'] })
 
 const packageJson = require('../../package.json')
 
@@ -28,14 +29,19 @@ const store = new Vuex.Store({
   state: {
     version: packageJson.version,
     homeUrl,
+    socket,
     status: 'waiting',
     roomName: null,
     roomSlug: null,
     players: {},
     isAdmin: false,
-    currentPlayer: null
+    currentPlayer: null,
+    playerData: null
   },
   mutations: {
+    updatePlayerData(state, playerData) {
+      state.playerData = playerData
+    },
     roomJoined(state, roomData) {
       state.players = roomData.players
       state.currentPlayer = roomData.currentPlayer

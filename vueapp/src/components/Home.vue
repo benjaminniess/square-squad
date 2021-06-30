@@ -64,6 +64,14 @@ export default {
       localStorage.playerName = this.playerName
       localStorage.playerColor = this.playerColor
 
+      let playerData = {
+        name: this.playerName,
+        color: this.playerColor
+      }
+
+      this.$store.state.socket.emit('updatePlayerData', playerData)
+      this.$store.commit('updatePlayerData', playerData)
+
       this.$router.push('/rooms')
     }
   }
