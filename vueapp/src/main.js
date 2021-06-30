@@ -81,7 +81,7 @@ const router = new VueRouter({
       component: Rooms
     },
     {
-      path: '/room/:id',
+      path: '/rooms/:id',
       component: Room
     },
     {

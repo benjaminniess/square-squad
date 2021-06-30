@@ -45,6 +45,11 @@
 import Logo from './common/Logo'
 import Footer from './common/Footer'
 export default {
+  mounted() {
+    this.$store.state.socket.on('player-data-updated', () => {
+      this.$router.push('/rooms')
+    })
+  },
   data() {
     return {
       playerName: localStorage.playerName ? localStorage.playerName : null,
@@ -69,10 +74,8 @@ export default {
         color: this.playerColor
       }
 
-      this.$store.state.socket.emit('updatePlayerData', playerData)
+      this.$store.state.socket.emit('update-player-data', playerData)
       this.$store.commit('updatePlayerData', playerData)
-
-      this.$router.push('/rooms')
     }
   }
 }

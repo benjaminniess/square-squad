@@ -1,9 +1,68 @@
 'use_strict'
 
+const validator = require('validator')
+
 module.exports = function (app) {
   io.on('connection', (socket) => {
-    socket.on('updatePlayerData', (data) => {
-      helpers.updatePlayer(socket.id, data)
+    socket.on('update-player-data', (data) => {
+      let existingPlayer = helpers.getPlayer(socket.id)
+      if (!existingPlayer) {
+        existingPlayer = helpers.initPlayer(socket.id, data.name, data.color)
+        if (!existingPlayer) {
+          io.to(socket.id).emit('player-data-updated', {
+            success: false,
+            error: 'Error while initializing player'
+          })
+        } else {
+          io.to(socket.id).emit('player-data-updated', {
+            success: true
+          })
+        }
+
+        return
+      }
+
+      helpers.updatePlayer(socket.id, {
+        nickName: data.name,
+        color: data.color
+      })
+
+      io.to(socket.id).emit('player-data-updated', {
+        success: true
+      })
+    })
+
+    socket.on('rooms-refresh', () => {
+      io.to(socket.id).emit('rooms-refresh-result', {
+        success: true,
+        data: helpers.getRoomsData()
+      })
+    })
+
+    socket.on('rooms-create', (roomName) => {
+      let currentPlayer = helpers.getPlayer(socket.id)
+      if (!currentPlayer || !currentPlayer.nickName) {
+        io.to(socket.id).emit('rooms-create-result', {
+          success: false,
+          error: 'Player not logged'
+        })
+        return
+      }
+
+      roomName = validator.blacklist(roomName, "<>\\/'")
+      let roomSlug = helpers.createRoom(roomName)
+      if (!roomSlug) {
+        io.to(socket.id).emit('rooms-create-result', {
+          success: false,
+          error: 'This name is already taken'
+        })
+        return
+      }
+
+      io.to(socket.id).emit('rooms-create-result', {
+        success: true,
+        data: { roomSlug: roomSlug }
+      })
     })
 
     socket.on('disconnecting', () => {
@@ -216,10 +275,6 @@ io.on('connection', (socket) => {
         }
       })
     }
-  })
-
-  socket.on('rooms-refresh', function () {
-    io.to(socket.id).emit('rooms-refresh-result', helpers.getRoomsData())
   })
 
   socket.on('keyPressed', function (socketData) {

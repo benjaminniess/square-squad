@@ -24,21 +24,28 @@
         </p>
         <p>You first need to select a room or create a new one</p>
       </div>
-      <a id="rooms-refresh" href="#">[Refresh]</a>
+      <a id="rooms-refresh" href="#" @click="refreshRooms">[Refresh]</a>
       <div class="rooms-list">
         <h3 class="rooms-list__title">Join a room…</h3>
         <div id="rooms-holder">
-          <p class="rooms-list__no-rooms">No rooms yet :(</p>
+          <ul v-if="rooms" class="rooms-list__list">
+            <li v-for="room in rooms" :key="room.id" class="rooms-list__item">
+              <a class="rooms-list__link" :href="'rooms/' + room.slug">{{
+                room.name
+              }}</a>
+            </li>
+          </ul>
+          <p v-else class="rooms-list__no-rooms">No rooms yet :(</p>
         </div>
       </div>
-      <form class="sq-form" method="post" action="/rooms">
+      <form class="sq-form" method="post" action="#" @submit="checkForm">
         <div class="input-field">
           <label for="newRoom">Or create a new one?</label
           ><input
             id="newRoom"
             placeholder="Give it a name"
             type="text"
-            name="new-room"
+            v-model="newRoomName"
           />
         </div>
         <div class="input-field input-submit text-center">
@@ -55,16 +62,48 @@ import Logo from './common/Logo'
 import Footer from './common/Footer'
 export default {
   name: 'Rooms',
+  data() {
+    return {
+      rooms: [],
+      newRoomName: null
+    }
+  },
   created() {
     if (this.$store.state.playerData === null) {
       this.$router.push('/')
     }
+
+    this.$store.state.socket.on('rooms-refresh-result', (result) => {
+      if (!result.success) {
+        alert(result.error)
+        return
+      }
+
+      this.rooms = result.data
+    })
+
+    this.$store.state.socket.on('rooms-create-result', (result) => {
+      if (!result.success) {
+        alert(result.error)
+        return
+      }
+
+      this.$router.push('/rooms/' + result.data.roomSlug)
+    })
   },
   components: {
     Logo,
     Footer
   },
-  methods: {},
+  methods: {
+    refreshRooms() {
+      this.$store.state.socket.emit('rooms-refresh')
+    },
+    checkForm(e) {
+      e.preventDefault()
+      this.$store.state.socket.emit('rooms-create', this.newRoomName)
+    }
+  },
   computed: {
     playerData() {
       return this.$store.state.playerData
