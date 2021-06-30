@@ -18,12 +18,18 @@
             class="user-name"
             href="/"
             id="playerNameLabel"
+<<<<<<< HEAD
             :style="{ color: playerData ? playerData.color : null }"
             ><span>{{ playerData ? playerData.name : null }}</span></a
+=======
+            :style="{ color: playerData.color }"
+            ><span>{{ playerData.name }}</span></a
+>>>>>>> origin/vue
           >
         </p>
         <p>You first need to select a room or create a new one</p>
       </div>
+<<<<<<< HEAD
       <a id="rooms-refresh" href="#" @click="refreshRooms">[Refresh]</a>
       <div class="rooms-list">
         <h3 class="rooms-list__title">Join a room…</h3>
@@ -39,13 +45,27 @@
         </div>
       </div>
       <form class="sq-form" method="post" action="#" @submit="checkForm">
+=======
+      <a id="rooms-refresh" href="#">[Refresh]</a>
+      <div class="rooms-list">
+        <h3 class="rooms-list__title">Join a room…</h3>
+        <div id="rooms-holder">
+          <p class="rooms-list__no-rooms">No rooms yet :(</p>
+        </div>
+      </div>
+      <form class="sq-form" method="post" action="/rooms">
+>>>>>>> origin/vue
         <div class="input-field">
           <label for="newRoom">Or create a new one?</label
           ><input
             id="newRoom"
             placeholder="Give it a name"
             type="text"
+<<<<<<< HEAD
             v-model="newRoomName"
+=======
+            name="new-room"
+>>>>>>> origin/vue
           />
         </div>
         <div class="input-field input-submit text-center">
@@ -62,6 +82,7 @@ import Logo from './common/Logo'
 import Footer from './common/Footer'
 export default {
   name: 'Rooms',
+<<<<<<< HEAD
   data() {
     return {
       rooms: [],
@@ -90,11 +111,18 @@ export default {
 
       this.$router.push('/rooms/' + result.data.roomSlug)
     })
+=======
+  mounted() {
+    if (this.$store.state.playerData === null) {
+      this.$router.push('/')
+    }
+>>>>>>> origin/vue
   },
   components: {
     Logo,
     Footer
   },
+<<<<<<< HEAD
   methods: {
     refreshRooms() {
       this.$store.state.socket.emit('rooms-refresh')
@@ -104,6 +132,9 @@ export default {
       this.$store.state.socket.emit('rooms-create', this.newRoomName)
     }
   },
+=======
+  methods: {},
+>>>>>>> origin/vue
   computed: {
     playerData() {
       return this.$store.state.playerData
