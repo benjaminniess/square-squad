@@ -43,9 +43,9 @@
           <input id="bonus-frequency" type="range" min="1" max="10" value="5" />
           Too many bonus
         </p>
-        <a class="btn" @click="startGame" href="#">play</a>
+        <a class="btn" @click="startGame">play</a>
       </div>
-      <a class="btn" href="/">back</a>
+      <a class="btn" @click="back">back</a>
     </div>
   </section>
 </template>
@@ -65,13 +65,16 @@ export default {
     },
     currentPlayer() {
       return this.$store.state.currentPlayer
-    },
+    }
   },
   methods: {
     startGame() {
       this.$parent.startGame()
     },
-  },
+    back() {
+      this.$router.push('/rooms')
+    }
+  }
 }
 </script>
 

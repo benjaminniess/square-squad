@@ -16,7 +16,8 @@
         <p class="text-center">
           <a
             class="user-name"
-            href="/"
+            href="#"
+            @click="goToHome"
             id="playerNameLabel"
             :style="{ color: playerData ? playerData.color : null }"
             ><span>{{ playerData ? playerData.name : null }}</span></a
@@ -28,11 +29,14 @@
       <div class="rooms-list">
         <h3 class="rooms-list__title">Join a room…</h3>
         <div id="rooms-holder">
-          <ul v-if="rooms" class="rooms-list__list">
+          <ul v-if="rooms.length > 0" class="rooms-list__list">
             <li v-for="room in rooms" :key="room.id" class="rooms-list__item">
-              <a class="rooms-list__link" :href="'rooms/' + room.slug">{{
-                room.name
-              }}</a>
+              <a
+                class="rooms-list__link"
+                href="#"
+                @click="goToRoom(room.slug)"
+                >{{ room.name }}</a
+              >
             </li>
           </ul>
           <p v-else class="rooms-list__no-rooms">No rooms yet :(</p>
@@ -79,7 +83,11 @@ export default {
         return
       }
 
-      this.rooms = result.data
+      if (result.data.length === 0) {
+        this.rooms = []
+      } else {
+        this.rooms = result.data
+      }
     })
 
     this.$store.state.socket.on('rooms-create-result', (result) => {
@@ -90,6 +98,8 @@ export default {
 
       this.$router.push('/rooms/' + result.data.roomSlug)
     })
+
+    this.refreshRooms()
   },
   components: {
     Logo,
@@ -102,6 +112,12 @@ export default {
     checkForm(e) {
       e.preventDefault()
       this.$store.state.socket.emit('rooms-create', this.newRoomName)
+    },
+    goToRoom(slug) {
+      this.$router.push('/rooms/' + slug)
+    },
+    goToHome() {
+      this.$router.push('/')
     }
   },
   computed: {
