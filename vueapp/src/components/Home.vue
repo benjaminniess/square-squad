@@ -74,15 +74,8 @@ export default {
         color: this.playerColor
       }
 
-<<<<<<< HEAD
       this.$store.state.socket.emit('update-player-data', playerData)
       this.$store.commit('updatePlayerData', playerData)
-=======
-      this.$store.state.socket.emit('updatePlayerData', playerData)
-      this.$store.commit('updatePlayerData', playerData)
-
-      this.$router.push('/rooms')
->>>>>>> origin/vue
     }
   }
 }
