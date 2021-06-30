@@ -1,99 +1,19 @@
 'use_strict'
 
-const express = require('express')
-const router = express.Router()
-const cookie = require('cookie')
-const validator = require('validator')
-
 module.exports = function (app) {
-  app.use('/rooms', router)
+  io.on('connection', (socket) => {
+    socket.on('updatePlayerData', (data) => {
+      helpers.updatePlayer(socket.id, data)
+    })
+
+    socket.on('disconnecting', () => {
+      helpers.deletePlayer(socket.id)
+    })
+  })
 }
 
-/**
- * Global check. Nobody is allowed here if no session ID or no nickname
- */
-router.get('*', function (req, res, next) {
-  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
-  if (!currentPlayer || !currentPlayer.getNickname()) {
-    res.redirect('/')
-  } else {
-    next()
-  }
-})
-
-/**
- * The rooms list view
- */
-router.get('/', function (req, res, next) {
-  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
-  let rooms = helpers.getRooms()
-
-  // On dev mode, auto create a user and a room
-  if (
-    process.env.AUTO_CREATE_ROOM &&
-    process.env.AUTO_CREATE_ROOM === 'true' &&
-    !_.size(rooms)
-  ) {
-    let roomSlug = helpers.createRoom('TEST ROOM')
-
-    let room = helpers.getRoom(roomSlug)
-    room.setAdminPlayer(currentPlayer.getPublicID())
-    res.redirect(room.getLobbyURL())
-
-    return
-  }
-
-  res.render('rooms', {
-    playerName: currentPlayer.getNickname(),
-    playerColor: currentPlayer.getColor()
-  })
-})
-
-/**
- * A single room view
- */
-router.get('/:roomSlug', function (req, res, next) {
-  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
-  let room = helpers.getRoom(req.params.roomSlug)
-  if (!room) {
-    res.render('error', { message: 'This room does not exist' })
-    return
-  }
-
-  let gameStatus = room.getGame().getStatus()
-
-  res.render('room', {
-    roomName: room.getName(),
-    roomSlug: room.getSlug(),
-    playerName: currentPlayer.getNickname(),
-    playerColor: currentPlayer.getColor(),
-    isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
-    status: gameStatus,
-    gameJS: '/assets/' + room.getGame().getSlug() + '/play.js'
-  })
-})
-
-/**
- * The room's add form handling
- */
-router.post('/', function (req, res, next) {
-  let currentPlayer = helpers.getPlayer(req.cookies['connect.sid'])
-  let roomName = validator.blacklist(req.body['new-room'], "<>\\/'")
-  let roomSlug = helpers.createRoom(roomName)
-  if (!currentPlayer) {
-    res.redirect('/')
-    return
-  }
-
-  if (!roomSlug) {
-    res.render('error', { message: 'This name is already taken' })
-    return
-  }
-
-  let room = helpers.getRoom(roomSlug)
-  room.setAdminPlayer(currentPlayer.getPublicID())
-  res.redirect(room.getLobbyURL())
-})
+return
+//TODO: redispatch code
 
 io.on('connection', (socket) => {
   let cookies = cookie.parse(socket.handshake.headers.cookie)
