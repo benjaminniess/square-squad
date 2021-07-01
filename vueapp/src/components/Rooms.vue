@@ -25,7 +25,9 @@
         </p>
         <p>You first need to select a room or create a new one</p>
       </div>
-      <a id="rooms-refresh" href="#" @click="refreshRooms">[Refresh]</a>
+      <a id="rooms-refresh" href="#" @click="refreshRoomsEventHandler"
+        >[Refresh]</a
+      >
       <div class="rooms-list">
         <h3 class="rooms-list__title">Join a room…</h3>
         <div id="rooms-holder">
@@ -72,7 +74,7 @@ export default {
       newRoomName: null
     }
   },
-  created() {
+  mounted() {
     if (this.$store.state.playerData === null) {
       this.$router.push('/')
     }
@@ -101,11 +103,19 @@ export default {
 
     this.refreshRooms()
   },
+  destroyed() {
+    this.$store.state.socket.off('rooms-refresh-result')
+    this.$store.state.socket.off('rooms-create-result')
+  },
   components: {
     Logo,
     Footer
   },
   methods: {
+    refreshRoomsEventHandler(e) {
+      e.preventDefault()
+      this.refreshRooms()
+    },
     refreshRooms() {
       this.$store.state.socket.emit('rooms-refresh')
     },

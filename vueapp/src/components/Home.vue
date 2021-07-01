@@ -44,11 +44,16 @@
 <script>
 import Logo from './common/Logo'
 import Footer from './common/Footer'
+
 export default {
   mounted() {
     this.$store.state.socket.on('player-data-updated', () => {
       this.$router.push('/rooms')
     })
+  },
+  destroyed() {
+    // Not to have double listener next time the component is mounted
+    this.$store.state.socket.off('player-data-updated')
   },
   data() {
     return {
