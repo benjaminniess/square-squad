@@ -1,5 +1,13 @@
 <template>
-  <div id="vue-app">
+  <div class="super-wrapper">
+    <div class="particles-js" id="particles-js">
+      <canvas
+        class="particles-js-canvas-el"
+        width="1905"
+        height="525"
+        style="width: 100%; height: 100%;"
+      ></canvas>
+    </div>
     <LobbySection v-show="status == 'waiting'"></LobbySection>
     <GameSection v-show="status == 'playing'"></GameSection>
     <RankSection v-show="status == 'end-round'"></RankSection>
@@ -10,6 +18,7 @@
 import LobbySection from './LobbySection'
 import GameSection from './GameSection'
 import RankSection from './RankSection'
+import Logo from './common/Logo'
 
 export default {
   name: 'App',
@@ -17,6 +26,7 @@ export default {
     LobbySection,
     GameSection,
     RankSection,
+    Logo
   },
   methods: {
     startGame() {
@@ -28,15 +38,15 @@ export default {
         roomSlug: this.$store.state.roomSlug,
         roundsNumber: document.getElementById('rounds-number').value,
         obstaclesSpeed: document.getElementById('obstacles-speed').value,
-        bonusFrequency: document.getElementById('bonus-frequency').value,
+        bonusFrequency: document.getElementById('bonus-frequency').value
       })
-    },
+    }
   },
   computed: {
     status() {
       return this.$store.state.status
-    },
-  },
+    }
+  }
 }
 </script>
 
