@@ -1,6 +1,5 @@
 <template>
   <div class="super-wrapper">
-    <div class="particles-js" id="particles-js"></div>
     <section class="wrapper">
       <Logo />
 

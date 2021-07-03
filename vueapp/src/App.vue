@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <div class="particles-js" id="particles-js"></div>
     <router-view></router-view>
   </div>
 </template>
