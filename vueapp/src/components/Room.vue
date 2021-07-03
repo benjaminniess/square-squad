@@ -28,6 +28,18 @@ export default {
     RankSection,
     Logo
   },
+  mounted() {
+    this.$store.state.socket.emit('room-join', {
+      roomSlug: this.$route.params.id
+    })
+    this.$store.state.socket.on('refresh-players', (data) => {
+      console.log(data)
+    })
+  },
+  destroyed() {
+    // Not to have double listener next time the component is mounted
+    this.$store.state.socket.off('refresh-players')
+  },
   methods: {
     startGame() {
       if (typeof gtag !== 'undefined') {

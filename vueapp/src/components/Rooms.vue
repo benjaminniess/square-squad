@@ -75,10 +75,12 @@ export default {
     }
   },
   mounted() {
+    // Not "logged"? Go back to home
     if (this.$store.state.playerData === null) {
       this.$router.push('/')
     }
 
+    // SOCKET CALLBACK: Update the rooms var after socket result
     this.$store.state.socket.on('rooms-refresh-result', (result) => {
       if (!result.success) {
         alert(result.error)
@@ -92,15 +94,18 @@ export default {
       }
     })
 
+    // SOCKET CALLBACK: The room creation result
     this.$store.state.socket.on('rooms-create-result', (result) => {
       if (!result.success) {
         alert(result.error)
         return
       }
 
-      this.$router.push('/rooms/' + result.data.roomSlug)
+      // Redirect to the new room
+      this.goToRoom(result.data.roomSlug)
     })
 
+    // First refresh everytime the rooms view is mounted
     this.refreshRooms()
   },
   destroyed() {
@@ -112,6 +117,7 @@ export default {
     Footer
   },
   methods: {
+    // The refresh rooms "on click" behaviour
     refreshRoomsEventHandler(e) {
       e.preventDefault()
       this.refreshRooms()

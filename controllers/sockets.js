@@ -39,6 +39,37 @@ module.exports = function (app) {
       })
     })
 
+    // When player ask for joining a room
+    socket.on('room-join', (data) => {
+      let room = helpers.getRoom(data.roomSlug)
+      if (!room) {
+        return
+      }
+
+      let currentPlayer = helpers.getPlayer(socket.id)
+      let game = room.getGame()
+      let gameStatus = game.getStatus()
+      socket.join(room.getSlug())
+      currentPlayer.resetData({
+        isSpectator: gameStatus === 'playing'
+      })
+      io.to(socket.id).emit('room-joined', {
+        roomSlug: room.getSlug(),
+        roomName: room.getName(),
+        isAdmin: room.getAdminPlayer() === currentPlayer.getSocketID(),
+        currentPlayer: currentPlayer.getSocketID(),
+        gameStatus: gameStatus
+      })
+      if (gameStatus === 'playing') {
+        io.to(socket.id).emit('countdown-update', {
+          timeleft: 0,
+          gameData: game.getBasicData()
+        })
+      }
+
+      room.refreshPlayers()
+    })
+
     socket.on('rooms-create', (roomName) => {
       let currentPlayer = helpers.getPlayer(socket.id)
       if (!currentPlayer || !currentPlayer.nickName) {
@@ -89,37 +120,6 @@ io.on('connection', (socket) => {
       sessionID: cookies['connect.sid']
     })
   }
-
-  // When player ask for joining a room
-  socket.on('room-join', (data) => {
-    let room = helpers.getRoom(data.roomSlug)
-    let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
-    if (room) {
-      let game = room.getGame()
-      let gameStatus = game.getStatus()
-      socket.join(room.getSlug())
-      currentPlayer.resetData({
-        socketID: socket.id,
-        isSpectator: gameStatus === 'playing'
-      })
-      io.to(socket.id).emit('room-joined', {
-        roomSlug: room.getSlug(),
-        roomName: room.getName(),
-        isAdmin: room.getAdminPlayer() === currentPlayer.getPublicID(),
-        currentPlayer: currentPlayer.getPublicID(),
-        gameStatus: gameStatus
-      })
-      if (gameStatus === 'playing') {
-        io.to(socket.id).emit('countdown-update', {
-          timeleft: 0,
-          gameData: game.getBasicData()
-        })
-      }
-
-      room.refreshPlayers()
-    }
-  })
 
   socket.on('disconnecting', () => {
     socket.rooms.forEach((roomSlug) => {
