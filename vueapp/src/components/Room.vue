@@ -8,7 +8,12 @@
         style="width: 100%; height: 100%;"
       ></canvas>
     </div>
-    <LobbySection v-show="status == 'waiting'"></LobbySection>
+    <LobbySection
+      v-bind:players="players"
+      v-bind:room="room"
+      v-bind:isAdmin="isAdmin"
+      v-show="status == 'waiting'"
+    ></LobbySection>
     <GameSection v-show="status == 'playing'"></GameSection>
     <RankSection v-show="status == 'end-round'"></RankSection>
   </div>
@@ -28,6 +33,14 @@ export default {
     RankSection,
     Logo
   },
+  data() {
+    return {
+      players: [],
+      room: {},
+      isAdmin: false,
+      status: 'waiting'
+    }
+  },
   mounted() {
     // Not "logged"? Go back to home
     if (this.$store.state.playerData === null) {
@@ -38,13 +51,18 @@ export default {
       roomSlug: this.$route.params.id
     })
 
+    this.$store.state.socket.on('room-joined', (room) => {
+      this.room = room
+    })
+
     this.$store.state.socket.on('refresh-players', (data) => {
-      this.$store.commit('refreshPlayers', data)
+      this.players = data
     })
   },
   destroyed() {
     // Not to have double listener next time the component is mounted
     this.$store.state.socket.off('refresh-players')
+    this.$store.state.socket.off('room-joined')
 
     this.$store.state.socket.emit('room-leave')
   },
@@ -60,14 +78,6 @@ export default {
         obstaclesSpeed: document.getElementById('obstacles-speed').value,
         bonusFrequency: document.getElementById('bonus-frequency').value
       })
-    }
-  },
-  computed: {
-    status() {
-      return this.$store.state.status
-    },
-    players() {
-      return this.$store.state.players
     }
   }
 }

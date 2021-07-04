@@ -30,33 +30,11 @@ const store = new Vuex.Store({
     version: packageJson.version,
     homeUrl,
     socket,
-    status: 'waiting',
-    roomName: null,
-    roomSlug: null,
-    players: {},
-    isAdmin: false,
-    currentPlayer: null,
     playerData: null
   },
   mutations: {
     updatePlayerData(state, playerData) {
       state.playerData = playerData
-    },
-    roomJoined(state, roomData) {
-      state.players = roomData.players
-      state.currentPlayer = roomData.currentPlayer
-      state.isAdmin = roomData.isAdmin
-      state.status = roomData.status
-      state.roomName = roomData.roomName
-      state.roomSlug = roomData.roomSlug
-    },
-    refreshPlayers(state, refreshedPlayers) {
-      state.players = refreshedPlayers
-      refreshedPlayers.map((player) => {
-        if (player.isAdmin && player.id === state.currentPlayer) {
-          state.isAdmin = true
-        }
-      })
     },
     setGameStatus(state, gameStatus) {
       if (gameStatus === 'playing') {

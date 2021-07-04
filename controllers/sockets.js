@@ -57,11 +57,14 @@ module.exports = function (app) {
       currentPlayer.resetData({
         isSpectator: gameStatus === 'playing'
       })
+
+      if (!room.getAdminPlayer()) {
+        room.setAdminPlayer(socket.id)
+      }
+
       io.to(socket.id).emit('room-joined', {
         roomSlug: room.getSlug(),
         roomName: room.getName(),
-        isAdmin: room.getAdminPlayer() === currentPlayer.getSocketID(),
-        currentPlayer: currentPlayer.getSocketID(),
         gameStatus: gameStatus
       })
       if (gameStatus === 'playing') {
@@ -108,6 +111,10 @@ module.exports = function (app) {
           let room = helpers.getRoom(roomSlug)
           if (_.size(room.getPlayers()) === 0) {
             helpers.deleteRoom(roomSlug)
+          }
+
+          if (room.getAdminPlayer() === socket.id) {
+            room.resetAdminPlayer()
           }
 
           room.refreshPlayers(socket.id)
