@@ -1,7 +1,7 @@
 <template>
   <section class="room-section lobby-section" id="section-lobby">
     <div class="wrapper">
-      <!--<logo></logo>-->
+      <Logo />
       <h3 class="rooms-list__title">Room: {{ roomName }}</h3>
 
       <ul v-if="players" class="players-list players no-score">
@@ -51,8 +51,12 @@
 </template>
 
 <script>
+import Logo from './common/Logo'
 export default {
   name: 'LobbySection',
+  components: {
+    Logo
+  },
   computed: {
     roomName() {
       return this.$store.state.roomName
