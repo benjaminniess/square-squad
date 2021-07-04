@@ -16,6 +16,7 @@
     ></LobbySection>
     <GameSection v-show="status == 'playing'"></GameSection>
     <RankSection v-show="status == 'end-round'"></RankSection>
+    <Footer />
   </div>
 </template>
 
@@ -24,6 +25,7 @@ import LobbySection from './LobbySection'
 import GameSection from './GameSection'
 import RankSection from './RankSection'
 import Logo from './common/Logo'
+import Footer from './common/Footer'
 
 export default {
   name: 'App',
@@ -31,7 +33,8 @@ export default {
     LobbySection,
     GameSection,
     RankSection,
-    Logo
+    Logo,
+    Footer
   },
   data() {
     return {
