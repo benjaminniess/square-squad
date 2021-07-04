@@ -14,7 +14,13 @@
       v-bind:isAdmin="isAdmin"
       v-show="status == 'waiting'"
     ></LobbySection>
-    <GameSection v-show="status == 'playing'"></GameSection>
+    <GameSection
+      v-bind:players="players"
+      v-bind:room="room"
+      v-bind:isAdmin="isAdmin"
+      v-bind:gameData="gameData"
+      v-show="status == 'playing'"
+    ></GameSection>
     <RankSection v-show="status == 'end-round'"></RankSection>
     <Footer />
   </div>
@@ -40,6 +46,9 @@ export default {
     return {
       players: [],
       room: {},
+      gameData: {
+        timeLeft: 2
+      },
       isAdmin: false,
       status: 'waiting'
     }
@@ -61,27 +70,25 @@ export default {
     this.$store.state.socket.on('refresh-players', (data) => {
       this.players = data
     })
+
+    this.$store.state.socket.on('game-is-starting', (data) => {
+      this.gameData.currentRound = data.currentRound
+      this.gameData.totalRounds = data.totalRounds
+      this.status = 'playing'
+    })
+
+    this.$store.state.socket.on('countdown-update', (data) => {
+      this.gameData.timeLeft = parseInt(data.timeleft)
+    })
   },
   destroyed() {
     // Not to have double listener next time the component is mounted
     this.$store.state.socket.off('refresh-players')
     this.$store.state.socket.off('room-joined')
+    this.$store.state.socket.off('game-is-starting')
+    this.$store.state.socket.off('countdown-update')
 
     this.$store.state.socket.emit('room-leave')
-  },
-  methods: {
-    startGame() {
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'Start Game')
-      }
-
-      socket.emit('start-game', {
-        roomSlug: this.$store.state.roomSlug,
-        roundsNumber: document.getElementById('rounds-number').value,
-        obstaclesSpeed: document.getElementById('obstacles-speed').value,
-        bonusFrequency: document.getElementById('bonus-frequency').value
-      })
-    }
   }
 }
 </script>

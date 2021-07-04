@@ -23,13 +23,21 @@
       >
         <h4>Rounds number</h4>
         <p>
-          <input id="rounds-number" type="number" value="3" min="1" max="100" />
+          <input
+            id="rounds-number"
+            v-model="roundsNumber"
+            type="number"
+            value="3"
+            min="1"
+            max="100"
+          />
         </p>
         <h4>Obstacles speed</h4>
         <p>
           Slow
           <input
             id="obstacles-speed"
+            v-model="obstaclesSpeed"
             type="range"
             min="1"
             max="30"
@@ -40,7 +48,14 @@
         <h4>Bonus frequency</h4>
         <p>
           No bonus
-          <input id="bonus-frequency" type="range" min="1" max="10" value="5" />
+          <input
+            id="bonus-frequency"
+            v-model="bonusFrequency"
+            type="range"
+            min="1"
+            max="10"
+            value="5"
+          />
           Too many bonus
         </p>
         <a class="btn" @click="startGame">play</a>
@@ -56,6 +71,13 @@ export default {
   name: 'LobbySection',
   components: {
     Logo
+  },
+  data() {
+    return {
+      roundsNumber: 3,
+      obstaclesSpeed: 15,
+      bonusFrequency: 5
+    }
   },
   props: {
     players: [],
@@ -82,6 +104,18 @@ export default {
     },
     back() {
       this.$router.push('/rooms')
+    },
+    startGame() {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'Start Game')
+      }
+
+      this.$store.state.socket.emit('start-game', {
+        roomSlug: this.room.roomSlug,
+        roundsNumber: this.roundsNumber,
+        obstaclesSpeed: this.obstaclesSpeed,
+        bonusFrequency: this.bonusFrequency
+      })
     }
   }
 }
