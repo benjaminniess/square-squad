@@ -29,16 +29,24 @@ export default {
     Logo
   },
   mounted() {
+    // Not "logged"? Go back to home
+    if (this.$store.state.playerData === null) {
+      this.$router.push('/')
+    }
+
     this.$store.state.socket.emit('room-join', {
       roomSlug: this.$route.params.id
     })
+
     this.$store.state.socket.on('refresh-players', (data) => {
-      console.log(data)
+      this.$store.commit('refreshPlayers', data)
     })
   },
   destroyed() {
     // Not to have double listener next time the component is mounted
     this.$store.state.socket.off('refresh-players')
+
+    this.$store.state.socket.emit('room-leave')
   },
   methods: {
     startGame() {
@@ -57,6 +65,9 @@ export default {
   computed: {
     status() {
       return this.$store.state.status
+    },
+    players() {
+      return this.$store.state.players
     }
   }
 }

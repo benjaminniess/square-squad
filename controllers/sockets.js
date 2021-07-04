@@ -47,6 +47,10 @@ module.exports = function (app) {
       }
 
       let currentPlayer = helpers.getPlayer(socket.id)
+      if (!currentPlayer) {
+        return
+      }
+
       let game = room.getGame()
       let gameStatus = game.getStatus()
       socket.join(room.getSlug())
@@ -96,8 +100,32 @@ module.exports = function (app) {
       })
     })
 
+    socket.on('room-leave', () => {
+      socket.rooms.forEach((roomSlug) => {
+        if (socket.id !== roomSlug) {
+          socket.leave(roomSlug)
+
+          let room = helpers.getRoom(roomSlug)
+          if (_.size(room.getPlayers()) === 0) {
+            helpers.deleteRoom(roomSlug)
+          }
+
+          room.refreshPlayers(socket.id)
+        }
+      })
+    })
+
     socket.on('disconnecting', () => {
       helpers.deletePlayer(socket.id)
+      socket.rooms.forEach((roomSlug) => {
+        let room = helpers.getRoom(roomSlug)
+        if (room) {
+          if (room.getAdminPlayer() === socket.id) {
+            room.resetAdminPlayer()
+          }
+          room.refreshPlayers(socket.id)
+        }
+      })
     })
   })
 }
