@@ -2,7 +2,7 @@
   <section class="room-section lobby-section" id="section-lobby">
     <div class="wrapper">
       <Logo />
-      <h3 class="rooms-list__title">Room: {{ roomName }}</h3>
+      <h3 class="rooms-list__title">Room: {{ room.roomName }}</h3>
 
       <ul v-if="players" class="players-list players no-score">
         <li
@@ -57,18 +57,23 @@ export default {
   components: {
     Logo
   },
+  props: {
+    players: [],
+    room: {}
+  },
   computed: {
-    roomName() {
-      return this.$store.state.roomName
-    },
-    players() {
-      return this.$store.state.players
-    },
     isAdmin() {
-      return this.$store.state.isAdmin
+      let isAdmin = false
+      this.players.map((player) => {
+        if (player.id === this.currentPlayer && player.isAdmin) {
+          isAdmin = true
+        }
+      })
+
+      return isAdmin
     },
     currentPlayer() {
-      return this.$store.state.currentPlayer
+      return this.$store.state.socket.id
     }
   },
   methods: {
