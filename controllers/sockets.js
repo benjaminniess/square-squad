@@ -33,6 +33,7 @@ module.exports = function (app) {
     })
 
     socket.on('rooms-refresh', () => {
+      helpers.deleteEmptyRooms()
       io.to(socket.id).emit('rooms-refresh-result', {
         success: true,
         data: helpers.getRoomsData()
