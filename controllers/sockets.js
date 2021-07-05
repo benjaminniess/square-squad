@@ -258,7 +258,7 @@ module.exports = function (app) {
         }
 
         io.to(data.roomSlug).emit('countdown-update', {
-          timeleft: timeleft,
+          timeleft: parseInt(timeleft),
           gameData: game.getBasicData()
         })
 

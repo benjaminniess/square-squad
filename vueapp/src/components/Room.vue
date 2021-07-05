@@ -47,7 +47,7 @@ export default {
       players: [],
       room: {},
       gameData: {
-        timeLeft: 2
+        timeLeft: null
       },
       isAdmin: false,
       status: 'waiting'
@@ -80,6 +80,39 @@ export default {
     this.$store.state.socket.on('countdown-update', (data) => {
       this.gameData.timeLeft = parseInt(data.timeleft)
     })
+
+    this.$store.state.socket.on('in-game-countdown-update', (data) => {
+      console.log(data)
+      this.gameData.timeLeft = parseInt(data.timeleft)
+
+      if (data.timeleft == 0) {
+        this.gameData.timeLeft = 'Game over'
+        this.status = 'end-round'
+
+        // TODO: get list of users with points
+
+        if (data.gameStatus === 'waiting') {
+          backButton.style.display = 'block'
+        } else {
+          backButton.style.display = 'none'
+          let timeleft = 3
+          let countdownTimer = setInterval(function () {
+            if (timeleft <= 0) {
+              clearInterval(countdownTimer)
+              if (typeof gtag !== 'undefined') {
+                gtag('event', 'Start new round')
+              }
+              this.$store.state.socket.emit('start-game', {
+                roomSlug: roomSlug
+              })
+              this.gameData.timeLeft = 'Starting...'
+            }
+
+            timeleft -= 1
+          }, 1000)
+        }
+      }
+    })
   },
   destroyed() {
     // Not to have double listener next time the component is mounted
@@ -87,6 +120,7 @@ export default {
     this.$store.state.socket.off('room-joined')
     this.$store.state.socket.off('game-is-starting')
     this.$store.state.socket.off('countdown-update')
+    this.$store.state.socket.off('in-game-countdown-update')
 
     this.$store.state.socket.emit('room-leave')
   }

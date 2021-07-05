@@ -30,6 +30,7 @@
         <h1
           v-if="gameData.timeLeft > 0"
           class="play-section__countdown"
+          style="opacity: 1;"
           id="countdown-text"
         >
           {{ gameData.timeLeft }}
