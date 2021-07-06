@@ -268,6 +268,27 @@ module.exports = function (app) {
   })
 }
 
+setInterval(refreshData, 10)
+
+let lockedRefresh = false
+function refreshData() {
+  if (lockedRefresh) {
+    return
+  }
+
+  lockedRefresh = true
+  _.forEach(helpers.getRooms(), (room) => {
+    let roomGame = room.getGame()
+    let status = room.getGame().getStatus()
+
+    if (roomGame && (status === 'playing' || status === 'starting')) {
+      io.to(room.getSlug()).emit('refreshCanvas', roomGame.refreshData())
+    }
+  })
+
+  lockedRefresh = false
+}
+
 return
 //TODO: redispatch code
 
@@ -415,24 +436,3 @@ io.on('connection', (socket) => {
     }
   })
 })
-
-setInterval(refreshData, 10)
-
-let lockedRefresh = false
-function refreshData() {
-  if (lockedRefresh) {
-    return
-  }
-
-  lockedRefresh = true
-  _.forEach(helpers.getRooms(), (room) => {
-    let roomGame = room.getGame()
-    let status = room.getGame().getStatus()
-
-    if (roomGame && (status === 'playing' || status === 'starting')) {
-      io.to(room.getSlug()).emit('refreshCanvas', roomGame.refreshData())
-    }
-  })
-
-  lockedRefresh = false
-}
