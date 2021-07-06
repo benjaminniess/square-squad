@@ -21,8 +21,8 @@
               <span>[{{ player.score }}]</span>
             </li>
           </ul>
-          <h1 id="points-text">
-            0
+          <h1>
+            {{ pointsText }}
           </h1>
         </div>
       </aside>
@@ -43,12 +43,129 @@
 
 <script>
 import Logo from './common/Logo'
-import Footer from './common/Footer'
+
 export default {
   name: 'GameSection',
+  mounted() {
+    let canvas = document.getElementById('gameCanvas')
+    let ctx = canvas ? canvas.getContext('2d') : null
+
+    let bonusImage = new Image()
+    bonusImage.src = this.$store.state.homeUrl + '/assets/images/bonus.png'
+
+    let currentTime = Date.now()
+    let blinkOn = true
+    let squareSize = 30
+    this.$store.state.socket.on('refreshCanvas', (data) => {
+      // Blink ON/OFF system for bonus about to end
+      var loopTime = Date.now()
+      if (loopTime - currentTime > 200) {
+        blinkOn = !blinkOn
+        currentTime = loopTime
+      }
+
+      if (Number.isInteger(data.score)) {
+        this.pointsText = data.score
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      data.bonusList.map((bonus) => {
+        ctx.beginPath()
+        ctx.drawImage(
+          bonusImage,
+          bonus.imgX,
+          bonus.imgY,
+          100,
+          100,
+          bonus.x,
+          bonus.y,
+          bonus.width,
+          bonus.height
+        )
+        ctx.fillStyle = '#00DD00'
+        ctx.fill()
+        ctx.closePath()
+      })
+
+      if (data.debugBodies.length > 0) {
+        data.debugBodies.map((vertice, i) => {
+          ctx.beginPath()
+          ctx.rect(vertice.x, vertice.y, 10, 10)
+          ctx.fillStyle = '#DDDD00'
+          ctx.fill()
+          ctx.closePath()
+        })
+      }
+
+      data.obstacles.map((obstacle) => {
+        ctx.beginPath()
+        ctx.fillStyle = '#DD0000'
+        obstacle.map((vertice, i) => {
+          if (i === 0) {
+            ctx.moveTo(vertice.x, vertice.y)
+          } else {
+            ctx.lineTo(vertice.x, vertice.y)
+          }
+        })
+
+        ctx.fill()
+        ctx.closePath()
+      })
+
+      for (const [key, player] of Object.entries(data.players)) {
+        if (player.alive) {
+          ctx.beginPath()
+          ctx.rect(
+            player.x - squareSize / 2,
+            player.y - squareSize / 2,
+            squareSize,
+            squareSize
+          )
+          ctx.fillStyle = player.color
+          ctx.fill()
+          ctx.closePath()
+
+          if (player.bonus && (!player.bonusBlinking || blinkOn)) {
+            ctx.beginPath()
+            ctx.drawImage(
+              bonusImage,
+              player.bonus.imgX,
+              player.bonus.imgY,
+              100,
+              100,
+              player.x + squareSize / 2,
+              player.y + squareSize / 2,
+              (player.bonus.width * 2) / 3,
+              (player.bonus.height * 2) / 3
+            )
+            ctx.fillStyle = '#00DD00'
+            ctx.fill()
+            ctx.closePath()
+          }
+        } else {
+          if (key === this.currentPlayer) {
+            ctx.font = "30px 'Zen Dots', cursive"
+            ctx.textAlign = 'center'
+            ctx.fillStyle = '#de564a'
+            ctx.fillText('You are DEAD!', canvas.width / 2, canvas.width / 2)
+          }
+        }
+      }
+    })
+  },
+  destroyed() {
+    // Not to have double listener next time the component is mounted
+    this.$store.state.socket.off('refreshCanvas')
+  },
   computed: {
     currentPlayer() {
       return this.$store.state.socket.id
+    }
+  },
+  data() {
+    return {
+      pointsText: 0
     }
   },
   props: {
@@ -57,8 +174,7 @@ export default {
     gameData: {}
   },
   components: {
-    Logo,
-    Footer
+    Logo
   },
   methods: {}
 }

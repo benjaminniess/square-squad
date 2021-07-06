@@ -21,7 +21,10 @@
       v-bind:gameData="gameData"
       v-show="status == 'playing'"
     ></GameSection>
-    <RankSection v-show="status == 'end-round'"></RankSection>
+    <RankSection
+      v-bind:room="room"
+      v-show="status == 'end-round'"
+    ></RankSection>
     <Footer />
   </div>
 </template>
@@ -92,9 +95,9 @@ export default {
         // TODO: get list of users with points
 
         if (data.gameStatus === 'waiting') {
-          backButton.style.display = 'block'
+          //backButton.style.display = 'block'
         } else {
-          backButton.style.display = 'none'
+          //backButton.style.display = 'none'
           let timeleft = 3
           let countdownTimer = setInterval(function () {
             if (timeleft <= 0) {
