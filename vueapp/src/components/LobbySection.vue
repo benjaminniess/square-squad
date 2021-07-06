@@ -21,43 +21,7 @@
         id="admin-section"
         style="visibility: visible;"
       >
-        <h4>Rounds number</h4>
-        <p>
-          <input
-            id="rounds-number"
-            v-model="roundsNumber"
-            type="number"
-            value="3"
-            min="1"
-            max="100"
-          />
-        </p>
-        <h4>Obstacles speed</h4>
-        <p>
-          Slow
-          <input
-            id="obstacles-speed"
-            v-model="obstaclesSpeed"
-            type="range"
-            min="1"
-            max="30"
-            value="10"
-          />
-          fast
-        </p>
-        <h4>Bonus frequency</h4>
-        <p>
-          No bonus
-          <input
-            id="bonus-frequency"
-            v-model="bonusFrequency"
-            type="range"
-            min="1"
-            max="10"
-            value="5"
-          />
-          Too many bonus
-        </p>
+        <AdminForm />
         <a class="btn" @click="startGame">play</a>
       </div>
       <a class="btn" @click="back">back</a>
@@ -67,10 +31,13 @@
 
 <script>
 import Logo from './common/Logo'
+import AdminForm from './games/panic-attack/AdminForm.vue'
+
 export default {
   name: 'LobbySection',
   components: {
-    Logo
+    Logo,
+    AdminForm
   },
   data() {
     return {

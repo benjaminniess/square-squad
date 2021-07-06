@@ -30,11 +30,16 @@ const store = new Vuex.Store({
     version: packageJson.version,
     homeUrl,
     socket,
-    playerData: null
+    playerData: null,
+    gameID: 'panic-attack',
+    gameOptions: {}
   },
   mutations: {
     updatePlayerData(state, playerData) {
       state.playerData = playerData
+    },
+    updateGameOption(state, gameOptions) {
+      state.gameOptions[gameOptions['key']] = gameOptions['value']
     },
     setGameStatus(state, gameStatus) {
       if (gameStatus === 'playing') {
