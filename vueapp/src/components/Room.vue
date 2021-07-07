@@ -23,7 +23,9 @@
     ></GameSection>
     <RankSection
       v-bind:room="room"
+      v-bind:players="players"
       v-show="status == 'end-round'"
+      v-bind:ranking="ranking"
     ></RankSection>
     <Footer />
   </div>
@@ -52,6 +54,7 @@ export default {
       gameData: {
         timeLeft: null
       },
+      ranking: [],
       isAdmin: false,
       status: 'waiting'
     }
@@ -85,11 +88,12 @@ export default {
     })
 
     this.$store.state.socket.on('in-game-countdown-update', (data) => {
-      console.log(data)
       this.gameData.timeLeft = parseInt(data.timeleft)
 
       if (data.timeleft == 0) {
         this.gameData.timeLeft = 'Game over'
+
+        this.ranking = data.ranking
         this.status = 'end-round'
 
         // TODO: get list of users with points

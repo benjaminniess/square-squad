@@ -23,7 +23,13 @@
       </table>
       <h3>Round results</h3>
       <ul class="players-list" id="round-rank-list">
-        <li style="color: #008ea8;">B (0 points)</li>
+        <li
+          v-for="rank in formatedRanking"
+          :key="rank.id"
+          style="color: #008ea8;"
+        >
+          {{ rank.nickname }} ({{ rank.score }} points)
+        </li>
       </ul>
       <h3>Global ranking</h3>
       <ul class="players-list" id="rank-list">
@@ -39,10 +45,26 @@ import Logo from './common/Logo'
 import Footer from './common/Footer'
 export default {
   name: 'RankSection',
-  computed: {},
+  computed: {
+    formatedRanking() {
+      let finalRanking = []
+      this.ranking.map((rank) => {
+        finalRanking.push({
+          ...this.players.find((player) => {
+            return player.id === rank.playerID
+          }),
+          score: rank.score
+        })
+      })
+
+      return finalRanking
+    }
+  },
   methods: {},
   props: {
-    room: {}
+    room: {},
+    ranking: [],
+    players: {}
   },
   components: {
     Logo,
