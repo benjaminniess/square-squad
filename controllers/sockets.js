@@ -265,6 +265,120 @@ module.exports = function (app) {
         timeleft -= 1
       }, 1000)
     })
+ 
+
+    socket.on('keyPressed', function (socketData) {
+      let currentPlayer = helpers.getPlayer(socket.id)
+      if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
+        socket.rooms.forEach((roomSlug) => {
+          if (roomSlug != socket.id) {
+            let room = helpers.getRoom(roomSlug)
+            let gameStatus = room.getGame().getStatus()
+            if (room && gameStatus === 'playing') {
+              if (socketData.key == 39) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'right',
+                    true
+                  )
+              } else if (socketData.key == 37) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'left',
+                    true
+                  )
+              }
+
+              if (socketData.key == 40) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'top',
+                    true
+                  )
+              } else if (socketData.key == 38) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'down',
+                    true
+                  )
+              }
+            }
+          }
+        })
+      }
+    })
+
+    socket.on('keyUp', function (socketData) {
+      let currentPlayer = helpers.getPlayer(socket.id)
+      if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
+        socket.rooms.forEach((roomSlug) => {
+          let room = helpers.getRoom(roomSlug)
+          if (room && room.getGame().getStatus() === 'playing') {
+            if (roomSlug != socket.id) {
+              if (typeof socketData === 'undefined' || !socketData.key) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .resetTouches(socket.id)
+
+                return
+              }
+              if (socketData.key == 39) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'right',
+                    false
+                  )
+              } else if (socketData.key == 37) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'left',
+                    false
+                  )
+              }
+
+              if (socketData.key == 40) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'top',
+                    false
+                  )
+              } else if (socketData.key == 38) {
+                rooms[roomSlug]
+                  .getGame()
+                  .getPlayersManager()
+                  .updatePlayerButtonState(
+                    socket.id,
+                    'down',
+                    false
+                  )
+              }
+            }
+          }
+        })
+      }
+    })
   })
 }
 
@@ -288,151 +402,3 @@ function refreshData() {
 
   lockedRefresh = false
 }
-
-return
-//TODO: redispatch code
-
-io.on('connection', (socket) => {
-  let cookies = cookie.parse(socket.handshake.headers.cookie)
-  let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
-  let rooms = helpers.getRooms()
-
-  let playerNickName = currentPlayer.getNickname()
-  if (playerNickName) {
-    currentPlayer.resetData({ socketID: socket.id })
-    io.to(socket.id).emit('player-connected', {
-      nickName: playerNickName,
-      playerColor: currentPlayer.getColor(),
-      playerID: currentPlayer.getPublicID(),
-      sessionID: cookies['connect.sid']
-    })
-  }
-
-  socket.on('disconnecting', () => {
-    socket.rooms.forEach((roomSlug) => {
-      let room = helpers.getRoom(roomSlug)
-      if (room) {
-        if (room.getAdminPlayer() === currentPlayer.getPublicID()) {
-          room.resetAdminPlayer()
-        }
-        room.refreshPlayers(socket.id)
-      }
-    })
-  })
-
-  socket.on('keyPressed', function (socketData) {
-    let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
-
-    if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
-      socket.rooms.forEach((roomSlug) => {
-        if (roomSlug != socket.id) {
-          let room = helpers.getRoom(roomSlug)
-          let gameStatus = room.getGame().getStatus()
-          if (room && gameStatus === 'playing') {
-            if (socketData.key == 39) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'right',
-                  true
-                )
-            } else if (socketData.key == 37) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'left',
-                  true
-                )
-            }
-
-            if (socketData.key == 40) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'top',
-                  true
-                )
-            } else if (socketData.key == 38) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'down',
-                  true
-                )
-            }
-          }
-        }
-      })
-    }
-  })
-
-  socket.on('keyUp', function (socketData) {
-    let cookies = cookie.parse(socket.handshake.headers.cookie)
-    let currentPlayer = helpers.getPlayer(cookies['connect.sid'])
-    if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
-      socket.rooms.forEach((roomSlug) => {
-        let room = helpers.getRoom(roomSlug)
-        if (room && room.getGame().getStatus() === 'playing') {
-          if (roomSlug != socket.id) {
-            if (typeof socketData === 'undefined' || !socketData.key) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .resetTouches(currentPlayer.getPublicID())
-
-              return
-            }
-            if (socketData.key == 39) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'right',
-                  false
-                )
-            } else if (socketData.key == 37) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'left',
-                  false
-                )
-            }
-
-            if (socketData.key == 40) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'top',
-                  false
-                )
-            } else if (socketData.key == 38) {
-              rooms[roomSlug]
-                .getGame()
-                .getPlayersManager()
-                .updatePlayerButtonState(
-                  currentPlayer.getPublicID(),
-                  'down',
-                  false
-                )
-            }
-          }
-        }
-      })
-    }
-  })
-})

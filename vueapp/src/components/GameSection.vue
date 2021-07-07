@@ -36,7 +36,7 @@
           {{ gameData.timeLeft }}
         </h1>
         <canvas id="gameCanvas" width="700" height="700"></canvas>
-        <input @keyup.page-down="keypressed('down')">
+        
       </div>
     </div>
   </section>
@@ -48,6 +48,9 @@ import Logo from './common/Logo'
 export default {
   name: 'GameSection',
   mounted() {
+    window.addEventListener('keydown', this.keyDownHandler)
+    window.addEventListener('keyup', this.keyUpHandler)
+
     let canvas = document.getElementById('gameCanvas')
     let ctx = canvas ? canvas.getContext('2d') : null
 
@@ -158,13 +161,13 @@ export default {
   destroyed() {
     // Not to have double listener next time the component is mounted
     this.$store.state.socket.off('refresh-canvas')
+
+    window.removeEventListener('keyup', this.keyUpHandler)
+    window.removeEventListener('keydown', this.keyDownHandler)
   },
   computed: {
     currentPlayer() {
       return this.$store.state.socket.id
-    },
-    keypressed(key) {
-      console.log(key)
     }
   },
   data() {
@@ -180,6 +183,13 @@ export default {
   components: {
     Logo
   },
-  methods: {}
+  methods: {
+    keyDownHandler(e) {
+      this.$store.state.socket.emit('keyPressed', { key: e.keyCode })
+    },
+    keyUpHandler(e) {
+      this.$store.state.socket.emit('keyUp', { key: e.keyCode })
+    }
+  }
 }
 </script>
