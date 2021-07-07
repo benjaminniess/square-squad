@@ -32,7 +32,11 @@ const store = new Vuex.Store({
     socket,
     playerData: null,
     gameID: 'panic-attack',
-    gameOptions: {}
+    gameOptions: {
+      roundsNumber: 3,
+      obstaclesSpeed: 10,
+      bonusFrequency: 5
+    }
   },
   mutations: {
     updatePlayerData(state, playerData) {

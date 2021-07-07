@@ -36,6 +36,7 @@
           {{ gameData.timeLeft }}
         </h1>
         <canvas id="gameCanvas" width="700" height="700"></canvas>
+        <input @keyup.page-down="keypressed('down')">
       </div>
     </div>
   </section>
@@ -57,7 +58,6 @@ export default {
     let blinkOn = true
     let squareSize = 30
     this.$store.state.socket.on('refresh-canvas', (data) => {
-      console.log(data)
       // Blink ON/OFF system for bonus about to end
       var loopTime = Date.now()
       if (loopTime - currentTime > 200) {
@@ -162,6 +162,9 @@ export default {
   computed: {
     currentPlayer() {
       return this.$store.state.socket.id
+    },
+    keypressed(key) {
+      console.log(key)
     }
   },
   data() {

@@ -79,9 +79,7 @@ export default {
 
       this.$store.state.socket.emit('start-game', {
         roomSlug: this.room.roomSlug,
-        roundsNumber: this.roundsNumber,
-        obstaclesSpeed: this.obstaclesSpeed,
-        bonusFrequency: this.bonusFrequency
+        ...this.$store.state.gameOptions
       })
     }
   }

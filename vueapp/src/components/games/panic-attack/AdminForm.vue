@@ -31,9 +31,9 @@ export default {
   name: 'AdminForm',
   data() {
     return {
-      roundsNumber: 3,
-      obstaclesSpeed: 10,
-      bonusFrequency: 5
+      roundsNumber: this.$store.state.gameOptions.roundsNumber,
+      obstaclesSpeed: this.$store.state.gameOptions.obstaclesSpeed,
+      bonusFrequency: this.$store.state.gameOptions.bonusFrequency
     }
   },
   methods: {
