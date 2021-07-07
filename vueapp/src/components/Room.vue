@@ -93,7 +93,7 @@ export default {
       if (data.timeleft == 0) {
         this.gameData.timeLeft = 'Game over'
 
-        this.ranking = data.ranking
+        this.ranking = data
         this.status = 'end-round'
 
         // TODO: get list of users with points

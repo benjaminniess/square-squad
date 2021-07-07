@@ -7,33 +7,41 @@
       </div>
       <table class="winner-annoucement" id="winner-announcement">
         <tbody>
-          <tr>
+          <tr v-if="winner">
             <td>Winner</td>
             <td>
-              <span class="user-name" style="color: #008ea8;"
-                ><span>B</span></span
+              <span class="user-name" v-bind:style="{ color: winner.color }"
+                ><span>{{ winner.nickname }}</span></span
               >
             </td>
           </tr>
-          <tr>
+          <tr v-if="winner">
             <td>Point(s)</td>
-            <td><p>0 pts</p></td>
+            <td>
+              <p>{{ winner.score }} pts</p>
+            </td>
           </tr>
         </tbody>
       </table>
       <h3>Round results</h3>
       <ul class="players-list" id="round-rank-list">
         <li
-          v-for="rank in formatedRanking"
+          v-for="rank in formatedRanking()"
           :key="rank.id"
-          style="color: #008ea8;"
+          v-bind:style="{ color: rank.color }"
         >
           {{ rank.nickname }} ({{ rank.score }} points)
         </li>
       </ul>
       <h3>Global ranking</h3>
       <ul class="players-list" id="rank-list">
-        <li style="color: #008ea8;">B (0 points)</li>
+        <li
+          v-for="rank in formatedRanking('ranking')"
+          :key="rank.id"
+          v-bind:style="{ color: rank.color }"
+        >
+          {{ rank.nickname }} ({{ rank.score }} points)
+        </li>
       </ul>
       <button class="btn" id="back-button" style="display: none;">Back</button>
     </div>
@@ -46,9 +54,27 @@ import Footer from './common/Footer'
 export default {
   name: 'RankSection',
   computed: {
-    formatedRanking() {
+    winner() {
+      if (!this.ranking.roundWinner) {
+        return null
+      }
+
+      return {
+        ...this.players.find((player) => {
+          return player.id === this.ranking.roundWinner.playerID
+        }),
+        score: this.ranking.roundWinner.score
+      }
+    }
+  },
+  methods: {
+    formatedRanking(type = 'roundRanking') {
+      if (!this.ranking[type]) {
+        return null
+      }
+
       let finalRanking = []
-      this.ranking.map((rank) => {
+      this.ranking[type].map((rank) => {
         finalRanking.push({
           ...this.players.find((player) => {
             return player.id === rank.playerID
@@ -60,7 +86,6 @@ export default {
       return finalRanking
     }
   },
-  methods: {},
   props: {
     room: {},
     ranking: [],
