@@ -282,7 +282,7 @@ function refreshData() {
     let status = room.getGame().getStatus()
 
     if (roomGame && (status === 'playing' || status === 'starting')) {
-      io.to(room.getSlug()).emit('refreshCanvas', roomGame.refreshData())
+      io.to(room.getSlug()).emit('refresh-canvas', roomGame.refreshData())
     }
   })
 
