@@ -36,7 +36,6 @@
           {{ gameData.timeLeft }}
         </h1>
         <canvas id="gameCanvas" width="700" height="700"></canvas>
-        
       </div>
     </div>
   </section>
@@ -50,6 +49,8 @@ export default {
   mounted() {
     window.addEventListener('keydown', this.keyDownHandler)
     window.addEventListener('keyup', this.keyUpHandler)
+
+    document.getElementById('particles-js').style.opacity = 0
 
     let canvas = document.getElementById('gameCanvas')
     let ctx = canvas ? canvas.getContext('2d') : null
@@ -164,6 +165,8 @@ export default {
 
     window.removeEventListener('keyup', this.keyUpHandler)
     window.removeEventListener('keydown', this.keyDownHandler)
+
+    document.getElementById('particles-js').style.opacity = 1
   },
   computed: {
     currentPlayer() {
