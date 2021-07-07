@@ -99,16 +99,20 @@ export default {
         } else {
           //backButton.style.display = 'none'
           let timeleft = 3
-          let countdownTimer = setInterval(function () {
+          let socket = this.$store.state.socket
+          let gameData = this.gameData
+          let room = this.room
+          let countdownTimer = setInterval(() => {
             if (timeleft <= 0) {
               clearInterval(countdownTimer)
               if (typeof gtag !== 'undefined') {
                 gtag('event', 'Start new round')
               }
-              this.$store.state.socket.emit('start-game', {
-                roomSlug: roomSlug
+
+              socket.emit('start-game', {
+                roomSlug: room.roomSlug
               })
-              this.gameData.timeLeft = 'Starting...'
+              gameData.timeLeft = 'Starting...'
             }
 
             timeleft -= 1
