@@ -265,7 +265,6 @@ module.exports = function (app) {
         timeleft -= 1
       }, 1000)
     })
- 
 
     socket.on('keyPressed', function (socketData) {
       let currentPlayer = helpers.getPlayer(socket.id)
@@ -276,43 +275,27 @@ module.exports = function (app) {
             let gameStatus = room.getGame().getStatus()
             if (room && gameStatus === 'playing') {
               if (socketData.key == 39) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'right',
-                    true
-                  )
+                  .updatePlayerButtonState(socket.id, 'right', true)
               } else if (socketData.key == 37) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'left',
-                    true
-                  )
+                  .updatePlayerButtonState(socket.id, 'left', true)
               }
 
               if (socketData.key == 40) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'top',
-                    true
-                  )
+                  .updatePlayerButtonState(socket.id, 'top', true)
               } else if (socketData.key == 38) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'down',
-                    true
-                  )
+                  .updatePlayerButtonState(socket.id, 'down', true)
               }
             }
           }
@@ -328,51 +311,32 @@ module.exports = function (app) {
           if (room && room.getGame().getStatus() === 'playing') {
             if (roomSlug != socket.id) {
               if (typeof socketData === 'undefined' || !socketData.key) {
-                rooms[roomSlug]
-                  .getGame()
-                  .getPlayersManager()
-                  .resetTouches(socket.id)
+                room.getGame().getPlayersManager().resetTouches(socket.id)
 
                 return
               }
               if (socketData.key == 39) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'right',
-                    false
-                  )
+                  .updatePlayerButtonState(socket.id, 'right', false)
               } else if (socketData.key == 37) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'left',
-                    false
-                  )
+                  .updatePlayerButtonState(socket.id, 'left', false)
               }
 
               if (socketData.key == 40) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'top',
-                    false
-                  )
+                  .updatePlayerButtonState(socket.id, 'top', false)
               } else if (socketData.key == 38) {
-                rooms[roomSlug]
+                room
                   .getGame()
                   .getPlayersManager()
-                  .updatePlayerButtonState(
-                    socket.id,
-                    'down',
-                    false
-                  )
+                  .updatePlayerButtonState(socket.id, 'down', false)
               }
             }
           }
