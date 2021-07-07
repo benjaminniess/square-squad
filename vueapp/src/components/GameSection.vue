@@ -56,7 +56,8 @@ export default {
     let currentTime = Date.now()
     let blinkOn = true
     let squareSize = 30
-    this.$store.state.socket.on('refreshCanvas', (data) => {
+    this.$store.state.socket.on('refresh-canvas', (data) => {
+      console.log(data)
       // Blink ON/OFF system for bonus about to end
       var loopTime = Date.now()
       if (loopTime - currentTime > 200) {
@@ -156,7 +157,7 @@ export default {
   },
   destroyed() {
     // Not to have double listener next time the component is mounted
-    this.$store.state.socket.off('refreshCanvas')
+    this.$store.state.socket.off('refresh-canvas')
   },
   computed: {
     currentPlayer() {

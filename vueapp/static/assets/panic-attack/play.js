@@ -3,7 +3,7 @@ bonusImage.src = '/assets/images/bonus.png'
 
 var currentTime = Date.now()
 var blinkOn = true
-socket.on('refreshCanvas', (data) => {
+socket.on('refresh-canvas', (data) => {
   // Blink ON/OFF system for bonus about to end
   var loopTime = Date.now()
   if (loopTime - currentTime > 200) {

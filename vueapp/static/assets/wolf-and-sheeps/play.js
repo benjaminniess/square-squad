@@ -1,6 +1,6 @@
 var bonusImage = new Image()
 bonusImage.src = '/assets/images/bonus.png'
-socket.on('refreshCanvas', (data) => {
+socket.on('refresh-canvas', (data) => {
   if (Number.isInteger(data.score)) {
     pointsText.innerHTML = data.score
   }
