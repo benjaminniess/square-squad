@@ -43,7 +43,9 @@
           {{ rank.nickname }} ({{ rank.score }} points)
         </li>
       </ul>
-      <button class="btn" id="back-button" style="display: none;">Back</button>
+      <button v-if="gameIsOver" class="btn" id="back-button" @click="back">
+        Back
+      </button>
     </div>
   </section>
 </template>
@@ -84,12 +86,16 @@ export default {
       })
 
       return finalRanking
+    },
+    back() {
+      this.$store.commit('updateGameStatus', 'waiting')
     }
   },
   props: {
     room: {},
     ranking: [],
-    players: {}
+    players: {},
+    gameIsOver: false
   },
   components: {
     Logo,

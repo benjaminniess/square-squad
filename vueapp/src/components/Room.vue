@@ -23,6 +23,7 @@
     ></GameSection>
     <RankSection
       v-bind:room="room"
+      v-bind:gameIsOver="gameIsOver"
       v-bind:players="players"
       v-show="status == 'end-round'"
       v-bind:ranking="ranking"
@@ -54,9 +55,14 @@ export default {
       gameData: {
         timeLeft: null
       },
+      gameIsOver: false,
       ranking: [],
-      isAdmin: false,
-      status: 'waiting'
+      isAdmin: false
+    }
+  },
+  computed: {
+    status() {
+      return this.$store.state.gameStatus
     }
   },
   mounted() {
@@ -80,7 +86,8 @@ export default {
     this.$store.state.socket.on('game-is-starting', (data) => {
       this.gameData.currentRound = data.currentRound
       this.gameData.totalRounds = data.totalRounds
-      this.status = 'playing'
+      this.$store.commit('updateGameStatus', 'playing')
+      this.gameIsOver = false
     })
 
     this.$store.state.socket.on('countdown-update', (data) => {
@@ -94,14 +101,11 @@ export default {
         this.gameData.timeLeft = 'Game over'
 
         this.ranking = data
-        this.status = 'end-round'
-
-        // TODO: get list of users with points
+        this.$store.commit('updateGameStatus', 'end-round')
 
         if (data.gameStatus === 'waiting') {
-          //backButton.style.display = 'block'
+          this.gameIsOver = true
         } else {
-          //backButton.style.display = 'none'
           let timeleft = 3
           let socket = this.$store.state.socket
           let gameData = this.gameData

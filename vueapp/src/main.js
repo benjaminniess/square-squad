@@ -32,6 +32,7 @@ const store = new Vuex.Store({
     socket,
     playerData: null,
     gameID: 'panic-attack',
+    gameStatus: 'waiting',
     gameOptions: {
       roundsNumber: 3,
       obstaclesSpeed: 10,
@@ -41,6 +42,9 @@ const store = new Vuex.Store({
   mutations: {
     updatePlayerData(state, playerData) {
       state.playerData = playerData
+    },
+    updateGameStatus(state, status) {
+      state.gameStatus = status
     },
     updateGameOption(state, gameOptions) {
       state.gameOptions[gameOptions['key']] = gameOptions['value']
