@@ -21,7 +21,7 @@
               <span>[{{ player.score }}]</span>
             </li>
           </ul>
-          <h1>
+          <h1 v-if="pointsText">
             {{ pointsText }}
           </h1>
         </div>
@@ -51,6 +51,10 @@ export default {
     window.addEventListener('keyup', this.keyUpHandler)
 
     document.getElementById('particles-js').style.opacity = 0
+
+    this.$store.state.socket.on('game-is-starting', (data) => {
+      this.pointsText = null
+    })
 
     let canvas = document.getElementById('gameCanvas')
     let ctx = canvas ? canvas.getContext('2d') : null
@@ -167,6 +171,8 @@ export default {
     window.removeEventListener('keydown', this.keyDownHandler)
 
     document.getElementById('particles-js').style.opacity = 1
+
+    this.$store.state.socket.off('game-is-starting')
   },
   computed: {
     currentPlayer() {
@@ -175,7 +181,7 @@ export default {
   },
   data() {
     return {
-      pointsText: 0
+      pointsText: null
     }
   },
   props: {
