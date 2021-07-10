@@ -7,6 +7,7 @@ import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 
 import Home from './components/Home.vue'
+import AboutUs from './components/AboutUs.vue'
 import Room from './components/Room.vue'
 import Rooms from './components/Rooms.vue'
 import Page404 from './components/Page404.vue'
@@ -74,6 +75,10 @@ const router = new VueRouter({
     {
       path: '/rooms/:id',
       component: Room
+    },
+    {
+      path: '/about-us',
+      component: AboutUs
     },
     {
       path: '*',
