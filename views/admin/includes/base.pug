@@ -23,29 +23,12 @@ html(lang='fr')
         link(rel='preconnect' href='https://fonts.gstatic.com')
         link(href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Zen+Dots&display=swap' rel='stylesheet')
 
-        if gaTag
-          script( async src="https://www.googletagmanager.com/gtag/js?id=#{gaTag}")
-          script.
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', '#{gaTag}');
-
     block bodyClass
         - var bodyClass = ''
 
     body(class=bodyClass)
       div.super-wrapper
         block content
-
-        block footer
-          footer.footer
-            p.text-center Version #{appVersion}
-              
-              // a(href='/about-us') About us
-              a(href='https://discord.gg/zGZ2TVw6e4' target="_blank")
-                img(src='/assets/images/discord.png' width="32px")
               
 
     block extraScripts

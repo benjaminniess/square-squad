@@ -10,42 +10,23 @@ if (
 
 const express = require('express')
 const app = express()
-const bodyParser = require('body-parser')
-const session = require('express-session')
-const cookieParser = require('cookie-parser')
+
 const { InMemorySessionStore } = require('./lib/sessionStore')
 const packageJson = require('./package.json')
 const cors = require('cors')
 
-let corsOption =
-  process.env.NODE_ENV !== 'development'
-    ? {
-        cors: {
-          origin: 'http://localhost:1080',
-          methods: ['GET', 'POST']
-        }
-      }
-    : {}
+// Allow vue app to access node from localhost:1080
+let corsOption = {}
+if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
+  corsOption = {
+    cors: {
+      origin: 'http://localhost:1080',
+      methods: ['GET', 'POST']
+    }
+  }
 
-if (process.env.NODE_ENV === 'development') {
   app.use(cors(corsOption))
 }
-
-app.set('trust proxy', 1) // trust first proxy
-app.use(
-  session({
-    secret: 'we will see later!',
-    resave: false,
-    saveUninitialized: true
-  })
-)
-
-app.use(cookieParser())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-
-app.set('view engine', 'pug')
-app.set('views', './views')
 
 app.use(express.static(__dirname + '/public'))
 app.use(express.static(__dirname + '/vueapp/dist'))
@@ -61,6 +42,8 @@ global.globalSessionStore = new InMemorySessionStore()
 global.canvasWidth = 700
 global.squareSize = 30
 global.bonusSize = 30
+global.gaTag =
+  process.env.GA_ID && process.env.GA_ID !== '' ? process.env.GA_ID : null
 global.helpers = require(__base + 'lib/helpers')
 global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')
@@ -83,13 +66,6 @@ app.use((req, res, next) => {
     return
   }
 
-  next()
-})
-
-app.use((req, res, next) => {
-  res.locals.appVersion = appVersion
-  res.locals.gaTag =
-    process.env.GA_ID && process.env.GA_ID !== '' ? process.env.GA_ID : null
   next()
 })
 

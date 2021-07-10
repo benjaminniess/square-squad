@@ -12,17 +12,13 @@
   "license": "ISC",
   "dependencies": {
     "chai": "^4.3.0",
-    "cookie": "^0.4.1",
-    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-session": "^1.17.1",
     "lodash": "^4.17.21",
     "matter-js": "^0.17.1",
     "mocha": "^8.3.0",
     "newrelic": "^7.3.1",
-    "pug": "^3.0.2",
     "socket.io": "^3.1.2",
     "validator": "^13.6.0"
   }
