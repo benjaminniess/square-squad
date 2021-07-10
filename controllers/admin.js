@@ -26,17 +26,20 @@ module.exports = function (app) {
   router.get('/', function (req, res, next) {
     let memoryUsage = process.memoryUsage()
 
-    res.render('admin/index', {
-      snapUrl: '/admin/snapshot?pwd=' + process.env.ADMIN_PASSWORD,
-      playersCount: _.size(Helpers.getPlayers()),
-      roomsCount: _.size(Helpers.getRooms()),
-      memoryRSS: Math.round(memoryUsage.rss / 1024 / 1024) + 'Mb',
-      memoryheapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024) + 'Mb',
-      memoryheapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024) + 'Mb',
-      memoryexternal: Math.round(memoryUsage.external / 1024 / 1024) + 'Mb',
-      memoryarrayBuffers:
-        Math.round(memoryUsage.arrayBuffers / 1024 / 1024) + 'Mb'
-    })
+    res.setHeader('Content-Type', 'application/json')
+    res.end(
+      JSON.stringify({
+        snapUrl: '/admin/snapshot?pwd=' + process.env.ADMIN_PASSWORD,
+        playersCount: _.size(Helpers.getPlayers()),
+        roomsCount: _.size(Helpers.getRooms()),
+        memoryRSS: Math.round(memoryUsage.rss / 1024 / 1024) + 'Mb',
+        memoryheapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024) + 'Mb',
+        memoryheapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024) + 'Mb',
+        memoryexternal: Math.round(memoryUsage.external / 1024 / 1024) + 'Mb',
+        memoryarrayBuffers:
+          Math.round(memoryUsage.arrayBuffers / 1024 / 1024) + 'Mb'
+      })
+    )
   })
 
   router.get('/snapshot', function (req, res, next) {
