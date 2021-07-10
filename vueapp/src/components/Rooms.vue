@@ -50,6 +50,7 @@
           ><input
             id="newRoom"
             placeholder="Give it a name"
+            required
             type="text"
             v-model="newRoomName"
           />

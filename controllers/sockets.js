@@ -88,6 +88,14 @@ module.exports = function (app) {
         return
       }
 
+      if (!roomName || roomName.length <= 0) {
+        io.to(socket.id).emit('rooms-create-result', {
+          success: false,
+          error: 'Room name is empty'
+        })
+        return
+      }
+
       roomName = validator.blacklist(roomName, "<>\\/'")
       let roomSlug = helpers.createRoom(roomName)
       if (!roomSlug) {
