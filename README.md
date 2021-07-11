@@ -61,3 +61,9 @@ AUTO_CREATE_ROOM: Not ready yet
 DISABLE_OBSTACLES: Not ready yet
 ADMIN_PASSWORD: Not ready yet
 ```
+
+## Changelog
+
+- 1.2.0
+
+Refactored the whole application to use Vue.js
