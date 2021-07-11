@@ -5,7 +5,7 @@
         <a href="https://github.com/benjaminniess/square-squad" target="_blank"
           >Version {{ version }}</a
         >
-        | <a href="/about-us">About us</a>
+        | <a href="#" @click="goToAbout">About us</a>
       </span>
       <a href="https://discord.gg/zGZ2TVw6e4" target="_blank">
         <img :src="'/static/assets/images/discord.png'" width="32px" />
@@ -20,6 +20,11 @@ export default {
   computed: {
     version() {
       return this.$store.state.version
+    }
+  },
+  methods: {
+    goToAbout() {
+      this.$router.push('/about-us')
     }
   }
 }
