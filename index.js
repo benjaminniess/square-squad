@@ -42,8 +42,6 @@ global.globalSessionStore = new InMemorySessionStore()
 global.canvasWidth = 700
 global.squareSize = 30
 global.bonusSize = 30
-global.gaTag =
-  process.env.GA_ID && process.env.GA_ID !== '' ? process.env.GA_ID : null
 global.helpers = require(__base + 'lib/helpers')
 global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')

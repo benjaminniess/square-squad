@@ -59,6 +59,5 @@ FORCE_DOMAIN: (String) If multiple domains linked to the app, you can define the
 AUTO_CREATE_PLAYER: Not ready yet
 AUTO_CREATE_ROOM: Not ready yet
 DISABLE_OBSTACLES: Not ready yet
-GA_ID: Not ready yet
 ADMIN_PASSWORD: Not ready yet
 ```
