@@ -64,6 +64,11 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
-- 1.2.0
+### 1.2.1
 
-Refactored the whole application to use Vue.js
+- Fixed about us link
+- Fixed version number in footer
+
+### 1.2.0
+
+- Refactored the whole application to use Vue.js
