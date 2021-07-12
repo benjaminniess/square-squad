@@ -28,10 +28,6 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
   app.use(cors(corsOption))
 }
 
-app.use(express.static(__dirname + '/public'))
-app.use(express.static(__dirname + '/vueapp/dist'))
-app.use(express.static(__dirname + '/vueapp/static'))
-
 const server = require('http').Server(app)
 
 global.appVersion = packageJson.version
@@ -50,8 +46,13 @@ global.io = require('socket.io')(server, corsOption)
 
 // Force HTTPS + redirect multiple domains/subdomains
 app.use((req, res, next) => {
-  if (!req.secure && useSSL) {
-    res.redirect('https://' + req.headers.host)
+  if (req.get('x-forwarded-proto') !== 'https' && useSSL) {
+    let domain =
+      process.env.FORCE_DOMAIN && process.env.FORCE_DOMAIN !== 'false'
+        ? process.env.FORCE_DOMAIN
+        : req.headers.host
+
+    res.redirect('https://' + domain)
     return
   }
 
@@ -66,6 +67,10 @@ app.use((req, res, next) => {
 
   next()
 })
+
+app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/vueapp/dist'))
+app.use(express.static(__dirname + '/vueapp/static'))
 
 const PORT = process.env.PORT || 8080
 server.listen(PORT)
