@@ -13,6 +13,18 @@ module.exports = function (app) {
     res.sendFile(__base + '/vueapp/dist/index.html')
   })
 
+  /**
+   * The dynamic public end data
+   */
+  router.get('/env', function (req, res, next) {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(
+      JSON.stringify({
+        ga_id: process.env.GA_ID
+      })
+    )
+  })
+
   setInterval(refreshData, 10)
 
   let lockedRefresh = false
