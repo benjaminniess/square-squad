@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import Vuex from 'vuex'
+import VueGtag from 'vue-gtag'
 
 import VueRouter from 'vue-router'
 
@@ -23,8 +24,24 @@ const packageJson = require('../../package.json')
 
 Vue.config.productionTip = false
 
+// Custom parse of env json file from server
+const xmlhttp = new XMLHttpRequest()
+xmlhttp.open('GET', homeUrl + '/env', false)
+xmlhttp.send()
+if (xmlhttp.status !== 200 || xmlhttp.readyState !== 4) {
+  alert('loading error.')
+}
+const envData = JSON.parse(xmlhttp.responseText)
+
 Vue.use(Vuex)
 Vue.use(VueRouter)
+
+// Enable analytics if set
+if (envData.ga_id) {
+  Vue.use(VueGtag, {
+    config: { id: envData.ga_tid }
+  })
+}
 
 const store = new Vuex.Store({
   state: {
