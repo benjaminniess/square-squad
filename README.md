@@ -64,11 +64,16 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
-### 1.2.1
+### 1.2.2 - 2021-07-12
+
+- Fixed multi domains + SSL redirection
+- Added Google Analytics when env var is set
+
+### 1.2.1 - 2021-07-11
 
 - Fixed about us link
 - Fixed version number in footer
 
-### 1.2.0
+### 1.2.0 - 2021-07-11
 
 - Refactored the whole application to use Vue.js
