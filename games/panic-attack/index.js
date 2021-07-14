@@ -63,6 +63,12 @@ class Panick_Attack extends MasterGame {
         return
       }
 
+      Matter.Composite.remove(
+        this.getPlayersManager().getComposite(),
+        player,
+        true
+      )
+
       this.getPlayersManager().killPlayer(player.gamePlayerID)
       this.getRoom().refreshPlayers()
     })
