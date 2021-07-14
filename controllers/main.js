@@ -7,13 +7,6 @@ module.exports = function (app) {
   app.use('/', router)
 
   /**
-   * The home URL
-   */
-  router.get('/', function (req, res, next) {
-    res.sendFile(__base + '/vueapp/dist/index.html')
-  })
-
-  /**
    * The dynamic public end data
    */
   router.get('/env', function (req, res, next) {
@@ -23,6 +16,13 @@ module.exports = function (app) {
         ga_id: process.env.GA_ID
       })
     )
+  })
+
+  /**
+   * Redirect everything to vueapp
+   */
+  router.get('*', function (req, res, next) {
+    res.sendFile(__base + '/vueapp/dist/index.html')
   })
 
   setInterval(refreshData, 10)
