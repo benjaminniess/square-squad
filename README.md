@@ -64,7 +64,7 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
-### 1.2.2 - 2021-07-12
+### 1.2.2 - 2021-07-14
 
 - Fixed multi domains + SSL redirection
 - Fixed 404 page
