@@ -3,7 +3,7 @@ sass:
     public:
       src:
         - 'assets/sass/**/*.scss'
-      dst: 'src/assets/css'
+      dst: 'static/assets/css'
   settings:
     sass:
       errLogToConsole: true
