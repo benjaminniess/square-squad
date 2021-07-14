@@ -276,7 +276,11 @@ module.exports = function (app) {
 
     socket.on('keyPressed', function (socketData) {
       let currentPlayer = helpers.getPlayer(socket.id)
-      if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
+      if (
+        currentPlayer &&
+        currentPlayer.getNickname() &&
+        !currentPlayer.isSpectator()
+      ) {
         socket.rooms.forEach((roomSlug) => {
           if (roomSlug != socket.id) {
             let room = helpers.getRoom(roomSlug)
@@ -313,7 +317,11 @@ module.exports = function (app) {
 
     socket.on('keyUp', function (socketData) {
       let currentPlayer = helpers.getPlayer(socket.id)
-      if (currentPlayer.getNickname() && !currentPlayer.isSpectator()) {
+      if (
+        currentPlayer &&
+        currentPlayer.getNickname() &&
+        !currentPlayer.isSpectator()
+      ) {
         socket.rooms.forEach((roomSlug) => {
           let room = helpers.getRoom(roomSlug)
           if (room && room.getGame().getStatus() === 'playing') {
