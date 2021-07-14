@@ -54,7 +54,7 @@ function bootVueApp(envData) {
       config: {
         id: envData.ga_id,
         params: {
-          send_page_view: true
+          send_page_view: false
         }
       }
     })

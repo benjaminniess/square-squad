@@ -70,20 +70,20 @@ export default {
       if (this.$gtag) {
         let view = 'default'
         if (newStatus === 'playing') {
-          view = 'GameSection'
+          view = '/play'
         } else if (newStatus === 'waiting') {
-          view = 'LobbySection'
+          view = '/lobby'
         } else if (newStatus === 'end-round') {
-          view = 'RankSection'
+          view = '/ranking'
         }
 
-        this.$gtag.event('pageViewed', { view: view })
+        this.$gtag.pageview(view)
       }
     }
   },
   mounted() {
     if (this.$gtag) {
-      this.$gtag.event('pageViewed', { view: 'LobbySection' })
+      this.$gtag.pageview('/lobby')
     }
 
     // Not "logged"? Go back to home

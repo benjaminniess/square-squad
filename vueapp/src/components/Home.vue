@@ -47,7 +47,7 @@ import Footer from './common/Footer'
 export default {
   mounted() {
     if (this.$gtag) {
-      this.$gtag.event('pageViewed', { view: 'Home' })
+      this.$gtag.pageview('/')
     }
 
     this.$store.state.socket.on('player-data-updated', () => {

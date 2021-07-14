@@ -40,7 +40,7 @@ export default {
   name: 'AboutUs',
   mounted() {
     if (this.$gtag) {
-      this.$gtag.event('pageViewed', { view: 'AboutUs' })
+      this.$gtag.pageview('/about-us')
     }
   },
   components: {

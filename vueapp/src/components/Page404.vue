@@ -28,7 +28,7 @@ export default {
   },
   mounted() {
     if (this.$gtag) {
-      this.$gtag.event('pageViewed', { view: 'Page404' })
+      this.$gtag.pageview(this.$route)
     }
   },
   methods: {

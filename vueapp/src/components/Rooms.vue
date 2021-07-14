@@ -77,7 +77,7 @@ export default {
   },
   mounted() {
     if (this.$gtag) {
-      this.$gtag.event('pageViewed', { view: 'Rooms' })
+      this.$gtag.pageview('/rooms')
     }
 
     // Not "logged"? Go back to home
