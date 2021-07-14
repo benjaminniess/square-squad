@@ -67,6 +67,7 @@ ADMIN_PASSWORD: Not ready yet
 ### 1.2.2 - 2021-07-12
 
 - Fixed multi domains + SSL redirection
+- Fixed 404 page
 - Added Google Analytics when env var is set
 
 ### 1.2.1 - 2021-07-11
