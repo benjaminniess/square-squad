@@ -46,6 +46,10 @@ import Footer from './common/Footer'
 
 export default {
   mounted() {
+    if (this.$gtag) {
+      this.$gtag.event('pageViewed', { view: 'Home' })
+    }
+
     this.$store.state.socket.on('player-data-updated', () => {
       this.$router.push('/rooms')
     })
@@ -80,6 +84,10 @@ export default {
 
       this.$store.state.socket.emit('update-player-data', playerData)
       this.$store.commit('updatePlayerData', playerData)
+
+      if (this.$gtag) {
+        this.$gtag.event('loginUpdate')
+      }
     }
   }
 }

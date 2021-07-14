@@ -76,6 +76,10 @@ export default {
     }
   },
   mounted() {
+    if (this.$gtag) {
+      this.$gtag.event('pageViewed', { view: 'Rooms' })
+    }
+
     // Not "logged"? Go back to home
     if (this.$store.state.playerData === null) {
       this.$router.push('/')
@@ -102,6 +106,10 @@ export default {
         return
       }
 
+      if (this.$gtag) {
+        this.$gtag.event('roomCreated')
+      }
+
       // Redirect to the new room
       this.goToRoom(result.data.roomSlug)
     })
@@ -121,6 +129,11 @@ export default {
     // The refresh rooms "on click" behaviour
     refreshRoomsEventHandler(e) {
       e.preventDefault()
+
+      if (this.$gtag) {
+        this.$gtag.event('roomsRefresh')
+      }
+
       this.refreshRooms()
     },
     refreshRooms() {

@@ -65,7 +65,27 @@ export default {
       return this.$store.state.gameStatus
     }
   },
+  watch: {
+    status: function (newStatus, oldStatus) {
+      if (this.$gtag) {
+        let view = 'default'
+        if (newStatus === 'playing') {
+          view = 'GameSection'
+        } else if (newStatus === 'waiting') {
+          view = 'LobbySection'
+        } else if (newStatus === 'end-round') {
+          view = 'RankSection'
+        }
+
+        this.$gtag.event('pageViewed', { view: view })
+      }
+    }
+  },
   mounted() {
+    if (this.$gtag) {
+      this.$gtag.event('pageViewed', { view: 'LobbySection' })
+    }
+
     // Not "logged"? Go back to home
     if (this.$store.state.playerData === null) {
       this.$router.push('/')
@@ -113,9 +133,6 @@ export default {
           let countdownTimer = setInterval(() => {
             if (timeleft <= 0) {
               clearInterval(countdownTimer)
-              if (typeof gtag !== 'undefined') {
-                gtag('event', 'Start new round')
-              }
 
               socket.emit('start-game', {
                 roomSlug: room.roomSlug

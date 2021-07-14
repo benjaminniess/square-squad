@@ -26,6 +26,11 @@ export default {
     Logo,
     Footer
   },
+  mounted() {
+    if (this.$gtag) {
+      this.$gtag.event('pageViewed', { view: 'Page404' })
+    }
+  },
   methods: {
     back() {
       this.$router.push('/')

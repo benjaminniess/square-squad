@@ -38,6 +38,11 @@ import Footer from './common/Footer'
 
 export default {
   name: 'AboutUs',
+  mounted() {
+    if (this.$gtag) {
+      this.$gtag.event('pageViewed', { view: 'AboutUs' })
+    }
+  },
   components: {
     Logo,
     Footer

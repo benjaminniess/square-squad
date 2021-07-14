@@ -66,21 +66,21 @@ export default {
     }
   },
   methods: {
-    startGame() {
-      this.$parent.startGame()
-    },
     back() {
       this.$router.push('/rooms')
     },
     startGame() {
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'Start Game')
-      }
-
       this.$store.state.socket.emit('start-game', {
         roomSlug: this.room.roomSlug,
         ...this.$store.state.gameOptions
       })
+
+      if (this.$gtag) {
+        this.$gtag.event('startGame', {
+          playersCount: this.players.length,
+          ...this.$store.state.gameOptions
+        })
+      }
     }
   }
 }
