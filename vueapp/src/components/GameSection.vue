@@ -100,7 +100,7 @@ export default {
       if (data.debugBodies.length > 0) {
         data.debugBodies.map((vertice, i) => {
           ctx.beginPath()
-          ctx.rect(vertice.x, vertice.y, 10, 10)
+          ctx.rect(vertice.x - 5, vertice.y - 5, 10, 10)
           ctx.fillStyle = '#DDDD00'
           ctx.fill()
           ctx.closePath()
