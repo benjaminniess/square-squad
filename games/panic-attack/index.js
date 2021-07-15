@@ -21,84 +21,89 @@ class Panick_Attack extends MasterGame {
       })
 
     Matter.Events.on(this.getEngine(), 'collisionStart', (event) => {
-      if (event.pairs[0].bodyA.enableCustomCollisionManagement === true) {
-        let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
-          event.pairs[0].bodyA.id
-        )
-
-        if (targetObstacle) {
-          targetObstacle.onCollisionStart(
-            event.pairs[0].bodyA,
-            event.pairs[0].bodyB
+      _.forEach(event.pairs, (collisionPair) => {
+        if (collisionPair.bodyA.enableCustomCollisionManagement === true) {
+          let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
+            collisionPair.bodyA.id
           )
+  
+          if (targetObstacle) {
+            targetObstacle.onCollisionStart(
+              collisionPair.bodyA,
+              collisionPair.bodyB
+            )
+          }
         }
-      }
-
-      if (event.pairs[0].bodyB.enableCustomCollisionManagement === true) {
-        let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
-          event.pairs[0].bodyB.id
-        )
-
-        if (targetObstacle) {
-          targetObstacle.onCollisionStart(
-            event.pairs[0].bodyB,
-            event.pairs[0].bodyA
+  
+        if (collisionPair.bodyB.enableCustomCollisionManagement === true) {
+          let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
+            collisionPair.bodyB.id
           )
+  
+          if (targetObstacle) {
+            targetObstacle.onCollisionStart(
+              collisionPair.bodyB,
+              collisionPair.bodyA
+            )
+          }
         }
-      }
-
-      let player
-      let otherBody
-      if (event.pairs[0].bodyA.gamePlayerID) {
-        player = event.pairs[0].bodyA
-        otherBody = event.pairs[0].bodyB
-      } else if (event.pairs[0].bodyB.gamePlayerID) {
-        player = event.pairs[0].bodyB
-        otherBody = event.pairs[0].bodyA
-      } else {
-        return
-      }
-
-      if (otherBody.customType !== 'obstacle') {
-        return
-      }
-
-      Matter.Composite.remove(
-        this.getPlayersManager().getComposite(),
-        player,
-        true
-      )
-
-      this.getPlayersManager().killPlayer(player.gamePlayerID)
-      this.getRoom().refreshPlayers()
-    })
-
-    Matter.Events.on(this.getEngine(), 'collisionEnd', (event) => {
-      if (event.pairs[0].bodyA.enableCustomCollisionManagement === true) {
-        let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
-          event.pairs[0].bodyA.id
+  
+        let player
+        let otherBody
+        if (collisionPair.bodyA.gamePlayerID) {
+          player = collisionPair.bodyA
+          otherBody = collisionPair.bodyB
+        } else if (collisionPair.bodyB.gamePlayerID) {
+          player = collisionPair.bodyB
+          otherBody = collisionPair.bodyA
+        } else {
+          return
+        }
+  
+        if (otherBody.customType !== 'obstacle') {
+          return
+        }
+  
+        Matter.Composite.remove(
+          this.getPlayersManager().getComposite(),
+          player,
+          true
         )
-
-        if (targetObstacle) {
-          targetObstacle.onCollisionEnd(
-            event.pairs[0].bodyA,
-            event.pairs[0].bodyB
-          )
-        }
-      }
-
-      if (event.pairs[0].bodyB.enableCustomCollisionManagement === true) {
-        let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
-          event.pairs[0].bodyB.id
-        )
-
-        if (targetObstacle) {
-          targetObstacle.onCollisionEnd(
-            event.pairs[0].bodyB,
-            event.pairs[0].bodyA
-          )
-        }
-      }
+  
+        this.getPlayersManager().killPlayer(player.gamePlayerID)
+        this.getRoom().refreshPlayers()
+      })
+  
+      Matter.Events.on(this.getEngine(), 'collisionEnd', (event) => {
+        _.forEach(event.pairs, (collisionPair) => {
+          if (collisionPair.bodyA.enableCustomCollisionManagement === true) {
+            let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
+              collisionPair.bodyA.id
+            )
+    
+            if (targetObstacle) {
+              targetObstacle.onCollisionEnd(
+                collisionPair.bodyA,
+                collisionPair.bodyB
+              )
+            }
+          }
+    
+          if (collisionPair.bodyB.enableCustomCollisionManagement === true) {
+            let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
+              collisionPair.bodyB.id
+            )
+    
+            if (targetObstacle) {
+              targetObstacle.onCollisionEnd(
+                collisionPair.bodyB,
+                collisionPair.bodyA
+              )
+            }
+          }
+        })
+      })
+      
     })
   }
 
