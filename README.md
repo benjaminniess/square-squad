@@ -64,6 +64,12 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
+### 1.2.3 - 2021-07-15
+
+- Fixed simultanous collisions
+- Fixed bodies not removed after death
+- Fixed crash after socket is lost
+
 ### 1.2.2 - 2021-07-14
 
 - Fixed multi domains + SSL redirection
