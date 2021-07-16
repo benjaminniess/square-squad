@@ -77,3 +77,5 @@ server.listen(PORT)
 
 // Dynamically loads all controllers
 require('./lib/controller')(app)
+
+module.exports = app
