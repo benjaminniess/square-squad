@@ -35,7 +35,11 @@
         >
           {{ gameData.timeLeft }}
         </h1>
-        <canvas id="gameCanvas" width="700" height="700"></canvas>
+        <canvas
+          id="gameCanvas"
+          :width="canvasWidth"
+          :height="canvasWidth"
+        ></canvas>
       </div>
     </div>
   </section>
@@ -68,6 +72,12 @@ export default {
     let blinkOn = true
     let squareSize = 30
     this.$store.state.socket.on('refresh-canvas', (data) => {
+      let canvasWidth = window.innerWidth > 700 ? 700 : window.innerWidth
+      this.canvasWidth = canvasWidth
+
+      function rationalize(num) {
+        return (num * canvasWidth) / 700
+      }
       // Blink ON/OFF system for bonus about to end
       var loopTime = Date.now()
       if (loopTime - currentTime > 200) {
@@ -89,10 +99,10 @@ export default {
           bonus.imgY,
           100,
           100,
-          bonus.x,
-          bonus.y,
-          bonus.width,
-          bonus.height
+          rationalize(bonus.x),
+          rationalize(bonus.y),
+          rationalize(bonus.width),
+          rationalize(bonus.height)
         )
         ctx.fillStyle = '#00DD00'
         ctx.fill()
@@ -102,7 +112,12 @@ export default {
       if (data.debugBodies.length > 0) {
         data.debugBodies.map((vertice, i) => {
           ctx.beginPath()
-          ctx.rect(vertice.x - 5, vertice.y - 5, 10, 10)
+          ctx.rect(
+            rationalize(vertice.x - 5),
+            rationalize(vertice.y - 5),
+            rationalize(10),
+            rationalize(10)
+          )
           ctx.fillStyle = '#DDDD00'
           ctx.fill()
           ctx.closePath()
@@ -114,9 +129,9 @@ export default {
         ctx.fillStyle = '#DD0000'
         obstacle.map((vertice, i) => {
           if (i === 0) {
-            ctx.moveTo(vertice.x, vertice.y)
+            ctx.moveTo(rationalize(vertice.x), rationalize(vertice.y))
           } else {
-            ctx.lineTo(vertice.x, vertice.y)
+            ctx.lineTo(rationalize(vertice.x), rationalize(vertice.y))
           }
         })
 
@@ -128,10 +143,10 @@ export default {
         if (player.alive) {
           ctx.beginPath()
           ctx.rect(
-            player.x - squareSize / 2,
-            player.y - squareSize / 2,
-            squareSize,
-            squareSize
+            rationalize(player.x - squareSize / 2),
+            rationalize(player.y - squareSize / 2),
+            rationalize(squareSize),
+            rationalize(squareSize)
           )
           ctx.fillStyle = player.color
           ctx.fill()
@@ -145,10 +160,10 @@ export default {
               player.bonus.imgY,
               100,
               100,
-              player.x + squareSize / 2,
-              player.y + squareSize / 2,
-              (player.bonus.width * 2) / 3,
-              (player.bonus.height * 2) / 3
+              rationalize(player.x + squareSize / 2),
+              rationalize(player.y + squareSize / 2),
+              rationalize((player.bonus.width * 2) / 3),
+              rationalize((player.bonus.height * 2) / 3)
             )
             ctx.fillStyle = '#00DD00'
             ctx.fill()
@@ -159,7 +174,11 @@ export default {
             ctx.font = "30px 'Zen Dots', cursive"
             ctx.textAlign = 'center'
             ctx.fillStyle = '#de564a'
-            ctx.fillText('You are DEAD!', canvas.width / 2, canvas.width / 2)
+            ctx.fillText(
+              'You are DEAD!',
+              rationalize(canvas.width / 2),
+              rationalize(canvas.width / 2)
+            )
           }
         }
       }
@@ -183,6 +202,7 @@ export default {
   },
   data() {
     return {
+      canvasWidth: window.innerWidth > 700 ? 700 : window.innerWidth,
       pointsText: null
     }
   },
