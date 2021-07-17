@@ -5,6 +5,14 @@ const validator = require('validator')
 module.exports = function (app) {
   io.on('connection', (socket) => {
     socket.on('update-player-data', (data) => {
+      if (!data.name || !data.color) {
+        io.to(socket.id).emit('player-data-updated', {
+          success: false,
+          error: 'Empty name or color'
+        })
+
+        return
+      }
       let existingPlayer = helpers.getPlayer(socket.id)
       if (!existingPlayer) {
         existingPlayer = helpers.initPlayer(socket.id, data.name, data.color)
@@ -44,11 +52,19 @@ module.exports = function (app) {
     socket.on('room-join', (data) => {
       let room = helpers.getRoom(data.roomSlug)
       if (!room) {
+        io.to(socket.id).emit('room-join-result', {
+          success: false,
+          error: 'Room does not exist'
+        })
         return
       }
 
       let currentPlayer = helpers.getPlayer(socket.id)
       if (!currentPlayer) {
+        io.to(socket.id).emit('room-join-result', {
+          success: false,
+          error: 'Session is over'
+        })
         return
       }
 
@@ -63,10 +79,13 @@ module.exports = function (app) {
         room.setAdminPlayer(socket.id)
       }
 
-      io.to(socket.id).emit('room-joined', {
-        roomSlug: room.getSlug(),
-        roomName: room.getName(),
-        gameStatus: gameStatus
+      io.to(socket.id).emit('room-join-result', {
+        success: true,
+        data: {
+          roomSlug: room.getSlug(),
+          roomName: room.getName(),
+          gameStatus: gameStatus
+        }
       })
       if (gameStatus === 'playing') {
         io.to(socket.id).emit('countdown-update', {

@@ -95,8 +95,10 @@ export default {
       roomSlug: this.$route.params.id
     })
 
-    this.$store.state.socket.on('room-joined', (room) => {
-      this.room = room
+    this.$store.state.socket.on('room-join-result', (result) => {
+      if (result.success) {
+        this.room = result.data
+      }
     })
 
     this.$store.state.socket.on('refresh-players', (data) => {
