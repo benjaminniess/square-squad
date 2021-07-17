@@ -166,12 +166,20 @@ module.exports = function (app) {
     socket.on('start-game', (data) => {
       let room = helpers.getRoom(data.roomSlug)
       if (!room) {
+        io.to(socket.id).emit('start-game-result', {
+          success: false,
+          error: 'This room does not exist'
+        })
         return
       }
 
       let game = room.getGame()
       let playersManager = game.getPlayersManager()
       if (room.getAdminPlayer() !== socket.id) {
+        io.to(socket.id).emit('start-game-result', {
+          success: false,
+          error: 'You are not admin of this room'
+        })
         return
       }
 
@@ -207,10 +215,14 @@ module.exports = function (app) {
         game.setStatus('starting')
       }
 
-      io.to(data.roomSlug).emit('game-is-starting', {
-        currentRound: game.getRoundNumber(),
-        totalRounds: game.getTotalRounds()
+      io.to(data.roomSlug).emit('start-game-result', {
+        success: true,
+        data: {
+          currentRound: game.getRoundNumber(),
+          totalRounds: game.getTotalRounds()
+        }
       })
+
       room.refreshPlayers()
 
       let timeleft = 3

@@ -52,8 +52,10 @@ export default {
 
     document.getElementById('particles-js').style.opacity = 0
 
-    this.$store.state.socket.on('game-is-starting', (data) => {
-      this.pointsText = null
+    this.$store.state.socket.on('start-game-result', (data) => {
+      if (data.success) {
+        this.pointsText = null
+      }
     })
 
     let canvas = document.getElementById('gameCanvas')
@@ -172,7 +174,7 @@ export default {
 
     document.getElementById('particles-js').style.opacity = 1
 
-    this.$store.state.socket.off('game-is-starting')
+    this.$store.state.socket.off('game-start-result')
   },
   computed: {
     currentPlayer() {
