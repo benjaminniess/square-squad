@@ -193,7 +193,7 @@ export default {
 
     document.getElementById('particles-js').style.opacity = 1
 
-    this.$store.state.socket.off('game-start-result')
+    this.$store.state.socket.off('start-game-result')
   },
   computed: {
     currentPlayer() {
