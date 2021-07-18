@@ -40,6 +40,8 @@
           :width="canvasWidth"
           :height="canvasWidth"
         ></canvas>
+
+        <Joystick @change="handleChange($event);" />
       </div>
     </div>
   </section>
@@ -47,6 +49,7 @@
 
 <script>
 import Logo from './common/Logo'
+import Joystick from './common/Joystick'
 
 export default {
   name: 'GameSection',
@@ -65,43 +68,6 @@ export default {
 
     let canvas = document.getElementById('gameCanvas')
     let ctx = canvas ? canvas.getContext('2d') : null
-
-    canvas.addEventListener(
-      'touchstart',
-      function (e) {
-        let mousePos = getTouchPos(canvas, e)
-        if (mousePos.x < canvas.width / 3) {
-          socket.emit('keyPressed', { key: 37 })
-        }
-        if (mousePos.x > (2 * canvas.width) / 3) {
-          socket.emit('keyPressed', { key: 39 })
-        }
-        if (mousePos.y < canvas.width / 3) {
-          socket.emit('keyPressed', { key: 38 })
-        }
-        if (mousePos.y > (2 * canvas.width) / 3) {
-          socket.emit('keyPressed', { key: 40 })
-        }
-      },
-      false
-    )
-
-    canvas.addEventListener(
-      'touchend',
-      function (e) {
-        socket.emit('keyUp')
-      },
-      false
-    )
-    canvas.addEventListener('touchmove', function (e) {}, false)
-
-    function getTouchPos(canvasDom, touchEvent) {
-      var rect = canvasDom.getBoundingClientRect()
-      return {
-        x: touchEvent.touches[0].clientX - rect.left,
-        y: touchEvent.touches[0].clientY - rect.top
-      }
-    }
 
     let bonusImage = new Image()
     bonusImage.src = this.$store.state.homeUrl + '/assets/images/bonus.png'
@@ -250,14 +216,41 @@ export default {
     gameData: {}
   },
   components: {
-    Logo
+    Logo,
+    Joystick
   },
   methods: {
     keyDownHandler(e) {
-      this.$store.state.socket.emit('keyPressed', { key: e.keyCode })
+      this.pressKey(e.keyCode)
     },
     keyUpHandler(e) {
-      this.$store.state.socket.emit('keyUp', { key: e.keyCode })
+      this.releaseKey(e.keyCode)
+    },
+    handleChange(event) {
+      let limit = 20
+      if (event.x < -limit) {
+        this.pressKey(37)
+      } else if ( event.x > limit) {
+        this.pressKey(39)
+      } else {
+        this.releaseKey(39)
+        this.releaseKey(37)
+      }
+
+      if (event.y < -limit) {
+        this.pressKey(38)
+      } else if ( event.y > limit) {
+        this.pressKey(40)
+      } else {
+        this.releaseKey(38)
+        this.releaseKey(40)
+      }
+    },
+    pressKey(keyNumber) {
+      this.$store.state.socket.emit('keyPressed', { key: keyNumber })
+    },
+    releaseKey(keyNumber) {
+      this.$store.state.socket.emit('keyUp', { key: keyNumber })
     }
   }
 }
