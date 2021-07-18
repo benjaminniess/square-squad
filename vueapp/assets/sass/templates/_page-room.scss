@@ -38,6 +38,18 @@
     }
   }
 
+  @media (min-width: 900px) {
+    &__joystick {
+      display: none;
+    }
+  }
+
+  &__joystick {
+    width: 128px;
+    height: 128px;
+    margin: 10px auto;
+  }
+
   &__infos {
     padding: 30px;
     border: 4px solid color(bottle);

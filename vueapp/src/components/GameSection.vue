@@ -41,7 +41,9 @@
           :height="canvasWidth"
         ></canvas>
 
-        <Joystick @change="handleChange($event);" />
+        <div class="play-section__joystick">
+          <Joystick @change="handleChange($event)" />
+        </div>
       </div>
     </div>
   </section>
@@ -230,7 +232,7 @@ export default {
       let limit = 20
       if (event.x < -limit) {
         this.pressKey(37)
-      } else if ( event.x > limit) {
+      } else if (event.x > limit) {
         this.pressKey(39)
       } else {
         this.releaseKey(39)
@@ -239,7 +241,7 @@ export default {
 
       if (event.y < -limit) {
         this.pressKey(38)
-      } else if ( event.y > limit) {
+      } else if (event.y > limit) {
         this.pressKey(40)
       } else {
         this.releaseKey(38)
@@ -247,7 +249,7 @@ export default {
       }
     },
     pressKey(keyNumber) {
-      this.$store.state.socket.emit('keyPressed', { key: keyNumber })
+      this.$store.state.socket.emit('keyPressed', { key: keyNumber })
     },
     releaseKey(keyNumber) {
       this.$store.state.socket.emit('keyUp', { key: keyNumber })
