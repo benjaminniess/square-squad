@@ -88,7 +88,7 @@ export default {
     // SOCKET CALLBACK: Update the rooms var after socket result
     this.$store.state.socket.on('rooms-refresh-result', (result) => {
       if (!result.success) {
-        alert(result.error)
+        this.goToHome()
         return
       }
 
@@ -102,7 +102,7 @@ export default {
     // SOCKET CALLBACK: The room creation result
     this.$store.state.socket.on('rooms-create-result', (result) => {
       if (!result.success) {
-        alert(result.error)
+        this.goToHome()
         return
       }
 
