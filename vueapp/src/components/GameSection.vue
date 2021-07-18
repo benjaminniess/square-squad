@@ -51,6 +51,7 @@ import Logo from './common/Logo'
 export default {
   name: 'GameSection',
   mounted() {
+    let socket = this.$store.state.socket
     window.addEventListener('keydown', this.keyDownHandler)
     window.addEventListener('keyup', this.keyUpHandler)
 
@@ -64,6 +65,43 @@ export default {
 
     let canvas = document.getElementById('gameCanvas')
     let ctx = canvas ? canvas.getContext('2d') : null
+
+    canvas.addEventListener(
+      'touchstart',
+      function (e) {
+        let mousePos = getTouchPos(canvas, e)
+        if (mousePos.x < canvas.width / 3) {
+          socket.emit('keyPressed', { key: 37 })
+        }
+        if (mousePos.x > (2 * canvas.width) / 3) {
+          socket.emit('keyPressed', { key: 39 })
+        }
+        if (mousePos.y < canvas.width / 3) {
+          socket.emit('keyPressed', { key: 38 })
+        }
+        if (mousePos.y > (2 * canvas.width) / 3) {
+          socket.emit('keyPressed', { key: 40 })
+        }
+      },
+      false
+    )
+
+    canvas.addEventListener(
+      'touchend',
+      function (e) {
+        socket.emit('keyUp')
+      },
+      false
+    )
+    canvas.addEventListener('touchmove', function (e) {}, false)
+
+    function getTouchPos(canvasDom, touchEvent) {
+      var rect = canvasDom.getBoundingClientRect()
+      return {
+        x: touchEvent.touches[0].clientX - rect.left,
+        y: touchEvent.touches[0].clientY - rect.top
+      }
+    }
 
     let bonusImage = new Image()
     bonusImage.src = this.$store.state.homeUrl + '/assets/images/bonus.png'
