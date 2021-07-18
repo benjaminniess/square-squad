@@ -556,6 +556,12 @@ body {
   margin-right: 40px;
 }
 
+@media (max-width: 900px) {
+  .play-section__aside {
+    display: none;
+  }
+}
+
 .play-section__infos {
   padding: 30px;
   border: 4px solid #0b3737;
