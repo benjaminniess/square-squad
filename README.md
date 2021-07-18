@@ -64,6 +64,11 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
+### 1.2.4 - 2021-07-18
+
+- Added touch control + media query to make the game work on mobile
+- Added unit tests on main socket actions
+
 ### 1.2.3 - 2021-07-15
 
 - Fixed simultanous collisions
