@@ -32,6 +32,12 @@
     margin-right: 40px;
   }
 
+  @media (max-width: 900px) {
+    &__aside {
+      display: none;
+    }
+  }
+
   &__infos {
     padding: 30px;
     border: 4px solid color(bottle);
