@@ -105,7 +105,7 @@ export default {
       this.players = data
     })
 
-    this.$store.state.socket.on('game-start-result', (result) => {
+    this.$store.state.socket.on('start-game-result', (result) => {
       if (result.success) {
         this.gameData.currentRound = result.data.currentRound
         this.gameData.totalRounds = result.data.totalRounds
@@ -154,7 +154,7 @@ export default {
     // Not to have double listener next time the component is mounted
     this.$store.state.socket.off('refresh-players')
     this.$store.state.socket.off('room-joined')
-    this.$store.state.socket.off('game-start-result')
+    this.$store.state.socket.off('start-game-result')
     this.$store.state.socket.off('countdown-update')
     this.$store.state.socket.off('in-game-countdown-update')
 
