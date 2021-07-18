@@ -201,4 +201,16 @@ describe('SOCKET - Start game', function () {
       expect(result.data.totalRounds).to.equal(4)
     })
   })
+
+  for (let i = 3; i >= 0; i--) {
+    it('Wait for the game to start in ' + i, function () {
+      return new Promise((resolve, reject) => {
+        socket.on('countdown-update', (data) => {
+          resolve(data)
+        })
+      }).then((result) => {
+        expect(result.timeleft).to.equal(i)
+      })
+    })
+  }
 })
