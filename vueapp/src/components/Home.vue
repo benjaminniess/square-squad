@@ -51,7 +51,12 @@ export default {
     }
 
     this.$store.state.socket.on('player-data-updated', () => {
-      this.$router.push('/rooms')
+      // Check if user comes from the room link
+      if ( this.$route.query.redirect_to ) {
+        this.$router.push('/rooms/' + this.$route.query.redirect_to)  
+      } else {
+        this.$router.push('/rooms')
+      }
     })
   },
   destroyed() {

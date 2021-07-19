@@ -88,7 +88,7 @@ export default {
 
     // Not "logged"? Go back to home
     if (this.$store.state.playerData === null) {
-      this.$router.push('/')
+      this.$router.push('/?redirect_to=' + this.$route.params.id)
     }
 
     this.$store.state.socket.emit('room-join', {

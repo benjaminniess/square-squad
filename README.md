@@ -64,28 +64,33 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
+### 1.2.5 - 2021-07-19
+
+- New: Joystick in mobile version
+- New: Allowed room url sharing with auto join
+
 ### 1.2.4 - 2021-07-18
 
-- Added touch control + media query to make the game work on mobile
-- Added unit tests on main socket actions
+- New: Added touch control + media query to make the game work on mobile
+- New: Added unit tests on main socket actions
 
 ### 1.2.3 - 2021-07-15
 
-- Fixed simultanous collisions
-- Fixed bodies not removed after death
-- Fixed crash after socket is lost
+- Fix: Fixed simultanous collisions
+- Fix: Fixed bodies not removed after death
+- Fix: Fixed crash after socket is lost
 
 ### 1.2.2 - 2021-07-14
 
-- Fixed multi domains + SSL redirection
-- Fixed 404 page
-- Added Google Analytics when env var is set
+- New: Google Analytics when env var is set
+- Fix: Fixed multi domains + SSL redirection
+- Fix: Fixed 404 page
 
 ### 1.2.1 - 2021-07-11
 
-- Fixed about us link
-- Fixed version number in footer
+- Fix: Fixed about us link
+- Fix: Fixed version number in footer
 
 ### 1.2.0 - 2021-07-11
 
-- Refactored the whole application to use Vue.js
+- New: Refactored the whole application to use Vue.js
