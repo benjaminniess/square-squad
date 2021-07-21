@@ -323,6 +323,7 @@ body {
   display: block;
   margin: 0 auto;
   background: #eee;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .super-wrapper {
@@ -560,6 +561,18 @@ body {
   .play-section__aside {
     display: none;
   }
+}
+
+@media (min-width: 900px) {
+  .play-section__joystick {
+    display: none;
+  }
+}
+
+.play-section__joystick {
+  width: 128px;
+  height: 128px;
+  margin: 10px auto;
 }
 
 .play-section__infos {

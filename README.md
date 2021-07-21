@@ -64,7 +64,7 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
-### 1.2.5 - 2021-07-19
+### 1.2.5 - 2021-07-21
 
 - New: Joystick in mobile version
 - New: Allowed room url sharing with auto join
