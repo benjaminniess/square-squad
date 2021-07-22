@@ -89,14 +89,6 @@ function bootVueApp(envData) {
       },
       updateGameOption(state, gameOptions) {
         state.gameOptions[gameOptions['key']] = gameOptions['value']
-      },
-      setGameStatus(state, gameStatus) {
-        if (gameStatus === 'playing') {
-          particles.style.display = 'none'
-        } else {
-          particles.style.display = 'block'
-        }
-        state.status = gameStatus
       }
     }
   })
