@@ -13,7 +13,7 @@ export default {
   created() {
     particlesJS.load(
       'particles-js',
-      this.$store.state.homeUrl + '/assets/js/particles.json'
+      this.$globalEnv.homeUrl + '/assets/js/particles.json'
     )
   },
   name: 'App'

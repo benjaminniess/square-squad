@@ -63,10 +63,13 @@ function bootVueApp(envData) {
   Vue.use(Vuex)
   Vue.use(VueRouter)
 
+  Vue.prototype.$globalEnv = {
+    version: packageJson.version,
+    homeUrl,
+  }
+
   const store = new Vuex.Store({
     state: {
-      version: packageJson.version,
-      homeUrl,
       socket,
       playerData: null,
       gameID: 'panic-attack',

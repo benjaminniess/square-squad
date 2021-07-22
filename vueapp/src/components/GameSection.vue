@@ -72,7 +72,7 @@ export default {
     let ctx = canvas ? canvas.getContext('2d') : null
 
     let bonusImage = new Image()
-    bonusImage.src = this.$store.state.homeUrl + '/assets/images/bonus.png'
+    bonusImage.src = this.$globalEnv.homeUrl + '/assets/images/bonus.png'
 
     let currentTime = Date.now()
     let blinkOn = true

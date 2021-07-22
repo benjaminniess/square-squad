@@ -19,7 +19,7 @@ export default {
   name: 'Footer',
   computed: {
     version() {
-      return this.$store.state.version
+      return this.$globalEnv.version
     }
   },
   methods: {
