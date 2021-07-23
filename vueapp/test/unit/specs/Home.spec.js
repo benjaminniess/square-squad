@@ -1,34 +1,28 @@
-import Vue from 'vue'
 import Home from '@/components/Home'
-import { shallowMount, createLocalVue } from '@vue/test-utils'
-import Vuex from 'vuex'
+import { mount, config } from '@vue/test-utils'
 
-const localVue = createLocalVue()
+config.mocks['$store'] = {
+  state: {
+    socket: {
+      on: () => {},
+      emit: () => {}
+    }
+  },
+  commit: () => {}
+}
 
-localVue.use(Vuex)
+config.mocks['$globalEnv'] = {
+  version: '1.0.0',
+  homeUrl: 'locahost:8080'
+}
 
 describe('Home.vue', () => {
-  let actions
-  let store
+  it('emit a socket when submitting the the login form', async () => {
+    const wrapper = mount(Home)
 
-  beforeEach(() => {
-    actions = {
-      actionClick: jest.fn(),
-      actionInput: jest.fn()
-    }
-    store = new Vuex.Store({
-      actions,
-      state: {
-        socket: {
-          on: () => {}
-        }
-      }
-    })
-  })
+    await wrapper.find('#playerName').setValue('Benjamin')
+    await wrapper.find('form').trigger('submit.prevent')
 
-  it('should render correct contents', () => {
-    const wrapper = shallowMount(Home, { store, localVue })
-
-    expect(1).toEqual(1)
+    expect(wrapper.html()).toContain('Connecting to server...')
   })
 })

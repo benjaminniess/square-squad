@@ -4,11 +4,12 @@
       <Logo />
 
       <form
+        v-if="!submitted"
         class="sq-form"
         id="pre-home-form"
         method="post"
         action="/"
-        @submit="checkForm"
+        @submit.prevent="checkForm"
       >
         <div class="input-field">
           <label for="playerName">What's your name?</label
@@ -35,6 +36,10 @@
           <button class="btn" type="submit">Let's play!</button>
         </div>
       </form>
+
+      <p v-if="submitted">
+        Connecting to server...
+      </p>
     </section>
     <Footer />
   </div>
@@ -52,8 +57,8 @@ export default {
 
     this.$store.state.socket.on('player-data-updated', () => {
       // Check if user comes from the room link
-      if ( this.$route.query.redirect_to ) {
-        this.$router.push('/rooms/' + this.$route.query.redirect_to)  
+      if (this.$route.query.redirect_to) {
+        this.$router.push('/rooms/' + this.$route.query.redirect_to)
       } else {
         this.$router.push('/rooms')
       }
@@ -68,7 +73,9 @@ export default {
       playerName: localStorage.playerName ? localStorage.playerName : null,
       playerColor: localStorage.playerColor
         ? localStorage.playerColor
-        : '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6)
+        : '#' +
+          (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+      submitted: false
     }
   },
   name: 'Home',
@@ -78,7 +85,6 @@ export default {
   },
   methods: {
     checkForm(e) {
-      e.preventDefault()
       localStorage.playerName = this.playerName
       localStorage.playerColor = this.playerColor
 
@@ -93,6 +99,8 @@ export default {
       if (this.$gtag) {
         this.$gtag.event('loginUpdate')
       }
+
+      this.submitted = true
     }
   }
 }
