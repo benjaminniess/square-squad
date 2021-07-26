@@ -44,24 +44,32 @@ describe('LobbySection.vue', () => {
   })
 
   it('should have 2 players', () => {
-    expect(wrapper.find('ul.players-list').text()).toContain('Tester Admin')
-    expect(wrapper.find('ul.players-list').text()).toContain('Tester client')
+    expect(wrapper.findAll('ul.players-list li').at(0).text()).toContain(
+      'Tester Admin'
+    )
+    expect(wrapper.findAll('ul.players-list li').at(1).text()).toContain(
+      'Tester client'
+    )
   })
 
   it('should show that current player is admin', () => {
-    expect(wrapper.find('ul.players-list li').text()).toContain('[Admin]')
+    expect(wrapper.findAll('ul.players-list li').at(0).text()).toContain(
+      '[Admin]'
+    )
   })
 
   it('should show that current player is flagged as current player', () => {
-    expect(wrapper.find('ul.players-list li').text()).toContain('[You]')
+    expect(wrapper.findAll('ul.players-list li').at(0).text()).toContain(
+      '[You]'
+    )
   })
 
   it('should show admin form to the admin player', () => {
     expect(wrapper.findComponent({ name: 'AdminForm' }).exists()).toBe(true)
   })
 
-  const wrapper2 = shallowMount(LobbySection, {
-    propsData: {
+  it('should show that current player is not admin anymore', async () => {
+    await wrapper.setProps({
       players: [
         {
           color: '#FF0000',
@@ -83,18 +91,19 @@ describe('LobbySection.vue', () => {
         roomName: 'The Room name',
         gameStatus: 'waiting'
       }
-    }
-  })
-
-  it('should show that current player is not admin anymore', () => {
-    expect(wrapper2.find('ul.players-list li').text()).not.toContain('[Admin]')
+    })
+    expect(wrapper.findAll('ul.players-list li').at(0).text()).not.toContain(
+      '[Admin]'
+    )
   })
 
   it('should show still that current player is flagged as current player', () => {
-    expect(wrapper2.find('ul.players-list li').text()).toContain('[You]')
+    expect(wrapper.findAll('ul.players-list li').at(0).text()).toContain(
+      '[You]'
+    )
   })
 
   it('should not show admin form to the admin player', () => {
-    expect(wrapper2.findComponent({ name: 'AdminForm' }).exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'AdminForm' }).exists()).toBe(false)
   })
 })
