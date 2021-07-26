@@ -18,7 +18,7 @@
           <tr v-if="winner">
             <td>Point(s)</td>
             <td>
-              <p>{{ winner.score }} pts</p>
+              <p class="user-score">{{ winner.score }} pts</p>
             </td>
           </tr>
         </tbody>
