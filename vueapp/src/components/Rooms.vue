@@ -25,7 +25,7 @@
         </p>
         <p>You first need to select a room or create a new one</p>
       </div>
-      <a id="rooms-refresh" href="#" @click="refreshRoomsEventHandler"
+      <a id="rooms-refresh" href="#" @click.prevent="refreshRoomsEventHandler"
         >[Refresh]</a
       >
       <div class="rooms-list">
@@ -44,7 +44,12 @@
           <p v-else class="rooms-list__no-rooms">No rooms yet :(</p>
         </div>
       </div>
-      <form class="sq-form" method="post" action="#" @submit="checkForm">
+      <form
+        class="sq-form"
+        method="post"
+        action="#"
+        @submit.prevent="checkForm"
+      >
         <div class="input-field">
           <label for="newRoom">Or create a new one?</label
           ><input
@@ -127,9 +132,7 @@ export default {
   },
   methods: {
     // The refresh rooms "on click" behaviour
-    refreshRoomsEventHandler(e) {
-      e.preventDefault()
-
+    refreshRoomsEventHandler() {
       if (this.$gtag) {
         this.$gtag.event('roomsRefresh')
       }
@@ -139,8 +142,7 @@ export default {
     refreshRooms() {
       this.$store.state.socket.emit('rooms-refresh')
     },
-    checkForm(e) {
-      e.preventDefault()
+    checkForm() {
       this.$store.state.socket.emit('rooms-create', this.newRoomName)
     },
     goToRoom(slug) {
