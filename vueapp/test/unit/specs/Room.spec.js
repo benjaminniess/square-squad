@@ -1,5 +1,5 @@
 import Room from '@/components/Room'
-import { shallowMount, config } from '@vue/test-utils'
+import { mount, config } from '@vue/test-utils'
 
 let stepsToCall = {
   'room-join-socket': false
@@ -7,36 +7,40 @@ let stepsToCall = {
 
 let mockRoomSlug = 'the-room-slug'
 
-config.mocks['$store'] = {
-  state: {
-    socket: {
-      id: 'n7BGXs8MCOWDd3hvAAAR',
-      on: (action) => {
-        if (action === 'room-join-result') {
-          return {
-            data: {
-              roomSlug: mockRoomSlug
+config.mocks = {
+  '$globalEnv': {
+    version: '1.0.0'
+  },
+  '$route' : {
+    params: {
+      id: mockRoomSlug
+    }
+  },
+  '$store': {
+    state: {
+      socket: {
+        id: 'n7BGXs8MCOWDd3hvAAAR',
+        on: (action) => {
+          if (action === 'room-join-result') {
+            return {
+              data: {
+                roomSlug: mockRoomSlug
+              }
             }
           }
-        }
-      },
-      emit: (event, data = {}) => {
-        if (event === 'room-join' && data.roomSlug === mockRoomSlug) {
-          stepsToCall['room-join-socket'] = true
+        },
+        emit: (event, data = {}) => {
+          if (event === 'room-join' && data.roomSlug === mockRoomSlug) {
+            stepsToCall['room-join-socket'] = true
+          }
         }
       }
     }
   }
 }
 
-config.mocks['$route'] = {
-  params: {
-    id: mockRoomSlug
-  }
-}
-
 describe('Room.vue', () => {
-  const wrapper = shallowMount(Room)
+  const wrapper = mount(Room)
 
   it('should emit a socket when mounted', () => {
     expect(stepsToCall['room-join-socket']).toBe(true)
