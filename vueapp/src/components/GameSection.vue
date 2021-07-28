@@ -60,7 +60,10 @@ export default {
     window.addEventListener('keydown', this.keyDownHandler)
     window.addEventListener('keyup', this.keyUpHandler)
 
-    document.getElementById('particles-js').style.opacity = 0
+    const particlesElement = document.getElementById('particles-js')
+    if (particlesElement) {
+      particlesElement.style.opacity = 0
+    }
 
     this.$store.state.socket.on('start-game-result', (data) => {
       if (data.success) {
