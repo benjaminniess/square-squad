@@ -8,15 +8,15 @@ let stepsToCall = {
 let mockRoomSlug = 'the-room-slug'
 
 config.mocks = {
-  '$globalEnv': {
+  $globalEnv: {
     version: '1.0.0'
   },
-  '$route' : {
+  $route: {
     params: {
       id: mockRoomSlug
     }
   },
-  '$store': {
+  $store: {
     state: {
       socket: {
         id: 'n7BGXs8MCOWDd3hvAAAR',
@@ -34,7 +34,8 @@ config.mocks = {
             stepsToCall['room-join-socket'] = true
           }
         }
-      }
+      },
+      gameStatus: 'waiting'
     }
   }
 }
@@ -46,7 +47,21 @@ describe('Room.vue', () => {
     expect(stepsToCall['room-join-socket']).toBe(true)
   })
 
-  it('should set the room on socket confirmation', () => {
-    // TODO: complete this test
+  it('should show the LobbySection component', () => {
+    expect(wrapper.findComponent({ name: 'LobbySection' }).isVisible()).toBe(
+      true
+    )
+  })
+
+  it('should hide the GameSection component', () => {
+    expect(wrapper.findComponent({ name: 'GameSection' }).isVisible()).toBe(
+      false
+    )
+  })
+
+  it('should hide the RankSection component', () => {
+    expect(wrapper.findComponent({ name: 'RankSection' }).isVisible()).toBe(
+      false
+    )
   })
 })
