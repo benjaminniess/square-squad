@@ -32,13 +32,18 @@ describe('Panic attack - AdminForm.vue', () => {
     input.setValue(5)
     input.trigger('input')
 
-    expect(mutations.updateGameOption).toBeCalledWith('', {
-      key: 'roundsNumber',
-      value: '5'
-    })
+    expect(mutations.updateGameOption).toBeCalledWith(
+      {
+        "gameOptions": 
+          {"bonusFrequency": 5, "obstaclesSpeed": 10, "roundsNumber": 3 }
+      },
+      {
+          key: 'roundsNumber',
+          value: '5'
+      })
   })
 
-  /*
+  
   it('should commit the vuex updateGameOption after obstaclesSpeed update', () => {
     const wrapper = shallowMount(AdminForm, { store, localVue })
 
@@ -46,10 +51,33 @@ describe('Panic attack - AdminForm.vue', () => {
     input.setValue(20)
     input.trigger('input')
 
-    expect(mutations.updateGameOption).toBeCalledWith('', {
-      key: 'roundsNumber',
-      value: '5'
-    })
+    expect(mutations.updateGameOption).toBeCalledWith(
+      {
+        "gameOptions": 
+          {"bonusFrequency": 5, "obstaclesSpeed": 10, "roundsNumber": 3 }
+      },
+      {
+        "key": "obstaclesSpeed", 
+        "value": "20"
+      })
   })
-  */
+
+  it('should commit the vuex updateGameOption after bonusFrequency update', () => {
+    const wrapper = shallowMount(AdminForm, { store, localVue })
+
+    const input = wrapper.find('#bonusFrequency')
+    input.setValue(7)
+    input.trigger('input')
+
+    expect(mutations.updateGameOption).toBeCalledWith(
+      {
+        "gameOptions": 
+          {"bonusFrequency": 5, "obstaclesSpeed": 10, "roundsNumber": 3 }
+      },
+      {
+        "key": "bonusFrequency", 
+        "value": "7"
+      })
+  })
+  
 })
