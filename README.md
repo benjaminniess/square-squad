@@ -64,6 +64,10 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
+### 1.2.6 - 2021-08-02
+
+- New: Added tests to Vue components
+
 ### 1.2.5 - 2021-07-21
 
 - New: Joystick in mobile version
