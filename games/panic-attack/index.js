@@ -1,5 +1,6 @@
 'use strict'
 
+const Matter = require('matter-js')
 const MasterGame = require(__base + '/games/master-game')
 
 class Panick_Attack extends MasterGame {
@@ -26,7 +27,7 @@ class Panick_Attack extends MasterGame {
           let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
             collisionPair.bodyA.id
           )
-  
+
           if (targetObstacle) {
             targetObstacle.onCollisionStart(
               collisionPair.bodyA,
@@ -34,12 +35,12 @@ class Panick_Attack extends MasterGame {
             )
           }
         }
-  
+
         if (collisionPair.bodyB.enableCustomCollisionManagement === true) {
           let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
             collisionPair.bodyB.id
           )
-  
+
           if (targetObstacle) {
             targetObstacle.onCollisionStart(
               collisionPair.bodyB,
@@ -47,7 +48,7 @@ class Panick_Attack extends MasterGame {
             )
           }
         }
-  
+
         let player
         let otherBody
         if (collisionPair.bodyA.gamePlayerID) {
@@ -59,28 +60,28 @@ class Panick_Attack extends MasterGame {
         } else {
           return
         }
-  
+
         if (otherBody.customType !== 'obstacle') {
           return
         }
-  
+
         Matter.Composite.remove(
           this.getPlayersManager().getComposite(),
           player,
           true
         )
-  
+
         this.getPlayersManager().killPlayer(player.gamePlayerID)
         this.getRoom().refreshPlayers()
       })
-  
+
       Matter.Events.on(this.getEngine(), 'collisionEnd', (event) => {
         _.forEach(event.pairs, (collisionPair) => {
           if (collisionPair.bodyA.enableCustomCollisionManagement === true) {
             let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
               collisionPair.bodyA.id
             )
-    
+
             if (targetObstacle) {
               targetObstacle.onCollisionEnd(
                 collisionPair.bodyA,
@@ -88,12 +89,12 @@ class Panick_Attack extends MasterGame {
               )
             }
           }
-    
+
           if (collisionPair.bodyB.enableCustomCollisionManagement === true) {
             let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
               collisionPair.bodyB.id
             )
-    
+
             if (targetObstacle) {
               targetObstacle.onCollisionEnd(
                 collisionPair.bodyB,
@@ -103,7 +104,6 @@ class Panick_Attack extends MasterGame {
           }
         })
       })
-      
     })
   }
 
