@@ -55,7 +55,7 @@ export default {
       this.$gtag.pageview('/')
     }
 
-    this.$store.state.socket.on('player-data-updated', () => {
+    this.$store.state.socket.on('update-player-data-result', () => {
       // Check if user comes from the room link
       if (this.$route.query.redirect_to) {
         this.$router.push('/rooms/' + this.$route.query.redirect_to)
@@ -66,7 +66,7 @@ export default {
   },
   destroyed() {
     // Not to have double listener next time the component is mounted
-    this.$store.state.socket.off('player-data-updated')
+    this.$store.state.socket.off('update-player-data-result')
   },
   data() {
     return {

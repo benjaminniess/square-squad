@@ -6,7 +6,7 @@ module.exports = function (app) {
   io.on('connection', (socket) => {
     socket.on('update-player-data', (data) => {
       if (!data.name || !data.color) {
-        io.to(socket.id).emit('player-data-updated', {
+        io.to(socket.id).emit('update-player-data-result', {
           success: false,
           error: 'Empty name or color'
         })
@@ -17,12 +17,12 @@ module.exports = function (app) {
       if (!existingPlayer) {
         existingPlayer = helpers.initPlayer(socket.id, data.name, data.color)
         if (!existingPlayer) {
-          io.to(socket.id).emit('player-data-updated', {
+          io.to(socket.id).emit('update-player-data-result', {
             success: false,
             error: 'Error while initializing player'
           })
         } else {
-          io.to(socket.id).emit('player-data-updated', {
+          io.to(socket.id).emit('update-player-data-result', {
             success: true
           })
         }
@@ -35,7 +35,7 @@ module.exports = function (app) {
         color: data.color
       })
 
-      io.to(socket.id).emit('player-data-updated', {
+      io.to(socket.id).emit('update-player-data-result', {
         success: true
       })
     })
