@@ -1,8 +1,18 @@
-const app = require('../')
+const server = require('../')
+
+const PORT = 7080
+
+beforeEach(() => {
+  server.listen(PORT)
+})
+
+afterEach(() => {
+  server.close()
+})
 
 const { io } = require('socket.io-client')
-const socket1 = io('http://localhost:8080')
-const socket2 = io('http://localhost:8080')
+const socket1 = io('http://localhost:' + PORT)
+const socket2 = io('http://localhost:' + PORT)
 
 const validUser = {
   name: 'Tester',

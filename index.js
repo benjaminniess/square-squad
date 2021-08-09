@@ -71,10 +71,12 @@ app.use(express.static(__dirname + '/public'))
 app.use(express.static(__dirname + '/vueapp/dist'))
 app.use(express.static(__dirname + '/vueapp/static'))
 
-const PORT = process.env.PORT || 8080
-server.listen(PORT)
+if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {
+  const PORT = process.env.PORT || 8080
+  server.listen(PORT)
+}
 
 // Dynamically loads all controllers
 require('./lib/controller')(app)
 
-module.exports = app
+module.exports = server
