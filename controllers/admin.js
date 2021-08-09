@@ -8,13 +8,26 @@ module.exports = function (app) {
   app.use('/admin', router)
 
   router.get('*', function (req, res, next) {
-    if (
-      !req.query.pwd ||
-      !process.env.ADMIN_PASSWORD ||
-      req.query.pwd != process.env.ADMIN_PASSWORD
-    ) {
-      res.send('Nop')
-      return
+    const reject = () => {
+      res.setHeader('www-authenticate', 'Basic')
+      res.sendStatus(401)
+    }
+
+    const authorization = req.headers.authorization
+
+    if (!authorization) {
+      return reject()
+    }
+
+    const [username, password] = Buffer.from(
+      authorization.replace('Basic ', ''),
+      'base64'
+    )
+      .toString()
+      .split(':')
+
+    if (password !== process.env.ADMIN_PASSWORD) {
+      return reject()
     }
 
     next()
