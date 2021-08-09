@@ -1,15 +1,15 @@
 const app = require('../index')
 const request = require('supertest')
 
-describe('GET /', function () {
-  it('shows the HP', function () {
-    return request(app)
-      .get('/')
-      .expect(200)
-      .expect('Content-Type', 'text/html; charset=UTF-8')
-      .then((response) => {
-        //console.log(response.text)
-      })
+describe('GET /', () => {
+  it('returns a 200 when HP is called', async () => {
+    const response = await request(app).get('/')
+    expect(response.status).toBe(200)
+  })
+
+  it('render the HP content with the <div id=app></div> block', async () => {
+    const response = await request(app).get('/')
+    expect(response.text).toContain('<div id=app></div>')
   })
 })
 
