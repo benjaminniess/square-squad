@@ -77,23 +77,23 @@ const startGame = (gameData = validGameData, socket = socket1) => {
   })
 }
 
-describe('SOCKET - Player Data', function () {
-  it('emits a update-player-data-result socket with a success set to false when missing name', async function () {
+describe('SOCKET - Player Data', () => {
+  it('emits a update-player-data-result socket with a success set to false when missing name', async () => {
     const result = await updatePlayer({ name: '', color: '#FF0000' })
     expect(result.success).toBe(false)
   })
 
-  it('emits a update-player-data-result socket with a Empty name or color message when missing name', async function () {
+  it('emits a update-player-data-result socket with a Empty name or color message when missing name', async () => {
     const result = await updatePlayer({ name: '', color: '#FF0000' })
     expect(result.error).toBe('Empty name or color')
   })
 
-  it('creates a player', async function () {
+  it('creates a player', async () => {
     const result = await updatePlayer()
     expect(result.success).toBeTruthy()
   })
 
-  it("updates a player's data", async function () {
+  it("updates a player's data", async () => {
     const result = await updatePlayer({
       name: 'Tester updated',
       color: '#00FF00'
@@ -102,34 +102,34 @@ describe('SOCKET - Player Data', function () {
   })
 })
 
-describe('SOCKET - Rooms', function () {
-  it('refreshs rooms list and sends a success result', async function () {
+describe('SOCKET - Rooms', () => {
+  it('refreshs rooms list and sends a success result', async () => {
     const result = await refreshRooms()
     expect(result.success).toBeTruthy()
   })
 
-  it('refreshs rooms list and sends an empty rooms list', async function () {
+  it('refreshs rooms list and sends an empty rooms list', async () => {
     const result = await refreshRooms()
     expect(result.data).toStrictEqual([])
   })
 
-  it('creates a room when no room exist with this name and returns a success staus with room data', async function () {
+  it('creates a room when no room exist with this name and returns a success staus with room data', async () => {
     const result = await createRoom()
     expect(result.success).toBeTruthy()
     expect(result.data).toStrictEqual({ roomSlug: 'room-name' })
   })
 
-  it('fails to create existing room and send an error status', async function () {
+  it('fails to create existing room and send an error status', async () => {
     const result = await createRoom()
     expect(result.success).toBe(false)
   })
 
-  it('fails to create existing room and send an error message', async function () {
+  it('fails to create existing room and send an error message', async () => {
     const result = await createRoom()
     expect(result.error).toBe('This name is already taken')
   })
 
-  it('joins an existing room and send a success state and an array of 1 player', async function () {
+  it('joins an existing room and send a success state and an array of 1 player', async () => {
     const result = await joinRoom()
     expect(result['room-join-result'].success).toBeTruthy()
     expect(result['room-join-result'].data).toStrictEqual({
@@ -141,8 +141,8 @@ describe('SOCKET - Rooms', function () {
   })
 })
 
-describe('SOCKET - Player 2 is joining', function () {
-  it('creates a second player with a new socket and returns a success status', async function () {
+describe('SOCKET - Player 2 is joining', () => {
+  it('creates a second player with a new socket and returns a success status', async () => {
     const result = await updatePlayer(
       {
         name: 'Tester 2 ',
@@ -153,7 +153,7 @@ describe('SOCKET - Player 2 is joining', function () {
     expect(result.success).toBeTruthy()
   })
 
-  it('joins a room with the second socket and returns a success state and an array of 2 players', async function () {
+  it('joins a room with the second socket and returns a success state and an array of 2 players', async () => {
     const result = await joinRoom({ roomSlug: 'room-name' }, socket2)
 
     expect(result['room-join-result'].success).toEqual(true)
@@ -166,20 +166,20 @@ describe('SOCKET - Player 2 is joining', function () {
   })
 })
 
-describe('SOCKET - Start game', function () {
-  it('Fails to create a game if not admin', async function () {
+describe('SOCKET - Start game', () => {
+  it('Fails to create a game if not admin', async () => {
     const result = await startGame(validGameData, socket2)
     expect(result.success).toBe(false)
     expect(result.error).toBe('You are not admin of this room')
   })
 
-  it('Fails to create a game if missing data', async function () {
+  it('Fails to create a game if missing data', async () => {
     const result = await startGame({}, socket2)
     expect(result.success).toBe(false)
     expect(result.error).toBe('This room does not exist')
   })
 
-  it('Creates a game', async function () {
+  it('Creates a game', async () => {
     const result = await startGame()
     expect(result.success).toBeTruthy()
     expect(result.data.currentRound).toBe(1)
@@ -187,7 +187,7 @@ describe('SOCKET - Start game', function () {
   })
 
   for (let i = 3; i >= 0; i--) {
-    it('Wait for the game to start in ' + i, function () {
+    it('Wait for the game to start in ' + i, () => {
       return new Promise((resolve, reject) => {
         socket1.on('countdown-update', (data) => {
           resolve(data)
