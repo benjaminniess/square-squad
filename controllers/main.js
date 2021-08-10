@@ -18,11 +18,19 @@ module.exports = function (app) {
     )
   })
 
+  const publicPages = ['/about-us', '/rooms/*']
+
+  _.forEach(publicPages, (pageEndpoint) => {
+    router.get(pageEndpoint, function (req, res, next) {
+      res.sendFile(__base + '/vueapp/dist/index.html')
+    })
+  })
+
   /**
    * Redirect everything to vueapp
    */
   router.get('*', function (req, res, next) {
-    res.sendFile(__base + '/vueapp/dist/index.html')
+    res.status(404).sendFile(__base + '/vueapp/dist/index.html')
   })
 
   setInterval(refreshData, 10)

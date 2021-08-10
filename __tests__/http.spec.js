@@ -46,19 +46,47 @@ describe('GET /admin', () => {
 })
 
 describe('GET /about-us', () => {
-  it('shows the about us page', () => {
-    return request(app)
-      .get('/about-us')
-      .expect(200)
-      .expect('Content-Type', 'text/html; charset=UTF-8')
+  it('shows the about us page', async () => {
+    const response = await request(app).get('/about-us')
+
+    expect(response.status).toBe(200)
+  })
+
+  it('render the about page content with the <div id=app></div> block', async () => {
+    const response = await request(app).get('/about-us')
+    expect(response.text).toContain('<div id=app></div>')
+  })
+})
+
+describe('GET /env : The /env endpoints gives dynamic public env variables to front end app', () => {
+  it('shows the /env json with a 200', async () => {
+    const response = await request(app).get('/env')
+    expect(response.status).toBe(200)
+  })
+
+  it('render the env json and is not null', async () => {
+    const response = await request(app).get('/env')
+
+    expect(response.body).not.toBeNull()
+    expect(response.headers['content-type']).toBe('application/json')
+  })
+})
+
+describe('GET /rooms/{room-slug)', () => {
+  it('shows a 200 when accessing a single room URL even if room does not exist', async () => {
+    const response = await request(app).get('/rooms/room-test')
+    expect(response.status).toBe(200)
+  })
+
+  it('render the single room page content with the <div id=app></div> block', async () => {
+    const response = await request(app).get('/rooms/room-slug')
+    expect(response.text).toContain('<div id=app></div>')
   })
 })
 
 describe('GET /any-url', () => {
-  it('shows the 404 page', () => {
-    return request(app)
-      .get('/any-url')
-      .expect(200)
-      .expect('Content-Type', 'text/html; charset=UTF-8')
+  it('shows the 404 page', async () => {
+    const response = await request(app).get('/any-url')
+    expect(response.status).toBe(404)
   })
 })
