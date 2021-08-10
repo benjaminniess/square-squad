@@ -1,3 +1,6 @@
+/**
+ * Thoses tests are checking the socket.io client => server communication from user creation/update to game start
+ */
 const server = require('../')
 
 const PORT = 7080
@@ -26,6 +29,13 @@ const validGameData = {
   bonusFrequency: '2'
 }
 
+/**
+ * Emit a 'update-player-data' socket and wait for 'update-player-data-result'
+ *
+ * @param {*} user: a user object with 'name' and 'color' properties
+ * @param {*} socket: the user socket.io socket
+ * @returns void
+ */
 const updatePlayer = (user = validUser, socket = socket1) => {
   return new Promise((resolve, reject) => {
     socket.emit('update-player-data', user)
@@ -35,6 +45,12 @@ const updatePlayer = (user = validUser, socket = socket1) => {
   })
 }
 
+/**
+ * Emit a 'rooms-refresh' socket and wait for 'rooms-refresh-result'
+ *
+ * @param {*} socket: the user socket.io socket
+ * @returns void
+ */
 const refreshRooms = (socket = socket1) => {
   return new Promise((resolve, reject) => {
     socket.emit('rooms-refresh')
@@ -44,6 +60,13 @@ const refreshRooms = (socket = socket1) => {
   })
 }
 
+/**
+ * Emit a 'rooms-create' socket and wait for 'rooms-create-result'
+ *
+ * @param {String} roomName: The name of the new room
+ * @param {*} socket: the user socket.io socket
+ * @returns void
+ */
 const createRoom = (roomName = 'Room name', socket = socket1) => {
   return new Promise((resolve, reject) => {
     socket.emit('rooms-create', roomName)
@@ -53,6 +76,13 @@ const createRoom = (roomName = 'Room name', socket = socket1) => {
   })
 }
 
+/**
+ * Emit a 'room-join' socket and wait for both 'room-join-result' and 'refresh-players' result which is automatically triggered after room join
+ *
+ * @param {*} room: The room object with at least a 'roomSlug' property
+ * @param {*} socket: the user socket.io socket
+ * @returns void
+ */
 const joinRoom = (room = { roomSlug: 'room-name' }, socket = socket1) => {
   return new Promise((resolve, reject) => {
     let socketData = {}
@@ -68,6 +98,13 @@ const joinRoom = (room = { roomSlug: 'room-name' }, socket = socket1) => {
   })
 }
 
+/**
+ * Emit a 'start-game' socket and wait for 'start-game-result'
+ *
+ * @param {*} gameData
+ * @param {*} socket
+ * @returns void
+ */
 const startGame = (gameData = validGameData, socket = socket1) => {
   return new Promise((resolve, reject) => {
     socket.emit('start-game', gameData)
