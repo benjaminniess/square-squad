@@ -33,8 +33,6 @@ const server = require('http').Server(app)
 
 global.appVersion = packageJson.version
 global.__base = __dirname + '/'
-global.globalRooms = {}
-global.globalPlayers = {}
 global.canvasWidth = 700
 global.squareSize = 30
 global.bonusSize = 30
