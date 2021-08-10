@@ -151,7 +151,6 @@ module.exports = function (app) {
     })
 
     socket.on('disconnecting', () => {
-      helpers.deletePlayer(socket.id)
       socket.rooms.forEach((roomSlug) => {
         let room = helpers.getRoom(roomSlug)
         if (room) {

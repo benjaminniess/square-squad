@@ -13,7 +13,6 @@ if (
 const express = require('express')
 const app = express()
 
-const { InMemorySessionStore } = require('./lib/sessionStore')
 const packageJson = require('./package.json')
 const cors = require('cors')
 
@@ -36,7 +35,6 @@ global.appVersion = packageJson.version
 global.__base = __dirname + '/'
 global.globalRooms = {}
 global.globalPlayers = {}
-global.globalSessionStore = new InMemorySessionStore()
 global.canvasWidth = 700
 global.squareSize = 30
 global.bonusSize = 30
