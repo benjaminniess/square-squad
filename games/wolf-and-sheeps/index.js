@@ -1,6 +1,7 @@
 'use strict'
 
 const MasterGame = require('../master-game')
+const _ = require('lodash')
 
 class Wolf_And_Sheep extends MasterGame {
   constructor(room) {

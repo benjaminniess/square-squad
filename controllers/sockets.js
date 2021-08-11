@@ -3,6 +3,8 @@
 const validator = require('validator')
 const rooms = require('../lib/rooms')
 const players = require('../lib/players')
+const _ = require('lodash')
+
 module.exports = function (app) {
   io.on('connection', (socket) => {
     socket.on('update-player-data', (data) => {

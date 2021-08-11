@@ -4,6 +4,7 @@ const express = require('express')
 const router = express.Router()
 const rooms = require('../lib/rooms')
 const players = require('../lib/players')
+const _ = require('lodash')
 
 module.exports = function (app) {
   app.use('/admin', router)

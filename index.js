@@ -31,7 +31,6 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
 
 const server = require('http').Server(app)
 
-global._ = require('lodash')
 global.io = require('socket.io')(server, corsOption)
 
 // Force HTTPS + redirect multiple domains/subdomains

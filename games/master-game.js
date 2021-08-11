@@ -6,6 +6,7 @@ const ObstaclesManager = require('../lib/obstacles-manager')
 const PlayersManager = require('../lib/players-manager')
 const Matter = require('matter-js')
 const { EventEmitter } = require('events')
+const _ = require('lodash')
 
 const Engine = Matter.Engine
 const Runner = Matter.Runner

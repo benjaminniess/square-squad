@@ -4,6 +4,7 @@ const helpers = require('../../lib/helpers')
 const { squareSize } = require('../../lib/config/main')
 const Matter = require('matter-js')
 const MasterGame = require('../master-game')
+const _ = require('lodash')
 
 class Panick_Attack extends MasterGame {
   constructor(room) {

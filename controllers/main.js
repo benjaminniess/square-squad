@@ -4,6 +4,7 @@ const appRoot = require('app-root-path')
 const rooms = require('../lib/rooms')
 const express = require('express')
 const router = express.Router()
+const _ = require('lodash')
 
 module.exports = function (app) {
   app.use('/', router)
