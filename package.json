@@ -6,11 +6,12 @@
   "scripts": {
     "start": "node index.js",
     "watch": "npx gulpfile.js",
-    "test": "jest ./__tests__ --watch --cache=false --detectOpenHandles --NODE_ENV=test"
+    "test": "jest ./__tests__ --watch --NODE_ENV=test"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "app-root-path": "^3.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.6.0",
     "express": "^4.17.1",

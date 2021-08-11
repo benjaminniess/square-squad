@@ -1,5 +1,6 @@
 'use_strict'
 
+const appRoot = require('app-root-path')
 const express = require('express')
 const router = express.Router()
 
@@ -22,7 +23,7 @@ module.exports = function (app) {
 
   _.forEach(publicPages, (pageEndpoint) => {
     router.get(pageEndpoint, function (req, res, next) {
-      res.sendFile(__base + '/vueapp/dist/index.html')
+      res.sendFile(appRoot + '/vueapp/dist/index.html')
     })
   })
 
@@ -30,7 +31,7 @@ module.exports = function (app) {
    * Redirect everything to vueapp
    */
   router.get('*', function (req, res, next) {
-    res.status(404).sendFile(__base + '/vueapp/dist/index.html')
+    res.status(404).sendFile(appRoot + '/vueapp/dist/index.html')
   })
 
   setInterval(refreshData, 10)
