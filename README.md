@@ -64,6 +64,12 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
+### 1.2.7 - 2021-08-11
+
+- Security update of package depenencies
+- Added some more tests on rooms and players actions
+- Code refacto to remove most of the global var usage in index.js
+
 ### 1.2.6 - 2021-08-02
 
 - New: Added tests to Vue components
