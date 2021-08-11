@@ -1,5 +1,6 @@
 'use strict'
 
+const { squareSize } = require('../lib/config/main')
 const BonusManager = require('../lib/bonus-manager')
 const ObstaclesManager = require('../lib/obstacles-manager')
 const PlayersManager = require('../lib/players-manager')

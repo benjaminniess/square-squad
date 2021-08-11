@@ -13,7 +13,6 @@ if (
 const express = require('express')
 const app = express()
 
-const packageJson = require('./package.json')
 const cors = require('cors')
 
 // Allow vue app to access node from localhost:1080
@@ -31,10 +30,6 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
 
 const server = require('http').Server(app)
 
-global.appVersion = packageJson.version
-global.canvasWidth = 700
-global.squareSize = 30
-global.bonusSize = 30
 global.helpers = require('./lib/helpers')
 global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')
