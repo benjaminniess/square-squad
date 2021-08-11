@@ -2,7 +2,8 @@
 
 const express = require('express')
 const router = express.Router()
-const Helpers = require('../lib/helpers')
+const rooms = require('../lib/rooms')
+const players = require('../lib/players')
 
 module.exports = function (app) {
   app.use('/admin', router)
@@ -43,8 +44,8 @@ module.exports = function (app) {
     res.end(
       JSON.stringify({
         snapUrl: '/admin/snapshot?pwd=' + process.env.ADMIN_PASSWORD,
-        playersCount: _.size(Helpers.getPlayers()),
-        roomsCount: _.size(Helpers.getRooms()),
+        playersCount: _.size(players.getPlayers()),
+        roomsCount: _.size(rooms.getRooms()),
         memoryRSS: Math.round(memoryUsage.rss / 1024 / 1024) + 'Mb',
         memoryheapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024) + 'Mb',
         memoryheapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024) + 'Mb',

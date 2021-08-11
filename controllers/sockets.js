@@ -1,7 +1,8 @@
 'use_strict'
 
 const validator = require('validator')
-
+const rooms = require('../lib/rooms')
+const players = require('../lib/players')
 module.exports = function (app) {
   io.on('connection', (socket) => {
     socket.on('update-player-data', (data) => {
@@ -13,9 +14,9 @@ module.exports = function (app) {
 
         return
       }
-      let existingPlayer = helpers.getPlayer(socket.id)
+      let existingPlayer = players.getPlayer(socket.id)
       if (!existingPlayer) {
-        existingPlayer = helpers.initPlayer(socket.id, data.name, data.color)
+        existingPlayer = players.initPlayer(socket.id, data.name, data.color)
         if (!existingPlayer) {
           io.to(socket.id).emit('update-player-data-result', {
             success: false,
@@ -30,7 +31,7 @@ module.exports = function (app) {
         return
       }
 
-      helpers.updatePlayer(socket.id, {
+      players.updatePlayer(socket.id, {
         nickName: data.name,
         color: data.color
       })
@@ -41,16 +42,16 @@ module.exports = function (app) {
     })
 
     socket.on('rooms-refresh', () => {
-      helpers.deleteEmptyRooms()
+      rooms.deleteEmptyRooms()
       io.to(socket.id).emit('rooms-refresh-result', {
         success: true,
-        data: helpers.getRoomsData()
+        data: rooms.getRoomsData()
       })
     })
 
     // When player ask for joining a room
     socket.on('room-join', (data) => {
-      let room = helpers.getRoom(data.roomSlug)
+      let room = rooms.getRoom(data.roomSlug)
       if (!room) {
         io.to(socket.id).emit('room-join-result', {
           success: false,
@@ -59,7 +60,7 @@ module.exports = function (app) {
         return
       }
 
-      let currentPlayer = helpers.getPlayer(socket.id)
+      let currentPlayer = players.getPlayer(socket.id)
       if (!currentPlayer) {
         io.to(socket.id).emit('room-join-result', {
           success: false,
@@ -98,7 +99,7 @@ module.exports = function (app) {
     })
 
     socket.on('rooms-create', (roomName) => {
-      let currentPlayer = helpers.getPlayer(socket.id)
+      let currentPlayer = players.getPlayer(socket.id)
       if (!currentPlayer || !currentPlayer.nickName) {
         io.to(socket.id).emit('rooms-create-result', {
           success: false,
@@ -116,7 +117,7 @@ module.exports = function (app) {
       }
 
       roomName = validator.blacklist(roomName, "<>\\/'")
-      let roomSlug = helpers.createRoom(roomName)
+      let roomSlug = rooms.createRoom(roomName)
       if (!roomSlug) {
         io.to(socket.id).emit('rooms-create-result', {
           success: false,
@@ -136,9 +137,9 @@ module.exports = function (app) {
         if (socket.id !== roomSlug) {
           socket.leave(roomSlug)
 
-          let room = helpers.getRoom(roomSlug)
-          if (_.size(room.getPlayers()) === 0) {
-            helpers.deleteRoom(roomSlug)
+          let room = rooms.getRoom(roomSlug)
+          if (_.size(players.getPlayers()) === 0) {
+            rooms.deleteRoom(roomSlug)
           }
 
           if (room.getAdminPlayer() === socket.id) {
@@ -152,7 +153,7 @@ module.exports = function (app) {
 
     socket.on('disconnecting', () => {
       socket.rooms.forEach((roomSlug) => {
-        let room = helpers.getRoom(roomSlug)
+        let room = rooms.getRoom(roomSlug)
         if (room) {
           if (room.getAdminPlayer() === socket.id) {
             room.resetAdminPlayer()
@@ -163,7 +164,7 @@ module.exports = function (app) {
     })
 
     socket.on('start-game', (data) => {
-      let room = helpers.getRoom(data.roomSlug)
+      let room = rooms.getRoom(data.roomSlug)
       if (!room) {
         io.to(socket.id).emit('start-game-result', {
           success: false,
@@ -305,7 +306,7 @@ module.exports = function (app) {
     })
 
     socket.on('keyPressed', function (socketData) {
-      let currentPlayer = helpers.getPlayer(socket.id)
+      let currentPlayer = players.getPlayer(socket.id)
       if (
         currentPlayer &&
         currentPlayer.getNickname() &&
@@ -313,7 +314,7 @@ module.exports = function (app) {
       ) {
         socket.rooms.forEach((roomSlug) => {
           if (roomSlug != socket.id) {
-            let room = helpers.getRoom(roomSlug)
+            let room = rooms.getRoom(roomSlug)
             let gameStatus = room.getGame().getStatus()
             if (room && gameStatus === 'playing') {
               if (socketData.key == 39) {
@@ -346,14 +347,14 @@ module.exports = function (app) {
     })
 
     socket.on('keyUp', function (socketData) {
-      let currentPlayer = helpers.getPlayer(socket.id)
+      let currentPlayer = players.getPlayer(socket.id)
       if (
         currentPlayer &&
         currentPlayer.getNickname() &&
         !currentPlayer.isSpectator()
       ) {
         socket.rooms.forEach((roomSlug) => {
-          let room = helpers.getRoom(roomSlug)
+          let room = rooms.getRoom(roomSlug)
           if (room && room.getGame().getStatus() === 'playing') {
             if (roomSlug != socket.id) {
               if (typeof socketData === 'undefined' || !socketData.key) {

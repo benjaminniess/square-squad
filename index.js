@@ -1,8 +1,9 @@
+// Load dynamic .env file so we can have a static conf for tests
 require('dotenv').config({
   path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'
 })
 
-// New relic agent option
+// Load new relic agent if env vars are set
 if (
   process.env.ENABLE_NEW_RELIC_AGENT &&
   process.env.ENABLE_NEW_RELIC_AGENT === 'true'
@@ -30,12 +31,11 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
 
 const server = require('http').Server(app)
 
-global.helpers = require('./lib/helpers')
-global.useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 global._ = require('lodash')
 global.io = require('socket.io')(server, corsOption)
 
 // Force HTTPS + redirect multiple domains/subdomains
+const useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
 app.use((req, res, next) => {
   if (req.get('x-forwarded-proto') !== 'https' && useSSL) {
     let domain =
@@ -63,12 +63,13 @@ app.use(express.static(__dirname + '/public'))
 app.use(express.static(__dirname + '/vueapp/dist'))
 app.use(express.static(__dirname + '/vueapp/static'))
 
+// Enable server listen only if not in a test env
 if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {
   const PORT = process.env.PORT || 8080
   server.listen(PORT)
 }
 
-// Dynamically loads all controllers
+// Dynamically loads all controllers in lib/controller dir
 require('./lib/controller')(app)
 
 module.exports = server

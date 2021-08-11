@@ -1,6 +1,7 @@
 'use_strict'
 
 const appRoot = require('app-root-path')
+const rooms = require('../lib/rooms')
 const express = require('express')
 const router = express.Router()
 
@@ -43,7 +44,7 @@ module.exports = function (app) {
     }
 
     lockedRefresh = true
-    _.forEach(helpers.getRooms(), (room) => {
+    _.forEach(rooms.getRooms(), (room) => {
       let roomGame = room.getGame()
       let status = room.getGame().getStatus()
 
