@@ -1,8 +1,7 @@
 'use strict'
 
-const appRoot = require('app-root-path')
 const Matter = require('matter-js')
-const MasterGame = require(appRoot + '/games/master-game')
+const MasterGame = require('../master-game')
 
 class Panick_Attack extends MasterGame {
   constructor(room) {

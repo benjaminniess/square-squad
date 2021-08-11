@@ -1,9 +1,8 @@
 'use strict'
 
-const appRoot = require('app-root-path')
-const BonusManager = require(appRoot + '/lib/bonus-manager')
-const ObstaclesManager = require(appRoot + '/lib/obstacles-manager')
-const PlayersManager = require(appRoot + '/lib/players-manager')
+const BonusManager = require('../lib/bonus-manager')
+const ObstaclesManager = require('../lib/obstacles-manager')
+const PlayersManager = require('../lib/players-manager')
 const Matter = require('matter-js')
 const { EventEmitter } = require('events')
 
