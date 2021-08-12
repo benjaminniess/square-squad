@@ -15,7 +15,11 @@ const Composite = Matter.Composite
 
 class MasterGame {
   constructor(room) {
+    if (!room) {
+      throw new Error('Missing room')
+    }
     this.speed = 6
+    this.score = 0
     this.duration = 30
     this.playersData = {}
     this.playersMoves = {}
