@@ -1,6 +1,7 @@
 'use strict'
 
 const MasterGame = require('../master-game')
+const Matter = require('matter-js')
 const _ = require('lodash')
 
 class Wolf_And_Sheep extends MasterGame {
