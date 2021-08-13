@@ -8,6 +8,7 @@ const _ = require('lodash')
 
 module.exports = function (app) {
   app.use('/admin', router)
+  rooms.injectIo(app.get('socketIOInstance'))
 
   router.get('*', function (req, res, next) {
     const reject = () => {

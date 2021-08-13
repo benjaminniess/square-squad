@@ -31,7 +31,7 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
 
 const server = require('http').Server(app)
 
-global.io = require('socket.io')(server, corsOption)
+app.set('socketIOInstance', require('socket.io')(server, corsOption))
 
 // Force HTTPS + redirect multiple domains/subdomains
 const useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'

@@ -2,6 +2,19 @@ require('../')
 const Room = require('../lib/room')
 const Rooms = require('../lib/rooms')
 
+// Quick mock of socket io object
+Rooms.injectIo({
+  sockets: {
+    adapter: {
+      rooms: {
+        get: (a) => {
+          return true
+        }
+      }
+    }
+  }
+})
+
 describe('Rooms management - scenario 1', () => {
   it('returns an empty rooms object', () => {
     expect(Rooms.getRooms()).toEqual({})

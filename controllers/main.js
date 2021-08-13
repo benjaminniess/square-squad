@@ -7,6 +7,9 @@ const router = express.Router()
 const _ = require('lodash')
 
 module.exports = function (app) {
+  const io = app.get('socketIOInstance')
+  rooms.injectIo(io)
+
   app.use('/', router)
 
   /**
