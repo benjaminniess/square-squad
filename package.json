@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "inspect": "nodemon index.js --inspect",
     "watch": "npx gulpfile.js",
     "test": "jest ./__tests__ --watch --NODE_ENV=test"
