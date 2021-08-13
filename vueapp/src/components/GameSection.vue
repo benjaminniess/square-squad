@@ -133,20 +133,22 @@ export default {
         })
       }
 
-      data.obstacles.map((obstacle) => {
-        ctx.beginPath()
-        ctx.fillStyle = '#DD0000'
-        obstacle.map((vertice, i) => {
-          if (i === 0) {
-            ctx.moveTo(rationalize(vertice.x), rationalize(vertice.y))
-          } else {
-            ctx.lineTo(rationalize(vertice.x), rationalize(vertice.y))
-          }
-        })
+      if (data.obstacles) {
+        data.obstacles.map((obstacle) => {
+          ctx.beginPath()
+          ctx.fillStyle = '#DD0000'
+          obstacle.map((vertice, i) => {
+            if (i === 0) {
+              ctx.moveTo(rationalize(vertice.x), rationalize(vertice.y))
+            } else {
+              ctx.lineTo(rationalize(vertice.x), rationalize(vertice.y))
+            }
+          })
 
-        ctx.fill()
-        ctx.closePath()
-      })
+          ctx.fill()
+          ctx.closePath()
+        })
+      }
 
       for (const [key, player] of Object.entries(data.players)) {
         if (player.alive) {

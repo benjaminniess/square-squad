@@ -1,7 +1,8 @@
 'use strict'
 
-const MasterGame = require('../master-game')
+const { squareSize } = require('../../lib/config/main')
 const Matter = require('matter-js')
+const MasterGame = require('../master-game')
 const _ = require('lodash')
 
 class Wolf_And_Sheep extends MasterGame {
