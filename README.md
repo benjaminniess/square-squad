@@ -64,6 +64,12 @@ ADMIN_PASSWORD: Not ready yet
 
 ## Changelog
 
+### 1.2.8 - 2021-08-13
+
+- New: Score changer bonus are now declined into +3, +5, +10 and -3, -5, -10
+- Removed last global var using DI
+- Added some more tests on bonus
+
 ### 1.2.7 - 2021-08-11
 
 - Security update of package depenencies

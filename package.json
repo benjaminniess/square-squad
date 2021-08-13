@@ -1,10 +1,11 @@
 {
   "name": "square-squad-reloaded",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
+    "inspect": "nodemon index.js --inspect",
     "watch": "npx gulpfile.js",
     "test": "jest ./__tests__ --watch --NODE_ENV=test"
   },
