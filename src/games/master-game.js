@@ -1,9 +1,9 @@
 'use strict'
 
-const { squareSize } = require('../lib/config/main')
-const BonusManager = require('../lib/bonus-manager')
-const ObstaclesManager = require('../lib/obstacles-manager')
-const PlayersManager = require('../lib/players-manager')
+const { squareSize } = require('../config/main')
+const BonusManager = require('../managers/bonus-manager')
+const ObstaclesManager = require('../managers/obstacles-manager')
+const PlayersManager = require('../managers/players-manager')
 const Matter = require('matter-js')
 const { EventEmitter } = require('events')
 const _ = require('lodash')

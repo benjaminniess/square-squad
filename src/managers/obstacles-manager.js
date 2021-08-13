@@ -1,14 +1,14 @@
 'use strict'
 
-const { canvasWidth } = require('../lib/config/main')
-const helpers = require('../lib/helpers')
+const { canvasWidth } = require('../config/main')
+const helpers = require('../helpers/helpers')
 const Matter = require('matter-js')
 const Composite = Matter.Composite
 
-const Press = require('./obstacles/press')
-const SimpleHole = require('./obstacles/simple-hole')
-const SpaceInvaders = require('./obstacles/space-invaders')
-const Ball = require('./obstacles/ball')
+const Press = require('../entities/obstacles/press')
+const SimpleHole = require('../entities/obstacles/simple-hole')
+const SpaceInvaders = require('../entities/obstacles/space-invaders')
+const Ball = require('../entities/obstacles/ball')
 const _ = require('lodash')
 
 const { EventEmitter } = require('events')

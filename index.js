@@ -69,6 +69,6 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {
 }
 
 // Dynamically loads all controllers in lib/controller dir
-require('./lib/controller')(app)
+require('./src/controller')(app)
 
 module.exports = server

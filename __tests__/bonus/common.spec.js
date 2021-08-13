@@ -1,9 +1,9 @@
 /**
  * A generic tests group for all bonus (extending from Bonus class)
  */
-const Invincible = require('../../lib/bonus/invincible')
-const ScoreChanger = require('../../lib/bonus/score-changer')
-const Speed = require('../../lib/bonus/speed')
+const Invincible = require('../../src/entities/bonus/invincible')
+const ScoreChanger = require('../../src/entities/bonus/score-changer')
+const Speed = require('../../src/entities/bonus/speed')
 const { EventEmitter } = require('events')
 
 const bonusTypes = [

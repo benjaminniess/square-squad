@@ -1,7 +1,7 @@
 'use strict'
 
-const helpers = require('../../lib/helpers')
-const { squareSize } = require('../../lib/config/main')
+const helpers = require('../../helpers/helpers')
+const { squareSize } = require('../../config/main')
 const Matter = require('matter-js')
 const MasterGame = require('../master-game')
 const _ = require('lodash')

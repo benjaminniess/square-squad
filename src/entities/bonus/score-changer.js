@@ -1,7 +1,7 @@
 'use strict'
 
-const Bonus = require('../bonus')
-const helpers = require('../../lib/helpers')
+const Bonus = require('../../entities/bonus')
+const helpers = require('../../helpers/helpers')
 
 /**
  * Affect the global score of the player from -10 to +10

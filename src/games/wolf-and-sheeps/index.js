@@ -1,6 +1,6 @@
 'use strict'
 
-const { squareSize } = require('../../lib/config/main')
+const { squareSize } = require('../../config/main')
 const Matter = require('matter-js')
 const MasterGame = require('../master-game')
 const _ = require('lodash')

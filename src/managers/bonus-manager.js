@@ -1,9 +1,9 @@
 'use strict'
 
-const helpers = require('../lib/helpers')
-const Speed = require('./bonus/speed')
-const ScoreChanger = require('./bonus/score-changer')
-const Invincible = require('./bonus/invincible')
+const helpers = require('../helpers/helpers')
+const Speed = require('../entities/bonus/speed')
+const ScoreChanger = require('../entities/bonus/score-changer')
+const Invincible = require('../entities/bonus/invincible')
 const _ = require('lodash')
 
 class BonusManager {

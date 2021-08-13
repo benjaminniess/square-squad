@@ -1,5 +1,5 @@
-const helpers = require('../lib/helpers')
-const Room = require('./room')
+const helpers = require('../helpers/helpers')
+const Room = require('../entities/room')
 const _ = require('lodash')
 
 class Rooms {

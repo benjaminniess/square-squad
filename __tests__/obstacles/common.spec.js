@@ -1,10 +1,10 @@
 /**
  * A generic tests group for all obstacles (extending from Obstacle class)
  */
-const Press = require('../../lib/obstacles/press')
-const Ball = require('../../lib/obstacles/ball')
-const SimpleHole = require('../../lib/obstacles/simple-hole')
-const SpaceInvaders = require('../../lib/obstacles/space-invaders')
+const Press = require('../../src/entities/obstacles/press')
+const Ball = require('../../src/entities/obstacles/ball')
+const SimpleHole = require('../../src/entities/obstacles/simple-hole')
+const SpaceInvaders = require('../../src/entities/obstacles/space-invaders')
 
 const obstaclesTypes = [
   {

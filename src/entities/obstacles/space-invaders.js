@@ -1,9 +1,9 @@
 'use strict'
 
-const { canvasWidth, squareSize } = require('../config/main')
+const { canvasWidth, squareSize } = require('../../config/main')
 const Matter = require('matter-js')
 const Obstacle = require('../obstacle')
-const helpers = require('../../lib/helpers')
+const helpers = require('../../helpers/helpers')
 const _ = require('lodash')
 
 class SpaceInvaders extends Obstacle {

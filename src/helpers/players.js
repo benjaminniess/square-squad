@@ -1,4 +1,4 @@
-const Player = require('./player')
+const Player = require('../entities/player')
 
 class Players {
   constructor() {

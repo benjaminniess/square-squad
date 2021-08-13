@@ -1,8 +1,8 @@
 'use strict'
 
-const { canvasWidth } = require('../config/main')
+const { canvasWidth } = require('../../config/main')
 const Matter = require('matter-js')
-const helpers = require('../../lib/helpers')
+const helpers = require('../../helpers/helpers')
 const Obstacle = require('../obstacle')
 const _ = require('lodash')
 

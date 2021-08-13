@@ -1,7 +1,7 @@
 'use strict'
 
-const helpers = require('../lib/helpers')
-const { canvasWidth, bonusSize } = require('../lib/config/main')
+const helpers = require('../helpers/helpers')
+const { canvasWidth, bonusSize } = require('../config/main')
 const { EventEmitter } = require('events')
 
 class Bonus {

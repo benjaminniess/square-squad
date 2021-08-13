@@ -1,5 +1,5 @@
-const Players = require('../lib/players')
-const Player = require('../lib/player')
+const Players = require('../src/helpers/players')
+const Player = require('../src/entities/player')
 
 describe('Players management', () => {
   it('returns an empty players object', () => {

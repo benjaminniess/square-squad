@@ -1,7 +1,7 @@
 'use_strict'
 
 const appRoot = require('app-root-path')
-const rooms = require('../lib/rooms')
+const rooms = require('../helpers/rooms')
 const express = require('express')
 const router = express.Router()
 const _ = require('lodash')

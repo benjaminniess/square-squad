@@ -1,6 +1,6 @@
 'use strict'
 
-const players = require('./players')
+const players = require('../helpers/players')
 const appRoot = require('app-root-path')
 const fs = require('fs')
 const _ = require('lodash')
@@ -41,14 +41,17 @@ class Room {
   }
 
   setGame(gameID) {
-    fs.readFile(appRoot + '/games/' + gameID + '/infos.json', (err, data) => {
-      if (err) {
-        throw err
-      }
+    fs.readFile(
+      appRoot + '/src/games/' + gameID + '/infos.json',
+      (err, data) => {
+        if (err) {
+          throw err
+        }
 
-      this.gameInfos = JSON.parse(data)
-      this.gameInfos.id = gameID
-    })
+        this.gameInfos = JSON.parse(data)
+        this.gameInfos.id = gameID
+      }
+    )
 
     switch (gameID) {
       case 'panic-attack':

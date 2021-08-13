@@ -1,7 +1,7 @@
 'use strict'
 
 const Matter = require('matter-js')
-const Config = require('./config/main')
+const Config = require('../config/main')
 const _ = require('lodash')
 
 class PlayersManager {
