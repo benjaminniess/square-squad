@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "inspect": "nodemon index.js --inspect",
+    "start": "node app/index.js",
+    "build": "tcs -p .",
+    "inspect": "nodemon app/index.js --inspect",
     "watch": "npx gulpfile.js",
     "test": "jest ./__tests__ --watch --NODE_ENV=test"
   },

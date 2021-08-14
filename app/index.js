@@ -1,5 +1,7 @@
 'use_strict'
 
+const path = require('path')
+
 // Load dynamic .env file so we can have a static conf for tests
 require('dotenv').config({
   path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'
@@ -60,8 +62,8 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use(express.static(__dirname + '/vueapp/dist'))
-app.use(express.static(__dirname + '/vueapp/static'))
+app.use(express.static(path.join(__dirname, '/../vueapp/dist')))
+app.use(express.static(path.join(__dirname, '/../vueapp/static')))
 
 // Enable server listen only if not in a test env
 if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {

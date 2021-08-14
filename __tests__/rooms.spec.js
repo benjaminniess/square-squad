@@ -1,6 +1,6 @@
-require('../')
-const Room = require('../src/entities/room')
-const Rooms = require('../src/helpers/rooms')
+require('../app/')
+const Room = require('../app/src/entities/room')
+const Rooms = require('../app/src/helpers/rooms')
 
 // Quick mock of socket io object
 Rooms.injectIo({

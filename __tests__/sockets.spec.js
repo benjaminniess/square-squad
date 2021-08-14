@@ -1,7 +1,7 @@
 /**
  * Thoses tests are checking the socket.io client => server communication from user creation/update to game start
  */
-const server = require('../')
+const server = require('../app')
 
 const PORT = 7080
 

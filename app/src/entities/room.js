@@ -42,7 +42,7 @@ class Room {
 
   setGame(gameID) {
     fs.readFile(
-      appRoot + '/src/games/' + gameID + '/infos.json',
+      appRoot + '/app/src/games/' + gameID + '/infos.json',
       (err, data) => {
         if (err) {
           throw err
