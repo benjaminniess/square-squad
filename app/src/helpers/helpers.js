@@ -1,5 +1,3 @@
-'use_strict'
-
 const crypto = require('crypto')
 
 class Helpers {

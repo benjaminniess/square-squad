@@ -1,5 +1,3 @@
-'use_strict'
-
 const path = require('path')
 
 // Load dynamic .env file so we can have a static conf for tests

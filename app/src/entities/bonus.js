@@ -1,5 +1,3 @@
-'use strict'
-
 const helpers = require('../helpers/helpers')
 const { canvasWidth, bonusSize } = require('../config/main')
 const { EventEmitter } = require('events')

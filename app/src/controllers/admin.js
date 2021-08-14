@@ -1,5 +1,3 @@
-'use_strict'
-
 const express = require('express')
 const router = express.Router()
 const rooms = require('../helpers/rooms')

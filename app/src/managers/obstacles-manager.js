@@ -1,5 +1,3 @@
-'use strict'
-
 const { canvasWidth } = require('../config/main')
 const helpers = require('../helpers/helpers')
 const Matter = require('matter-js')

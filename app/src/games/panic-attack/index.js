@@ -1,5 +1,3 @@
-'use strict'
-
 const helpers = require('../../helpers/helpers')
 const { squareSize } = require('../../config/main')
 const Matter = require('matter-js')

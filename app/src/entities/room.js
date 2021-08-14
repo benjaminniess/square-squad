@@ -1,5 +1,3 @@
-'use strict'
-
 const players = require('../helpers/players')
 const appRoot = require('app-root-path')
 const fs = require('fs')

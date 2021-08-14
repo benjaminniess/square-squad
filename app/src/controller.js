@@ -1,5 +1,3 @@
-'use_strict'
-
 const glob = require('glob')
 const path = require('path')
 

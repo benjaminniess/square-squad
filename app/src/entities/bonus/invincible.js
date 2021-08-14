@@ -1,5 +1,3 @@
-'use strict'
-
 const Bonus = require('../bonus')
 
 class Invincible extends Bonus {

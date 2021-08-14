@@ -1,5 +1,3 @@
-'use strict'
-
 const { squareSize } = require('../../config/main')
 const Matter = require('matter-js')
 const MasterGame = require('../master-game')

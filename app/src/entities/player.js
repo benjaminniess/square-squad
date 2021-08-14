@@ -1,5 +1,3 @@
-'use strict'
-
 class Player {
   constructor(socketID) {
     this.socketID = socketID

@@ -1,5 +1,3 @@
-'use strict'
-
 const Bonus = require('../../entities/bonus')
 const helpers = require('../../helpers/helpers')
 

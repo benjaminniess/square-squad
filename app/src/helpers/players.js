@@ -1,5 +1,3 @@
-'use_strict'
-
 const Player = require('../entities/player')
 
 class Players {

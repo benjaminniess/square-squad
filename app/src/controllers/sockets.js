@@ -1,5 +1,3 @@
-'use_strict'
-
 const validator = require('validator')
 const rooms = require('../helpers/rooms')
 const players = require('../helpers/players')

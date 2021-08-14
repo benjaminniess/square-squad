@@ -1,5 +1,3 @@
-'use strict'
-
 const helpers = require('../helpers/helpers')
 const Speed = require('../entities/bonus/speed')
 const ScoreChanger = require('../entities/bonus/score-changer')

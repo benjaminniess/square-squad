@@ -1,5 +1,3 @@
-'use strict'
-
 const Matter = require('matter-js')
 const { EventEmitter } = require('events')
 const Composite = Matter.Composite
