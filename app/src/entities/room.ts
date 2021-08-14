@@ -39,18 +39,6 @@ class Room {
   }
 
   setGame(gameID) {
-    fs.readFile(
-      appRoot + '/app/src/games/' + gameID + '/infos.json',
-      (err, data) => {
-        if (err) {
-          throw err
-        }
-
-        this.gameInfos = JSON.parse(data)
-        this.gameInfos.id = gameID
-      }
-    )
-
     switch (gameID) {
       case 'panic-attack':
         this.game = new games.panicAttack(this)
@@ -59,10 +47,6 @@ class Room {
         this.game = new games.wolfAndSheeps(this)
         break
     }
-  }
-
-  getGameInfos() {
-    return this.gameInfos
   }
 
   getPlayers() {
