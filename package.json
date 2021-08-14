@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node app/index.js",
-    "build": "tcs -p .",
+    "start": "npm run build && node app/index.js",
+    "build": "tsc",
     "inspect": "nodemon app/index.js --inspect",
     "watch": "npx gulpfile.js",
     "test": "jest ./__tests__ --watch --NODE_ENV=test"
@@ -22,13 +22,13 @@
     "matter-js": "^0.17.1",
     "newrelic": "^7.5.2",
     "socket.io": "^3.1.2",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "typescript": "^4.3.5"
   },
   "devDependencies": {
     "jest": "^27.0.6",
     "socket.io-client": "^4.1.3",
-    "supertest": "^6.1.4",
-    "typescript": "^4.3.5"
+    "supertest": "^6.1.4"
   },
   "jest": {
     "verbose": true
