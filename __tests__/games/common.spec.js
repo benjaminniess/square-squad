@@ -1,8 +1,8 @@
 /**
  * A generic tests group for all games (extending from MasterGame)
  */
-const PanicAttack = require('../../app/src/games/panic-attack')
-const WolfAndSheeps = require('../../app/src/games/wolf-and-sheeps')
+const PanicAttack = require('../../build/src/games/panic-attack')
+const WolfAndSheeps = require('../../build/src/games/wolf-and-sheeps')
 
 const gameTypes = [
   {

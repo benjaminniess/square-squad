@@ -2,7 +2,7 @@
  * Specific tests for score changer bonus
  */
 
-const ScoreChanger = require('../../app/src/entities/bonus/score-changer')
+const ScoreChanger = require('../../build/src/entities/bonus/score-changer')
 
 const mockedParams = {
   game: {

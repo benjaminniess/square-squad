@@ -1,4 +1,4 @@
-const helpers = require('../app/src/helpers/helpers')
+const helpers = require('../build/src/helpers/helpers')
 
 describe('stringToSlug function', () => {
   it('returns a slug from a string', () => {
