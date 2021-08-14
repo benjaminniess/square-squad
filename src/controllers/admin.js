@@ -29,6 +29,11 @@ module.exports = function (app) {
       .toString()
       .split(':')
 
+    // If nothing is configured, don't show the admin to anyone
+    if (!process.env.ADMIN_PASSWORD) {
+      return reject()
+    }
+
     if (password !== process.env.ADMIN_PASSWORD) {
       return reject()
     }
