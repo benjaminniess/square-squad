@@ -1,8 +1,14 @@
+export {}
+import { Socket } from 'socket.io'
 const helpers = require('../helpers/helpers')
 const Room = require('../entities/room')
 const _ = require('lodash')
 
 class Rooms {
+  private static instance: any
+  private rooms: any
+  private io: Socket | null = null
+
   constructor() {
     if (!Rooms.instance) {
       Rooms.instance = this
@@ -20,7 +26,7 @@ class Rooms {
    *
    * @param {} io: the socket io server object
    */
-  injectIo(io) {
+  injectIo(io: Socket) {
     this.io = io
   }
 
@@ -28,7 +34,7 @@ class Rooms {
     return this.rooms
   }
 
-  deleteRoom(roomSlug) {
+  deleteRoom(roomSlug: string) {
     if (typeof this.rooms[roomSlug] !== 'undefined') {
       delete this.rooms[roomSlug]
       return true
@@ -44,7 +50,7 @@ class Rooms {
     }
 
     let hasDeletedRooms = false
-    _.forEach(rooms, (room) => {
+    _.forEach(rooms, (room: any) => {
       if (room.getPlayers().length <= 0) {
         this.deleteRoom(room.getSlug())
         hasDeletedRooms = true
@@ -55,20 +61,20 @@ class Rooms {
   }
 
   getRoomsData() {
-    let roomsData = []
+    let roomsData: any[] = []
     let rooms = this.getRooms()
     if (!rooms) {
       return []
     }
 
-    _.forEach(rooms, (room) => {
+    _.forEach(rooms, (room: any) => {
       roomsData.push(room.getBasicData())
     })
 
     return roomsData
   }
 
-  createRoom(roomName) {
+  createRoom(roomName: string) {
     let roomSlug = helpers.stringToSlug(roomName)
     if (typeof this.rooms[roomSlug] !== 'undefined' || roomName === '') {
       return null
@@ -79,7 +85,7 @@ class Rooms {
     return roomSlug
   }
 
-  getRoom(roomSlug) {
+  getRoom(roomSlug: string) {
     if (typeof this.rooms[roomSlug] !== 'undefined') {
       return this.rooms[roomSlug]
     } else {

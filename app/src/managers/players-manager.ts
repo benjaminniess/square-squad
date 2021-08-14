@@ -1,9 +1,16 @@
+export {}
 const Matter = require('matter-js')
 const Config = require('../config/main')
 const _ = require('lodash')
 
 class PlayersManager {
-  constructor(game) {
+  private compositeObj: any
+  private playersData: any
+  private playersMoves: any
+  private game: any
+  private speed: number
+
+  constructor(game: any) {
     this.compositeObj = Matter.Composite.create({ label: 'players' })
     this.playersData = {}
     this.playersMoves = {}
@@ -32,10 +39,10 @@ class PlayersManager {
   }
 
   getPlayersMoveRequests() {
-    let playersMovesRequests = {}
+    let playersMovesRequests: any = {}
     let playersData = this.getPlayersData()
 
-    _.forEach(this.getPlayersMoves(), (moves, playerID) => {
+    _.forEach(this.getPlayersMoves(), (moves: any, playerID: string) => {
       let playerData = playersData[playerID]
       if (playerData.alive) {
         let playerMoveVector = { x: 0, y: 0 }
@@ -73,8 +80,8 @@ class PlayersManager {
   }
 
   processPlayersRequests() {
-    let playersMoves = this.getPlayersMoveRequests()
-    _.forEach(this.getPlayersPhysicalData(), (compositePlayer) => {
+    let playersMoves: any = this.getPlayersMoveRequests()
+    _.forEach(this.getPlayersPhysicalData(), (compositePlayer: any) => {
       if (playersMoves[compositePlayer.gamePlayerID]) {
         Matter.Body.applyForce(compositePlayer, compositePlayer.position, {
           x:
@@ -95,7 +102,7 @@ class PlayersManager {
     })
   }
 
-  initPlayer(playerSession) {
+  initPlayer(playerSession: any) {
     this.playersData[playerSession.id] = {
       x: -100,
       y: Config.canvasWidth / 2,
@@ -113,7 +120,7 @@ class PlayersManager {
     this.resetTouches(playerSession.id)
   }
 
-  killPlayer(playerID) {
+  killPlayer(playerID: string) {
     if (!this.playersData[playerID]) {
       return
     }
@@ -121,7 +128,7 @@ class PlayersManager {
     this.playersData[playerID].alive = false
   }
 
-  addPoints(playerID, countPoints) {
+  addPoints(playerID: string, countPoints: number) {
     this.playersData[playerID].score += countPoints
     if (this.playersData[playerID].score < 0) {
       this.playersData[playerID].score = 0
@@ -129,7 +136,7 @@ class PlayersManager {
   }
 
   addPlayersPoints(countPoints = 1, aliveOnly = true) {
-    _.forEach(this.playersData, (playerData, playerID) => {
+    _.forEach(this.playersData, (playerData: any, playerID: string) => {
       if (aliveOnly) {
         if (playerData.alive) {
           this.addPoints(playerID, countPoints)
@@ -141,7 +148,7 @@ class PlayersManager {
   }
 
   renewPlayers() {
-    _.forEach(this.playersData, (moves, playerID) => {
+    _.forEach(this.playersData, (moves: any, playerID: string) => {
       this.playersData[playerID].alive = true
       this.resetTouches(playerID)
     })
@@ -152,7 +159,7 @@ class PlayersManager {
     let existingPlayers = _.size(this.playersData)
     let i = 0
     let playerRequiredWidth = Config.squareSize * 1.3
-    _.forEach(_.shuffle(_.keys(this.playersData)), (playerID) => {
+    _.forEach(_.shuffle(_.keys(this.playersData)), (playerID: string) => {
       let playerData = this.playersData[playerID]
       this.playersData[playerID].x =
         Config.canvasWidth / 2 +
@@ -178,7 +185,7 @@ class PlayersManager {
     })
   }
 
-  resetTouches(playerID) {
+  resetTouches(playerID: string) {
     this.playersMoves[playerID] = {
       up: false,
       down: false,
@@ -187,24 +194,24 @@ class PlayersManager {
     }
   }
 
-  removePlayer(playerID) {
+  removePlayer(playerID: string) {
     delete this.playersData[playerID]
     delete this.playersMoves[playerID]
   }
 
-  updatePlayerButtonState(playerID, button, state) {
+  updatePlayerButtonState(playerID: string, button: any, state: string) {
     if (this.playersMoves[playerID]) {
       this.playersMoves[playerID][button] = state
     }
   }
 
-  getPlayerData(playerID) {
+  getPlayerData(playerID: string) {
     return this.getPlayersData()[playerID]
   }
 
-  getPlayerBody(playerID) {
+  getPlayerBody(playerID: string) {
     let body
-    _.forEach(this.getPlayersPhysicalData(), (playerBody) => {
+    _.forEach(this.getPlayersPhysicalData(), (playerBody: any) => {
       if (playerBody.gamePlayerID === playerID) {
         body = playerBody
       }
@@ -213,15 +220,15 @@ class PlayersManager {
     return body
   }
 
-  setPlayerData(playerID, playerData) {
+  setPlayerData(playerID: string, playerData: any) {
     this.playersData[playerID] = playerData
   }
 
-  uptadePlayerSingleData(playerID, property, value) {
+  uptadePlayerSingleData(playerID: string, property: string, value: any) {
     this.playersData[playerID][property] = value
   }
 
-  setPlayerBodyData(playerID, playerData) {
+  setPlayerBodyData(playerID: string, playerData: any) {
     let body = this.getPlayerBody(playerID)
     if (!body) {
       return
@@ -230,17 +237,13 @@ class PlayersManager {
     Matter.Body.set(body, playerData)
   }
 
-  getPlayersData() {
-    return this.playersData
-  }
-
   countPlayers() {
     return _.size(this.playersData)
   }
 
   countAlivePlayers() {
     let alive = 0
-    _.forEach(this.playersData, (playerData, playerID) => {
+    _.forEach(this.playersData, (playerData: any, playerID: string) => {
       if (playerData.alive) {
         alive++
       }

@@ -1,3 +1,4 @@
+export {}
 const { canvasWidth } = require('../../config/main')
 const Matter = require('matter-js')
 const helpers = require('../../helpers/helpers')
@@ -5,7 +6,11 @@ const Obstacle = require('../obstacle')
 const _ = require('lodash')
 
 class Ball extends Obstacle {
-  constructor(params = {}) {
+  constructor(
+    params = {
+      slug: ''
+    }
+  ) {
     params.slug = 'ball'
     super(params)
 
@@ -19,7 +24,7 @@ class Ball extends Obstacle {
       this.getLevel() * this.getSpeedMultiplicator() * speedReducer
     let radius = 20
     let angle = ((10 - helpers.getRandomInt(1, 21)) / 10) * obstacleSpeed
-    let obstacle = {}
+    let obstacle: any = {}
 
     switch (startPosition) {
       // Bottom
@@ -93,7 +98,7 @@ class Ball extends Obstacle {
     Matter.Composite.add(this.getComposite(), body)
   }
 
-  onCollisionStart(obstaclePart, bodyB) {
+  onCollisionStart(obstaclePart: any, bodyB: any) {
     if (bodyB.customType && bodyB.customType === 'player') {
       this.getEventEmmitter().emit('obstaclePartOver', obstaclePart)
       return
@@ -101,7 +106,7 @@ class Ball extends Obstacle {
   }
 
   loop() {
-    _.forEach(this.getBodies(), (obstacle) => {
+    _.forEach(this.getBodies(), (obstacle: any) => {
       if (
         obstacle.position.x < -100 ||
         obstacle.position.x > canvasWidth + 100 ||

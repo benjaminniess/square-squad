@@ -1,12 +1,18 @@
+export {}
 class Player {
-  constructor(socketID) {
+  private socketID: string
+  private nickName: string
+  private color: string
+  private isSpectatorVal: boolean
+
+  constructor(socketID: string) {
     this.socketID = socketID
-    this.nickName = null
-    this.color = null
+    this.nickName = ''
+    this.color = ''
     this.isSpectatorVal = false
   }
 
-  resetData(data) {
+  resetData(data: any) {
     if (data.nickName) {
       this.nickName = data.nickName
     }

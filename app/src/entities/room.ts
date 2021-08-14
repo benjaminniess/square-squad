@@ -1,3 +1,5 @@
+export {}
+import { Socket } from 'socket.io'
 const players = require('../helpers/players')
 const appRoot = require('app-root-path')
 const fs = require('fs')
@@ -9,7 +11,14 @@ const games = {
 }
 
 class Room {
-  constructor(slug, name, io) {
+  private name: string
+  private slug: string
+  private io: any
+  private adminPlayer: any
+  private gameStatus: string
+  private game: any
+
+  constructor(slug: string, name: string, io: Socket) {
     this.name = name
     this.slug = slug
     this.io = io
@@ -38,7 +47,7 @@ class Room {
     }
   }
 
-  setGame(gameID) {
+  setGame(gameID: string) {
     switch (gameID) {
       case 'panic-attack':
         this.game = new games.panicAttack(this)
@@ -62,7 +71,7 @@ class Room {
     return '/rooms/' + this.getSlug()
   }
 
-  setAdminPlayer(playerID) {
+  setAdminPlayer(playerID: string) {
     this.adminPlayer = playerID
   }
 
@@ -72,7 +81,7 @@ class Room {
   resetAdminPlayer() {
     let socketClients = this.getPlayers()
 
-    socketClients.map((socketID) => {
+    socketClients.map((socketID: string) => {
       if (this.getAdminPlayer() !== socketID) {
         this.setAdminPlayer(socketID)
       }
@@ -85,10 +94,10 @@ class Room {
     let globalRanking = game.getRanking()
     let currentRoundRanking = game.getLastRoundRanking()
     let socketClients = this.getPlayers()
-    let sessionsInRoom = []
+    let sessionsInRoom: any[] = []
     let playersData = game.getPlayersManager().getPlayersData()
 
-    _.forEach(socketClients, (socketID) => {
+    _.forEach(socketClients, (socketID: string) => {
       let playerObj = players.getPlayer(socketID)
       let globalRankingIndex = _.findIndex(globalRanking, {
         playerID: socketID
@@ -109,7 +118,8 @@ class Room {
         nickname: playerObj.getNickname(),
         color: playerObj.getColor(),
         score: totalScore,
-        alive: playersData[socketID] && playersData[socketID].alive
+        alive: playersData[socketID] && playersData[socketID].alive,
+        isAdmin: false
       }
 
       // If a player is about to disconnect, don't show it in the room

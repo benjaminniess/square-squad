@@ -1,4 +1,5 @@
-const path = require('path')
+import path from 'path'
+import express, { Application, Request, Response, NextFunction } from 'express'
 
 // Load dynamic .env file so we can have a static conf for tests
 require('dotenv').config({
@@ -13,8 +14,7 @@ if (
   require('newrelic')
 }
 
-const express = require('express')
-const app = express()
+const app: Application = express()
 
 const cors = require('cors')
 
@@ -37,7 +37,7 @@ const io = require('socket.io')(server, corsOption)
 
 // Force HTTPS + redirect multiple domains/subdomains
 const useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.get('x-forwarded-proto') !== 'https' && useSSL) {
     let domain =
       process.env.FORCE_DOMAIN && process.env.FORCE_DOMAIN !== 'false'

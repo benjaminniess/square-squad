@@ -1,9 +1,21 @@
+export {}
 const helpers = require('../helpers/helpers')
 const { canvasWidth, bonusSize } = require('../config/main')
-const { EventEmitter } = require('events')
+import EventEmitter from 'events'
 
 class Bonus {
-  constructor(params) {
+  private game: any
+  private isTriggeredState: boolean
+  private x: number = 0
+  private y: number = 0
+  private eventEmitter: EventEmitter = new EventEmitter()
+  private width: number = 0
+  private height: number = 0
+  private playerID: string = ''
+  private imgX: number = 0
+  private imgY: number = 0
+
+  constructor(params: any) {
     if (!params) {
       throw new Error('Missing params')
     }
@@ -16,7 +28,6 @@ class Bonus {
   init() {
     this.x = helpers.getRandomInt(1, canvasWidth - bonusSize)
     this.y = helpers.getRandomInt(1, canvasWidth - bonusSize)
-    this.eventEmitter = new EventEmitter()
     this.width = bonusSize
     this.height = bonusSize
   }
@@ -41,7 +52,7 @@ class Bonus {
     return this.playerID
   }
 
-  trigger(playerID) {
+  trigger(playerID: string) {
     this.playerID = playerID
     this.isTriggeredState = true
     let playersManager = this.getGame().getPlayersManager()

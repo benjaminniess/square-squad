@@ -1,16 +1,23 @@
+export {}
 const Matter = require('matter-js')
-const { EventEmitter } = require('events')
 const Composite = Matter.Composite
 const _ = require('lodash')
+import EventEmitter from 'events'
 
 class Obstacle {
-  constructor(params) {
+  private level: number = 1
+  private speedMultiplicator: number = 1
+  private bodies: any[] = []
+  private params: any
+  private eventEmitter: EventEmitter
+  private compositeObj: any
+
+  constructor(params: any) {
     this.level = params.level ? params.level : 1
     this.speedMultiplicator = params.speedMultiplicator
       ? params.speedMultiplicator
       : 1
 
-    this.bodies = []
     this.params = params
     this.eventEmitter = new EventEmitter()
     this.compositeObj = Matter.Composite.create({ label: this.getSlug() })
@@ -29,11 +36,11 @@ class Obstacle {
   }
 
   getVertices() {
-    let vertices = []
+    let vertices: any[] = []
 
-    _.forEach(this.getBodies(), (matterBody) => {
-      let bodyVertices = []
-      _.forEach(matterBody.vertices, (vertice) => {
+    _.forEach(this.getBodies(), (matterBody: any) => {
+      let bodyVertices: any[] = []
+      _.forEach(matterBody.vertices, (vertice: any) => {
         bodyVertices.push({ x: vertice.x, y: vertice.y })
       })
 
@@ -65,8 +72,8 @@ class Obstacle {
 
   loop() {}
 
-  onCollisionStart(obstaclePart, bodyB) {}
-  onCollisionEnd(obstaclePart, bodyB) {}
+  onCollisionStart(obstaclePart: any, bodyB: any) {}
+  onCollisionEnd(obstaclePart: any, bodyB: any) {}
 }
 
 module.exports = Obstacle

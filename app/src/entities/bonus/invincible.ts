@@ -1,7 +1,8 @@
+export {}
 const Bonus = require('../bonus')
 
 class Invincible extends Bonus {
-  constructor(params) {
+  constructor(params: any) {
     super(params)
     this.imgX = 200
     this.imgY = 100
@@ -26,7 +27,7 @@ class Invincible extends Bonus {
           collisionFilter: prevCollisionFilter
         })
 
-        resolve()
+        resolve(true)
       }, this.getDuration())
     })
   }

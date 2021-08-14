@@ -1,3 +1,4 @@
+export {}
 const { canvasWidth, squareSize } = require('../../config/main')
 const helpers = require('../../helpers/helpers')
 const Matter = require('matter-js')
@@ -5,7 +6,11 @@ const Obstacle = require('../obstacle')
 const _ = require('lodash')
 
 class SimpleHole extends Obstacle {
-  constructor(params = {}) {
+  constructor(
+    params = {
+      slug: ''
+    }
+  ) {
     params.slug = 'simple-hole'
     super(params)
 
@@ -129,7 +134,7 @@ class SimpleHole extends Obstacle {
         break
     }
 
-    _.forEach(obstacleParts, (obstaclePart) => {
+    _.forEach(obstacleParts, (obstaclePart: any) => {
       let body = Matter.Bodies.rectangle(
         obstaclePart.x,
         obstaclePart.y,
@@ -155,7 +160,7 @@ class SimpleHole extends Obstacle {
   }
 
   loop() {
-    _.forEach(this.getBodies(), (obstacle) => {
+    _.forEach(this.getBodies(), (obstacle: any) => {
       switch (obstacle.direction) {
         case 'left':
           if (obstacle.position.x < 0) {

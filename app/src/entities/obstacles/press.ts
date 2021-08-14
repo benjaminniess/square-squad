@@ -1,3 +1,4 @@
+export {}
 const { canvasWidth, squareSize } = require('../../config/main')
 const helpers = require('../../helpers/helpers')
 const Matter = require('matter-js')
@@ -5,7 +6,11 @@ const Obstacle = require('../obstacle')
 const _ = require('lodash')
 
 class Press extends Obstacle {
-  constructor(params = {}) {
+  constructor(
+    params = {
+      slug: ''
+    }
+  ) {
     params.slug = 'press'
     super(params)
 
@@ -137,7 +142,7 @@ class Press extends Obstacle {
         break
     }
 
-    _.forEach(obstacleParts, (obstaclePart) => {
+    _.forEach(obstacleParts, (obstaclePart: any) => {
       let body = Matter.Bodies.rectangle(
         obstaclePart.x,
         obstaclePart.y,
@@ -164,7 +169,7 @@ class Press extends Obstacle {
   }
 
   loop() {
-    _.forEach(this.getBodies(), (obstacle) => {
+    _.forEach(this.getBodies(), (obstacle: any) => {
       if (
         (obstacle.currentPosition === 'top' &&
           obstacle.ahead &&

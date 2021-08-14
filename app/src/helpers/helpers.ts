@@ -1,3 +1,4 @@
+export {}
 const crypto = require('crypto')
 
 class Helpers {
@@ -7,7 +8,7 @@ class Helpers {
    * @param {string} str
    * @returns
    */
-  static stringToSlug(str) {
+  static stringToSlug(str: string) {
     str = str.replace(/^\s+|\s+$/g, '') // trim
     str = str.toLowerCase()
 
@@ -40,7 +41,7 @@ class Helpers {
    *
    * @returns {int} the random int
    */
-  static getRandomInt(min, max) {
+  static getRandomInt(min: number, max: number) {
     min = Math.ceil(min)
     max = Math.floor(max)
     return Math.floor(Math.random() * (max - min)) + min

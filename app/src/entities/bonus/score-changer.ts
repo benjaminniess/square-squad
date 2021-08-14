@@ -1,3 +1,4 @@
+export {}
 const Bonus = require('../../entities/bonus')
 const helpers = require('../../helpers/helpers')
 
@@ -5,7 +6,7 @@ const helpers = require('../../helpers/helpers')
  * Affect the global score of the player from -10 to +10
  */
 class ScoreChanger extends Bonus {
-  constructor(params) {
+  constructor(params: any) {
     super(params)
     this.initChangerType()
   }
@@ -70,7 +71,7 @@ class ScoreChanger extends Bonus {
    * @param {int} result
    * @returns {string} the key of the result
    */
-  getTypeFromNumber(result) {
+  getTypeFromNumber(result: number) {
     if (result <= 10) {
       return 'p3'
     }
@@ -110,7 +111,7 @@ class ScoreChanger extends Bonus {
       game.syncScores()
       game.getRoom().refreshPlayers()
 
-      resolve()
+      resolve(true)
     })
   }
 }

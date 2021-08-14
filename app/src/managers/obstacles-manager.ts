@@ -1,3 +1,5 @@
+export {}
+import EventEmitter from 'events'
 const { canvasWidth } = require('../config/main')
 const helpers = require('../helpers/helpers')
 const Matter = require('matter-js')
@@ -9,10 +11,16 @@ const SpaceInvaders = require('../entities/obstacles/space-invaders')
 const Ball = require('../entities/obstacles/ball')
 const _ = require('lodash')
 
-const { EventEmitter } = require('events')
-
 class ObstaclesManager {
-  constructor(game) {
+  private obstacles: any[]
+  private level: number
+  private game: any
+  private compositeObj: any
+  private eventEmitter: EventEmitter
+  private walls: any
+  private startLevel: number = 1
+
+  constructor(game: any) {
     this.obstacles = []
     this.level = 0
     this.game = game
@@ -90,7 +98,7 @@ class ObstaclesManager {
   }
 
   resetObstacles() {
-    _.forEach(this.getComposites(), (obstacle) => {
+    _.forEach(this.getComposites(), (obstacle: any) => {
       Matter.Composite.remove(this.getComposite(), obstacle, true)
     })
 
@@ -99,8 +107,8 @@ class ObstaclesManager {
   }
 
   getObstaclesParts() {
-    let parts = []
-    _.forEach(this.getObstacles(), (obstacle, key) => {
+    let parts: any[] = []
+    _.forEach(this.getObstacles(), (obstacle: any, key: string) => {
       parts = _.concat(parts, obstacle.getVertices())
     })
 
@@ -123,10 +131,10 @@ class ObstaclesManager {
     return this.eventEmitter
   }
 
-  getObstacleFromBodyID(bodyID) {
+  getObstacleFromBodyID(bodyID: string) {
     let matchedObstacle = null
-    _.forEach(this.getObstacles(), (obstacle) => {
-      _.forEach(obstacle.getBodies(), (body) => {
+    _.forEach(this.getObstacles(), (obstacle: any) => {
+      _.forEach(obstacle.getBodies(), (body: any) => {
         if (body.id === bodyID) {
           matchedObstacle = obstacle
         }
@@ -136,14 +144,14 @@ class ObstaclesManager {
     return matchedObstacle
   }
 
-  setStartLevel(level) {
+  setStartLevel(level: number) {
     this.startLevel = level
   }
-  setLevel(level) {
+  setLevel(level: number) {
     this.level = level
   }
 
-  initObstacle(params = {}) {
+  initObstacle(params: any = {}) {
     let obstacleID = helpers.getRandomInt(1, 5)
     if (params.obstacleID) {
       obstacleID = params.obstacleID
@@ -151,7 +159,7 @@ class ObstaclesManager {
 
     params.level = this.getDynamicLevel()
 
-    let newObstacle
+    let newObstacle: any
     switch (obstacleID) {
       case 1:
         newObstacle = new SpaceInvaders(params)
@@ -182,9 +190,11 @@ class ObstaclesManager {
         break
     }
 
-    newObstacle.getEventEmmitter().on('obstaclePartOver', (obstaclePart) => {
-      Matter.Composite.remove(newObstacle.getComposite(), obstaclePart)
-    })
+    newObstacle
+      .getEventEmmitter()
+      .on('obstaclePartOver', (obstaclePart: any) => {
+        Matter.Composite.remove(newObstacle.getComposite(), obstaclePart)
+      })
 
     this.obstacles.push(newObstacle)
 
@@ -192,7 +202,7 @@ class ObstaclesManager {
   }
 
   updateObstacles() {
-    _.forEach(this.getObstacles(), (obstacle, obstacleKey) => {
+    _.forEach(this.getObstacles(), (obstacle: any, obstacleKey: any) => {
       obstacle.loop()
       if (obstacle.isOver()) {
         Matter.Composite.remove(

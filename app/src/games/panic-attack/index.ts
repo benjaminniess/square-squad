@@ -1,3 +1,4 @@
+export {}
 const helpers = require('../../helpers/helpers')
 const { squareSize } = require('../../config/main')
 const Matter = require('matter-js')
@@ -5,7 +6,7 @@ const MasterGame = require('../master-game')
 const _ = require('lodash')
 
 class Panick_Attack extends MasterGame {
-  constructor(room) {
+  constructor(room: any) {
     super(room)
     this.speed = 2
     this.slug = 'panic-attack'
@@ -16,14 +17,14 @@ class Panick_Attack extends MasterGame {
   eventSubscriptions() {
     this.getObstaclesManager()
       .getEventEmmitter()
-      .on('obstacleOver', (data) => {
+      .on('obstacleOver', (data: any) => {
         this.getPlayersManager().addPlayersPoints()
         this.syncScores()
         this.getRoom().refreshPlayers()
       })
 
-    Matter.Events.on(this.getEngine(), 'collisionStart', (event) => {
-      _.forEach(event.pairs, (collisionPair) => {
+    Matter.Events.on(this.getEngine(), 'collisionStart', (event: any) => {
+      _.forEach(event.pairs, (collisionPair: any) => {
         if (collisionPair.bodyA.enableCustomCollisionManagement === true) {
           let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
             collisionPair.bodyA.id
@@ -76,8 +77,8 @@ class Panick_Attack extends MasterGame {
         this.getRoom().refreshPlayers()
       })
 
-      Matter.Events.on(this.getEngine(), 'collisionEnd', (event) => {
-        _.forEach(event.pairs, (collisionPair) => {
+      Matter.Events.on(this.getEngine(), 'collisionEnd', (event: any) => {
+        _.forEach(event.pairs, (collisionPair: any) => {
           if (collisionPair.bodyA.enableCustomCollisionManagement === true) {
             let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
               collisionPair.bodyA.id
@@ -117,9 +118,9 @@ class Panick_Attack extends MasterGame {
     let playersManager = this.getPlayersManager()
     let playersData = playersManager.getPlayersData()
 
-    let increasePoints = false
+    let increasePoints: number = 0
 
-    let updatedBonus = []
+    let updatedBonus: any[] = []
 
     if (this.getStatus() === 'playing') {
       if (
@@ -144,26 +145,33 @@ class Panick_Attack extends MasterGame {
         }
       }
 
-      _.forEach(playersManager.getPlayersMoves(), (moves, playerID) => {
-        let playerData = playersData[playerID]
+      _.forEach(
+        playersManager.getPlayersMoves(),
+        (moves: any, playerID: string) => {
+          let playerData = playersData[playerID]
 
-        bonusList.map((bonus) => {
-          let bonusData = bonus.getData()
-          if (
-            playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
-            playerData.x - squareSize / 2 + squareSize > bonusData.x &&
-            playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
-            squareSize + playerData.y - squareSize / 2 > bonusData.y
-          ) {
-            playersManager.uptadePlayerSingleData(playerID, 'bonus', bonusData)
-            bonus.trigger(playerID).then(() => {
-              playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
-            })
-          } else {
-            updatedBonus.push(bonusData)
-          }
-        })
-      })
+          bonusList.map((bonus: any) => {
+            let bonusData = bonus.getData()
+            if (
+              playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
+              playerData.x - squareSize / 2 + squareSize > bonusData.x &&
+              playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
+              squareSize + playerData.y - squareSize / 2 > bonusData.y
+            ) {
+              playersManager.uptadePlayerSingleData(
+                playerID,
+                'bonus',
+                bonusData
+              )
+              bonus.trigger(playerID).then(() => {
+                playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
+              })
+            } else {
+              updatedBonus.push(bonusData)
+            }
+          })
+        }
+      )
 
       playersManager.processPlayersRequests()
     }

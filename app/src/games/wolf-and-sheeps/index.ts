@@ -1,10 +1,11 @@
+export {}
 const { squareSize } = require('../../config/main')
 const Matter = require('matter-js')
 const MasterGame = require('../master-game')
 const _ = require('lodash')
 
 class Wolf_And_Sheep extends MasterGame {
-  constructor(room) {
+  constructor(room: any) {
     super(room)
     this.speed = 4
     this.slug = 'wolf-and-sheeps'
@@ -20,7 +21,7 @@ class Wolf_And_Sheep extends MasterGame {
       this.setWolf(Object.keys(playersData)[0])
     })
 
-    Matter.Events.on(this.getEngine(), 'collisionStart', (event) => {
+    Matter.Events.on(this.getEngine(), 'collisionStart', (event: any) => {
       if (
         !event.pairs[0].bodyA.gamePlayerID ||
         !event.pairs[0].bodyB.gamePlayerID
@@ -56,35 +57,42 @@ class Wolf_And_Sheep extends MasterGame {
     let playersManager = this.getPlayersManager()
     let playersData = playersManager.getPlayersData()
 
-    let updatedBonus = []
+    let updatedBonus: any[] = []
 
     if (this.getStatus() === 'playing') {
       if (bonusList.length < bonusManager.getFrequency()) {
         bonusManager.maybeInitBonus()
       }
 
-      _.forEach(playersManager.getPlayersMoves(), (moves, playerID) => {
-        let playerData = playersData[playerID]
+      _.forEach(
+        playersManager.getPlayersMoves(),
+        (moves: any, playerID: string) => {
+          let playerData = playersData[playerID]
 
-        playersData[playerID].isWolf = playerID === this.getWolf()
+          playersData[playerID].isWolf = playerID === this.getWolf()
 
-        bonusList.map((bonus) => {
-          let bonusData = bonus.getData()
-          if (
-            playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
-            playerData.x - squareSize / 2 + squareSize > bonusData.x &&
-            playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
-            squareSize + playerData.y - squareSize / 2 > bonusData.y
-          ) {
-            playersManager.uptadePlayerSingleData(playerID, 'bonus', bonusData)
-            bonus.trigger(playerID).then(() => {
-              playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
-            })
-          } else {
-            updatedBonus.push(bonusData)
-          }
-        })
-      })
+          bonusList.map((bonus: any) => {
+            let bonusData = bonus.getData()
+            if (
+              playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
+              playerData.x - squareSize / 2 + squareSize > bonusData.x &&
+              playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
+              squareSize + playerData.y - squareSize / 2 > bonusData.y
+            ) {
+              playersManager.uptadePlayerSingleData(
+                playerID,
+                'bonus',
+                bonusData
+              )
+              bonus.trigger(playerID).then(() => {
+                playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
+              })
+            } else {
+              updatedBonus.push(bonusData)
+            }
+          })
+        }
+      )
 
       playersManager.processPlayersRequests()
     }
@@ -100,11 +108,11 @@ class Wolf_And_Sheep extends MasterGame {
     return this.wolf
   }
 
-  setWolf(playerID) {
+  setWolf(playerID: string) {
     this.wolf = playerID
   }
 
-  setCatchable(playerID, catchable = true) {
+  setCatchable(playerID: string, catchable = true) {
     let playersManager = this.getPlayersManager()
     playersManager.uptadePlayerSingleData(playerID, 'catchable', catchable)
     if (!catchable) {
@@ -116,7 +124,7 @@ class Wolf_And_Sheep extends MasterGame {
     }
   }
 
-  isCatchable(playerID) {
+  isCatchable(playerID: string) {
     return this.getPlayersManager().getPlayerData(playerID).catchable
   }
 }

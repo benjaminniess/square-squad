@@ -1,3 +1,4 @@
+export {}
 const { canvasWidth, squareSize } = require('../../config/main')
 const Matter = require('matter-js')
 const Obstacle = require('../obstacle')
@@ -5,7 +6,11 @@ const helpers = require('../../helpers/helpers')
 const _ = require('lodash')
 
 class SpaceInvaders extends Obstacle {
-  constructor(params = {}) {
+  constructor(
+    params = {
+      slug: ''
+    }
+  ) {
     params.slug = 'space-invader'
     super(params)
 
@@ -39,7 +44,7 @@ class SpaceInvaders extends Obstacle {
       }
     }
 
-    _.forEach(obstacleParts, (obstaclePart) => {
+    _.forEach(obstacleParts, (obstaclePart: any) => {
       let body = Matter.Bodies.rectangle(
         obstaclePart.x,
         obstaclePart.y,
@@ -63,7 +68,7 @@ class SpaceInvaders extends Obstacle {
   }
 
   loop() {
-    _.forEach(this.getBodies(), (obstacle) => {
+    _.forEach(this.getBodies(), (obstacle: any) => {
       if (obstacle.position.y > canvasWidth) {
         this.getEventEmmitter().emit('obstaclePartOver', obstacle)
       }

@@ -1,11 +1,13 @@
+import { Application, Request, Response, NextFunction } from 'express'
+import { Socket } from 'socket.io'
 const validator = require('validator')
 const rooms = require('../helpers/rooms')
 const players = require('../helpers/players')
 const _ = require('lodash')
 
-module.exports = function (app, io) {
+module.exports = function (app: Application, io: Socket) {
   io.on('connection', (socket) => {
-    socket.on('update-player-data', (data) => {
+    socket.on('update-player-data', (data: any) => {
       if (!data.name || !data.color) {
         io.to(socket.id).emit('update-player-data-result', {
           success: false,
@@ -50,7 +52,7 @@ module.exports = function (app, io) {
     })
 
     // When player ask for joining a room
-    socket.on('room-join', (data) => {
+    socket.on('room-join', (data: any) => {
       let room = rooms.getRoom(data.roomSlug)
       if (!room) {
         io.to(socket.id).emit('room-join-result', {
@@ -98,7 +100,7 @@ module.exports = function (app, io) {
       room.refreshPlayers()
     })
 
-    socket.on('rooms-create', (roomName) => {
+    socket.on('rooms-create', (roomName: string) => {
       let currentPlayer = players.getPlayer(socket.id)
       if (!currentPlayer || !currentPlayer.nickName) {
         io.to(socket.id).emit('rooms-create-result', {
@@ -133,7 +135,7 @@ module.exports = function (app, io) {
     })
 
     socket.on('room-leave', () => {
-      socket.rooms.forEach((roomSlug) => {
+      socket.rooms.forEach((roomSlug: string) => {
         if (socket.id !== roomSlug) {
           socket.leave(roomSlug)
 
@@ -152,7 +154,7 @@ module.exports = function (app, io) {
     })
 
     socket.on('disconnecting', () => {
-      socket.rooms.forEach((roomSlug) => {
+      socket.rooms.forEach((roomSlug: string) => {
         let room = rooms.getRoom(roomSlug)
         if (room) {
           if (room.getAdminPlayer() === socket.id) {
@@ -163,7 +165,7 @@ module.exports = function (app, io) {
       })
     })
 
-    socket.on('start-game', (data) => {
+    socket.on('start-game', (data: any) => {
       let room = rooms.getRoom(data.roomSlug)
       if (!room) {
         io.to(socket.id).emit('start-game-result', {
@@ -225,9 +227,9 @@ module.exports = function (app, io) {
 
       room.refreshPlayers()
 
-      let timeleft = 3
+      let timeleft: number = 3
       if (process.env.COUNTDOWN) {
-        timeleft = process.env.COUNTDOWN
+        timeleft = parseInt(process.env.COUNTDOWN)
       }
 
       let countdownTimer = setInterval(function () {
@@ -261,7 +263,7 @@ module.exports = function (app, io) {
                 if (countAlive) {
                   _.forEach(
                     playersManager.getPlayersData(),
-                    (playerData, playerID) => {
+                    (playerData: any, playerID: string) => {
                       if (playerData.alive) {
                         playersManager.addPoints(playerID, 3)
                       }
@@ -297,7 +299,7 @@ module.exports = function (app, io) {
         }
 
         io.to(data.roomSlug).emit('countdown-update', {
-          timeleft: parseInt(timeleft),
+          timeleft: timeleft,
           gameData: game.getBasicData()
         })
 
@@ -305,14 +307,14 @@ module.exports = function (app, io) {
       }, 1000)
     })
 
-    socket.on('keyPressed', function (socketData) {
+    socket.on('keyPressed', function (socketData: any) {
       let currentPlayer = players.getPlayer(socket.id)
       if (
         currentPlayer &&
         currentPlayer.getNickname() &&
         !currentPlayer.isSpectator()
       ) {
-        socket.rooms.forEach((roomSlug) => {
+        socket.rooms.forEach((roomSlug: string) => {
           if (roomSlug != socket.id) {
             let room = rooms.getRoom(roomSlug)
             let gameStatus = room.getGame().getStatus()
@@ -346,14 +348,14 @@ module.exports = function (app, io) {
       }
     })
 
-    socket.on('keyUp', function (socketData) {
+    socket.on('keyUp', function (socketData: any) {
       let currentPlayer = players.getPlayer(socket.id)
       if (
         currentPlayer &&
         currentPlayer.getNickname() &&
         !currentPlayer.isSpectator()
       ) {
-        socket.rooms.forEach((roomSlug) => {
+        socket.rooms.forEach((roomSlug: string) => {
           let room = rooms.getRoom(roomSlug)
           if (room && room.getGame().getStatus() === 'playing') {
             if (roomSlug != socket.id) {

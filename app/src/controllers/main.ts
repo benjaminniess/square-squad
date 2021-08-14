@@ -1,10 +1,11 @@
+import express, { Application, Request, Response, NextFunction } from 'express'
+import { Socket } from 'socket.io'
 const appRoot = require('app-root-path')
 const rooms = require('../helpers/rooms')
-const express = require('express')
 const router = express.Router()
 const _ = require('lodash')
 
-module.exports = function (app, io) {
+module.exports = function (app: Application, io: Socket) {
   rooms.injectIo(io)
 
   app.use('/', router)
@@ -12,7 +13,11 @@ module.exports = function (app, io) {
   /**
    * The dynamic public end data
    */
-  router.get('/env', function (req, res, next) {
+  router.get('/env', function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     res.setHeader('Content-Type', 'application/json')
     res.end(
       JSON.stringify({
@@ -23,7 +28,7 @@ module.exports = function (app, io) {
 
   const publicPages = ['/about-us', '/rooms/*']
 
-  _.forEach(publicPages, (pageEndpoint) => {
+  _.forEach(publicPages, (pageEndpoint: any) => {
     router.get(pageEndpoint, function (req, res, next) {
       res.sendFile(appRoot + '/vueapp/dist/index.html')
     })
@@ -45,7 +50,7 @@ module.exports = function (app, io) {
     }
 
     lockedRefresh = true
-    _.forEach(rooms.getRooms(), (room) => {
+    _.forEach(rooms.getRooms(), (room: any) => {
       let roomGame = room.getGame()
       let status = room.getGame().getStatus()
 

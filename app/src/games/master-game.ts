@@ -1,3 +1,4 @@
+export {}
 const { squareSize } = require('../config/main')
 const BonusManager = require('../managers/bonus-manager')
 const ObstaclesManager = require('../managers/obstacles-manager')
@@ -12,23 +13,35 @@ const Bodies = Matter.Bodies
 const Composite = Matter.Composite
 
 class MasterGame {
-  constructor(room) {
+  private speed: number = 6
+  private score: number = 0
+  private duration: number = 30
+  private playersData: any = {}
+  private playersMoves: any = {}
+  private status: string = 'waiting'
+  private type: string = 'countdown'
+  private room: any
+  private ranking: any[] = []
+  private lastRoundRanking: any[] = []
+  private lastWinner: any = {}
+  private totalRounds: number = 3
+  private bonusFrequency: number = 5
+  private bonusManager
+  private eventEmitter
+  private slug: string = ''
+  private engine: any
+  private runner: any
+  private obstaclesManager: any
+  private playersManager: any
+  private roundNumber: number = 3
+
+  constructor(room: any) {
     if (!room) {
       throw new Error('Missing room')
     }
-    this.speed = 6
-    this.score = 0
-    this.duration = 30
-    this.playersData = {}
-    this.playersMoves = {}
-    this.status = 'waiting'
-    this.type = 'countdown'
+
     this.room = room
-    this.ranking = []
-    this.lastRoundRanking = []
-    this.lastWinner = {}
-    this.totalRounds = 3
-    this.bonusFrequency = 5
+
     this.bonusManager = new BonusManager(this)
     this.eventEmitter = new EventEmitter()
     this.initEngine()
@@ -61,7 +74,7 @@ class MasterGame {
       }
     ]
 
-    _.forEach(worldComposites, (composite) => {
+    _.forEach(worldComposites, (composite: any) => {
       tree.push({
         label: composite.label,
         composites: _.size(Matter.Composite.allComposites(composite)),
@@ -73,11 +86,11 @@ class MasterGame {
   }
 
   getDebugBodies() {
-    let debugBodies = []
+    let debugBodies: any[] = []
     if (process.env.MATTER_DEBUG && process.env.MATTER_DEBUG === 'true') {
       let worldBodies = Matter.Composite.allBodies(this.engine.world)
-      _.forEach(worldBodies, (wb) => {
-        _.forEach(wb.vertices, (vertice) => {
+      _.forEach(worldBodies, (wb: any) => {
+        _.forEach(wb.vertices, (vertice: any) => {
           debugBodies.push({ x: vertice.x, y: vertice.y })
         })
       })
@@ -201,11 +214,11 @@ class MasterGame {
     this.getEventEmmitter().emit('initRound')
   }
 
-  setTotalRounds(roundsNumber) {
+  setTotalRounds(roundsNumber: number) {
     this.totalRounds = roundsNumber
   }
 
-  setBonusFrequency(frequency) {
+  setBonusFrequency(frequency: number) {
     this.bonusFrequency = frequency
   }
 
@@ -224,7 +237,7 @@ class MasterGame {
   syncScores() {
     let playersData = this.getPlayersManager().getPlayersData()
     this.lastRoundRanking = []
-    _.forEach(playersData, (playerData, playerID) => {
+    _.forEach(playersData, (playerData: any, playerID: string) => {
       this.lastRoundRanking.push({
         playerID: playerID,
         score: playerData.score
@@ -240,7 +253,7 @@ class MasterGame {
 
   saveRoundScores() {
     let lastRoundRanking = this.getLastRoundRanking()
-    _.forEach(lastRoundRanking, (lastRoundResult) => {
+    _.forEach(lastRoundRanking, (lastRoundResult: any) => {
       let index = _.findIndex(this.ranking, {
         playerID: lastRoundResult.playerID
       })
@@ -258,7 +271,7 @@ class MasterGame {
     this.ranking = _.orderBy(this.ranking, ['score'], ['desc'])
   }
 
-  setStatus(status) {
+  setStatus(status: string) {
     this.status = status
   }
 

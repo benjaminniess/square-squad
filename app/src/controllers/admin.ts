@@ -1,10 +1,11 @@
-const express = require('express')
+import express, { Application, Request, Response, NextFunction } from 'express'
+import { Socket } from 'socket.io'
 const router = express.Router()
 const rooms = require('../helpers/rooms')
 const players = require('../helpers/players')
 const _ = require('lodash')
 
-module.exports = function (app, io) {
+module.exports = function (app: Application, io: Socket) {
   app.use('/admin', router)
   rooms.injectIo(io)
 
@@ -42,7 +43,7 @@ module.exports = function (app, io) {
   /**
    * The home URL
    */
-  router.get('/', function (req, res, next) {
+  router.get('/', function (req: Request, res: Response, next: NextFunction) {
     let memoryUsage = process.memoryUsage()
 
     res.setHeader('Content-Type', 'application/json')

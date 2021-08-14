@@ -1,3 +1,4 @@
+export {}
 const helpers = require('../helpers/helpers')
 const Speed = require('../entities/bonus/speed')
 const ScoreChanger = require('../entities/bonus/score-changer')
@@ -5,7 +6,12 @@ const Invincible = require('../entities/bonus/invincible')
 const _ = require('lodash')
 
 class BonusManager {
-  constructor(game) {
+  private bonusList: any[]
+  private game: any
+  private frequency: number
+  private lastBonusTime: any
+
+  constructor(game: any) {
     this.bonusList = []
     this.game = game
     this.frequency = 5
@@ -21,14 +27,14 @@ class BonusManager {
   }
 
   getFrequency() {
-    return parseInt(this.frequency)
+    return this.frequency
   }
 
   resetBonus() {
     this.bonusList = []
   }
 
-  setFrequency(frequency) {
+  setFrequency(frequency: number) {
     this.frequency = frequency
   }
 
@@ -48,7 +54,7 @@ class BonusManager {
     }
   }
 
-  initBonus(params = {}) {
+  initBonus(params: any = {}) {
     let bonusID = helpers.getRandomInt(1, 4)
 
     params.game = this.getGame()
@@ -69,9 +75,9 @@ class BonusManager {
   }
 
   getActiveBonus() {
-    let activeBonus = []
+    let activeBonus: any[] = []
 
-    _.forEach(this.getBonus(), (bonus, bonusKey) => {
+    _.forEach(this.getBonus(), (bonus: any, bonusKey: string) => {
       if (!bonus.isTriggered()) {
         activeBonus.push(bonus)
       }

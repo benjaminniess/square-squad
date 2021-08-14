@@ -1,6 +1,10 @@
+export {}
 const Player = require('../entities/player')
 
 class Players {
+  private players: any
+  private static instance: any
+
   constructor() {
     if (!Players.instance) {
       Players.instance = this
@@ -16,7 +20,7 @@ class Players {
     return this.players
   }
 
-  getPlayer(socketID) {
+  getPlayer(socketID: string) {
     if (!socketID) {
       return false
     }
@@ -28,7 +32,7 @@ class Players {
     return this.players[socketID]
   }
 
-  initPlayer(socketID, playerName, playerColor) {
+  initPlayer(socketID: string, playerName: string, playerColor: string) {
     let newPlayer = new Player(socketID)
     newPlayer.resetData({
       nickName: playerName,
@@ -40,7 +44,7 @@ class Players {
     return newPlayer
   }
 
-  updatePlayer(socketID, playerData) {
+  updatePlayer(socketID: string, playerData: string) {
     if (!this.getPlayer(socketID)) {
       return false
     }

@@ -1,7 +1,8 @@
+export {}
 const Bonus = require('../bonus')
 
 class Speed extends Bonus {
-  constructor(params) {
+  constructor(params: any) {
     super(params)
     this.imgX = 0
     this.imgY = 0
@@ -18,7 +19,7 @@ class Speed extends Bonus {
         playerData.speedMultiplicator = 1
         game.getPlayersManager().setPlayerData(playerID, playerData)
 
-        resolve()
+        resolve(true)
       }, this.getDuration())
     })
   }
