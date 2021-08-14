@@ -60,7 +60,6 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use(express.static(__dirname + '/public'))
 app.use(express.static(__dirname + '/vueapp/dist'))
 app.use(express.static(__dirname + '/vueapp/static'))
 
