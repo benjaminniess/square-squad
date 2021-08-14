@@ -6,9 +6,9 @@ const rooms = require('../helpers/rooms')
 const players = require('../helpers/players')
 const _ = require('lodash')
 
-module.exports = function (app) {
+module.exports = function (app, io) {
   app.use('/admin', router)
-  rooms.injectIo(app.get('socketIOInstance'))
+  rooms.injectIo(io)
 
   router.get('*', function (req, res, next) {
     const reject = () => {

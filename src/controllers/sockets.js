@@ -5,9 +5,7 @@ const rooms = require('../helpers/rooms')
 const players = require('../helpers/players')
 const _ = require('lodash')
 
-module.exports = function (app) {
-  const io = app.get('socketIOInstance')
-
+module.exports = function (app, io) {
   io.on('connection', (socket) => {
     socket.on('update-player-data', (data) => {
       if (!data.name || !data.color) {

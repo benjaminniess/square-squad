@@ -33,7 +33,7 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
 
 const server = require('http').Server(app)
 
-app.set('socketIOInstance', require('socket.io')(server, corsOption))
+const io = require('socket.io')(server, corsOption)
 
 // Force HTTPS + redirect multiple domains/subdomains
 const useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
@@ -70,6 +70,6 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {
 }
 
 // Dynamically loads all controllers in lib/controller dir
-require('./src/controller')(app)
+require('./src/controller')(app, io)
 
 module.exports = server
