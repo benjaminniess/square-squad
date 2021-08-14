@@ -1,3 +1,5 @@
+'use_strict'
+
 // Load dynamic .env file so we can have a static conf for tests
 require('dotenv').config({
   path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'

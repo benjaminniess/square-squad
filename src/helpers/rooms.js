@@ -1,3 +1,5 @@
+'use_strict'
+
 const helpers = require('../helpers/helpers')
 const Room = require('../entities/room')
 const _ = require('lodash')
