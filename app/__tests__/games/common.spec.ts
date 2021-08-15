@@ -1,8 +1,9 @@
 /**
  * A generic tests group for all games (extending from MasterGame)
  */
-const PanicAttack = require('../../build/src/games/panic-attack')
-const WolfAndSheeps = require('../../build/src/games/wolf-and-sheeps')
+import { Room } from '../../src/entities/room'
+const PanicAttack = require('../../src/games/panic-attack')
+const WolfAndSheeps = require('../../src/games/wolf-and-sheeps')
 
 const gameTypes = [
   {
@@ -17,15 +18,19 @@ const gameTypes = [
   }
 ]
 
-// Mock the Room class
-class Room {
-  __construct() {
-    this.name = 'The Room Name'
-    this.slug = 'the-room-name'
-    this.adminPlayer = null
-    this.gameStatus = 'waiting'
+// Quick mock of socket io object
+const mockedSocket = {
+  sockets: {
+    adapter: {
+      rooms: {
+        get: (a: any) => {
+          return true
+        }
+      }
+    }
   }
 }
+const room: Room = new Room('room-name', 'Room name', mockedSocket)
 
 gameTypes.forEach((gameType) => {
   describe(gameType.name + ' game tests', () => {
@@ -36,69 +41,67 @@ gameTypes.forEach((gameType) => {
     })
 
     it('instanciate a new ' + gameType.name + ' object', () => {
-      expect(new gameType.obj(new Room())).toBeInstanceOf(gameType.obj)
+      expect(new gameType.obj(room)).toBeInstanceOf(gameType.obj)
     })
 
     it('renders the game slug', () => {
-      expect(new gameType.obj(new Room()).getSlug()).toBe(gameType.slug)
+      expect(new gameType.obj(room).getSlug()).toBe(gameType.slug)
     })
 
     it('renders the default game status which is "waiting"', () => {
-      expect(new gameType.obj(new Room()).getRoom()).toBeInstanceOf(Room)
+      expect(new gameType.obj(room).getRoom()).toBeInstanceOf(Room)
     })
 
     it('has 3 rounds by default', () => {
-      expect(new gameType.obj(new Room()).getTotalRounds()).toBe(3)
+      expect(new gameType.obj(room).getTotalRounds()).toBe(3)
     })
 
     it('changes the totals rounds with a set function', () => {
-      const game = new gameType.obj(new Room())
+      const game = new gameType.obj(room)
       game.setTotalRounds(8)
       expect(game.getTotalRounds()).toBe(8)
     })
 
     it('has a bonus frequency of 5 by default', () => {
-      expect(new gameType.obj(new Room()).getBonusFrequency()).toBe(5)
+      expect(new gameType.obj(room).getBonusFrequency()).toBe(5)
     })
 
     it('changes the bonus frequency with a set function', () => {
-      const game = new gameType.obj(new Room())
+      const game = new gameType.obj(room)
       game.setBonusFrequency(6)
       expect(game.getBonusFrequency()).toBe(6)
     })
 
     it('has a default score of 0', () => {
-      expect(new gameType.obj(new Room()).getScore()).toBe(0)
+      expect(new gameType.obj(room).getScore()).toBe(0)
     })
 
     it('increase the score with a set function', () => {
-      const game = new gameType.obj(new Room())
+      const game = new gameType.obj(room)
       game.increaseScore()
       expect(game.getScore()).toBe(1)
     })
 
     it('renders the default game status which is "waiting"', () => {
-      expect(new gameType.obj(new Room()).getStatus()).toBe('waiting')
+      expect(new gameType.obj(room).getStatus()).toBe('waiting')
     })
 
     it('updates the game status with a set function', () => {
-      const game = new gameType.obj(new Room())
+      const game = new gameType.obj(room)
       game.setStatus('playing')
       expect(game.getStatus()).toBe('playing')
     })
 
     it('has no ranking by default', () => {
-      expect(new gameType.obj(new Room()).getRanking()).toStrictEqual([])
+      expect(new gameType.obj(room).getRanking()).toStrictEqual([])
     })
 
     it('has no last round by default', () => {
-      expect(new gameType.obj(new Room()).getLastRoundRanking()).toStrictEqual(
-        []
-      )
+      expect(new gameType.obj(room).getLastRoundRanking()).toStrictEqual([])
     })
 
     it('has a highest score of 0 by default', () => {
-      expect(new gameType.obj(new Room()).getHighestScore()).toBe(0)
+      expect(new gameType.obj(room).getHighestScore()).toBe(0)
     })
   })
 })

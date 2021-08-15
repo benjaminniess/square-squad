@@ -1,9 +1,10 @@
 /**
  * A generic tests group for all bonus (extending from Bonus class)
  */
-const Invincible = require('../../build/src/entities/bonus/invincible')
-const ScoreChanger = require('../../build/src/entities/bonus/score-changer')
-const Speed = require('../../build/src/entities/bonus/speed')
+export {}
+const Invincible = require('../../src/entities/bonus/invincible')
+const ScoreChanger = require('../../src/entities/bonus/score-changer')
+const Speed = require('../../src/entities/bonus/speed')
 const { EventEmitter } = require('events')
 
 const bonusTypes = [
@@ -28,7 +29,7 @@ const mockedParams = {
   game: {
     getPlayersManager: () => {
       return {
-        uptadePlayerSingleData: (param1, param2, param3) => {
+        uptadePlayerSingleData: (param1: any, param2: any, param3: any) => {
           return
         }
       }

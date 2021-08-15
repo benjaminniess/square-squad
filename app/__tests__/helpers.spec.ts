@@ -1,4 +1,4 @@
-const helpers = require('../build/src/helpers/helpers')
+const helpers = require('../src/helpers/helpers')
 
 describe('stringToSlug function', () => {
   it('returns a slug from a string', () => {
@@ -19,7 +19,7 @@ describe('stringToSlug function', () => {
 })
 
 describe('getRandomInt function', () => {
-  for (i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     it('returns a random int from 1 to 10', () => {
       const response = helpers.getRandomInt(1, 10)
       expect(response).toBeGreaterThan(0)
@@ -29,7 +29,7 @@ describe('getRandomInt function', () => {
 })
 
 describe('getRandomID function', () => {
-  for (i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     it('returns a random 8 characters ID', () => {
       expect(helpers.getRandomID().length).toBe(16)
     })
