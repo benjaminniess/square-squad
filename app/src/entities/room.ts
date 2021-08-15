@@ -1,8 +1,7 @@
-export {}
-import { Socket } from 'socket.io'
+export { RoomBasicData, Room }
+import { Player } from './player'
+import { MasterGame } from '../games/master-game'
 const players = require('../helpers/players')
-const appRoot = require('app-root-path')
-const fs = require('fs')
 const _ = require('lodash')
 
 const games = {
@@ -10,36 +9,40 @@ const games = {
   wolfAndSheeps: require('../games/wolf-and-sheeps')
 }
 
+type RoomBasicData = {
+  slug: string
+  name: string
+  url: string
+}
+
 class Room {
   private name: string
   private slug: string
   private io: any
-  private adminPlayer: any
-  private gameStatus: string
+  private adminPlayer?: string
   private game: any
+  private players: Player[] = []
 
-  constructor(slug: string, name: string, io: Socket) {
+  constructor(slug: string, name: string, io: any) {
     this.name = name
     this.slug = slug
     this.io = io
-    this.adminPlayer = null
-    this.gameStatus = 'waiting'
     this.setGame('panic-attack')
   }
 
-  getName() {
+  getName(): string {
     return this.name
   }
 
-  getSlug() {
+  getSlug(): string {
     return this.slug
   }
 
-  getGame() {
+  getGame(): MasterGame {
     return this.game
   }
 
-  getBasicData() {
+  getBasicData(): RoomBasicData {
     return {
       slug: this.getSlug(),
       name: this.getName(),
@@ -58,6 +61,20 @@ class Room {
     }
   }
 
+  addPlayer(player: Player) {
+    this.players.push(player)
+  }
+
+  removePlayer(player: Player) {
+    this.players = this.players.filter((playerElement: Player) => {
+      return player.getSocketID() === playerElement.getSocketID()
+    })
+  }
+
+  getPlayersEntities(): Player[] {
+    return this.players
+  }
+
   getPlayers() {
     let players = this.io.sockets.adapter.rooms.get(this.getSlug())
     return players ? _.toArray(players) : []
@@ -67,11 +84,11 @@ class Room {
     return this.adminPlayer
   }
 
-  getLobbyURL() {
+  getLobbyURL(): string {
     return '/rooms/' + this.getSlug()
   }
 
-  setAdminPlayer(playerID: string) {
+  setAdminPlayer(playerID: string): void {
     this.adminPlayer = playerID
   }
 
@@ -147,5 +164,3 @@ class Room {
     return sessionsInRoom
   }
 }
-
-module.exports = Room

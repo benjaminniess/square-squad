@@ -1,4 +1,4 @@
-export {}
+export { MasterGame }
 const { squareSize } = require('../config/main')
 const BonusManager = require('../managers/bonus-manager')
 const ObstaclesManager = require('../managers/obstacles-manager')

@@ -1,12 +1,14 @@
 import express, { Application, Request, Response, NextFunction } from 'express'
 import { Socket } from 'socket.io'
 const router = express.Router()
-const rooms = require('../helpers/rooms')
+import { Rooms } from '../helpers/rooms'
 const players = require('../helpers/players')
 const _ = require('lodash')
 
 module.exports = function (app: Application, io: Socket) {
   app.use('/admin', router)
+
+  const rooms = new Rooms().getInstance()
   rooms.injectIo(io)
 
   router.get('*', function (req, res, next) {

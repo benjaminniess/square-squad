@@ -1,7 +1,9 @@
-export {}
+export { Rooms }
 import { Socket } from 'socket.io'
+import { RoomBasicData } from '../entities/room'
+import { Room } from '../entities/room'
 const helpers = require('../helpers/helpers')
-const Room = require('../entities/room')
+
 const _ = require('lodash')
 
 class Rooms {
@@ -60,7 +62,7 @@ class Rooms {
     return hasDeletedRooms
   }
 
-  getRoomsData() {
+  getRoomsData(): RoomBasicData[] {
     let roomsData: any[] = []
     let rooms = this.getRooms()
     if (!rooms) {
@@ -93,5 +95,3 @@ class Rooms {
     }
   }
 }
-
-module.exports = new Rooms().getInstance()

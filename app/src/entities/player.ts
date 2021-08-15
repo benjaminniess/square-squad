@@ -1,4 +1,4 @@
-export {}
+export { Player }
 class Player {
   private socketID: string
   private nickName: string

@@ -1,11 +1,13 @@
 import { Application, Request, Response, NextFunction } from 'express'
 import { Socket } from 'socket.io'
+import { Rooms } from '../helpers/rooms'
 const validator = require('validator')
-const rooms = require('../helpers/rooms')
 const players = require('../helpers/players')
 const _ = require('lodash')
 
 module.exports = function (app: Application, io: Socket) {
+  const rooms = new Rooms().getInstance()
+
   io.on('connection', (socket) => {
     socket.on('update-player-data', (data: any) => {
       if (!data.name || !data.color) {
