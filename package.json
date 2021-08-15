@@ -4,17 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build && node app/index.js",
-    "build": "tsc",
-    "inspect": "nodemon app/index.js --inspect",
+    "start": "node build/index.js",
+    "build": "cd vueapp && NODE_ENV=production npm install && NODE_ENV=production npm run build && cd ../ && tsc",
+    "inspect": "nodemon build/index.js --inspect",
     "watch": "npx gulpfile.js",
-    "test": "jest ./__tests__ --watch --NODE_ENV=test"
+    "test": "jest --watch --NODE_ENV=test"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/express": "^4.17.13",
-    "@types/node": "^16.6.1",
     "app-root-path": "^3.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.6.0",
@@ -24,16 +22,18 @@
     "matter-js": "^0.17.1",
     "newrelic": "^7.5.2",
     "socket.io": "^3.1.2",
-    "ts-node": "^10.2.0",
-    "typescript": "^4.3.5",
     "validator": "^13.6.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.6.1",
     "jest": "^27.0.6",
+    "mock-socket": "^9.0.3",
     "socket.io-client": "^4.1.3",
-    "supertest": "^6.1.4"
-  },
-  "jest": {
-    "verbose": true
+    "supertest": "^6.1.4",
+    "ts-jest": "^27.0.4",
+    "ts-node": "^10.2.0",
+    "typescript": "^4.3.5"
   }
 }
