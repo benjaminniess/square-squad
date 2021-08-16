@@ -66,47 +66,47 @@ ADMIN_PASSWORD: Not ready yet
 
 ### 1.2.8 - 2021-08-13
 
-- New: Score changer bonus are now declined into +3, +5, +10 and -3, -5, -10
-- Removed last global var using DI
-- Added some more tests on bonus
+- :sparkles: Score changer bonus are now declined into +3, +5, +10 and -3, -5, -10
+- :hammer: Removed last global var using DI
+- :hammer:Added some more tests on bonus
 
 ### 1.2.7 - 2021-08-11
 
-- Security update of package depenencies
-- Added some more tests on rooms and players actions
-- Code refacto to remove most of the global var usage in index.js
+- :lock: Security update of package depenencies
+- :hammer: Added some more tests on rooms and players actions
+- :hammer: Code refacto to remove most of the global var usage in index.js
 
 ### 1.2.6 - 2021-08-02
 
-- New: Added tests to Vue components
+- :sparkles: Added tests to Vue components
 
 ### 1.2.5 - 2021-07-21
 
-- New: Joystick in mobile version
-- New: Allowed room url sharing with auto join
+- :sparkles: Joystick in mobile version
+- :sparkles: Allowed room url sharing with auto join
 
 ### 1.2.4 - 2021-07-18
 
-- New: Added touch control + media query to make the game work on mobile
-- New: Added unit tests on main socket actions
+- :sparkles: Added touch control + media query to make the game work on mobile
+- :hammer: Added unit tests on main socket actions
 
 ### 1.2.3 - 2021-07-15
 
-- Fix: Fixed simultanous collisions
-- Fix: Fixed bodies not removed after death
-- Fix: Fixed crash after socket is lost
+- :bug: Fixed simultanous collisions
+- :bug: Fixed bodies not removed after death
+- :bug: Fixed crash after socket is lost
 
 ### 1.2.2 - 2021-07-14
 
-- New: Google Analytics when env var is set
-- Fix: Fixed multi domains + SSL redirection
-- Fix: Fixed 404 page
+- :sparkles: Google Analytics when env var is set
+- :bug: Fixed multi domains + SSL redirection
+- :bug: Fixed 404 page
 
 ### 1.2.1 - 2021-07-11
 
-- Fix: Fixed about us link
-- Fix: Fixed version number in footer
+- :bug: Fixed about us link
+- :bug: Fixed version number in footer
 
 ### 1.2.0 - 2021-07-11
 
-- New: Refactored the whole application to use Vue.js
+- :hammer: Refactored the whole application to use Vue.js
