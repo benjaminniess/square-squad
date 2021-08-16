@@ -1,5 +1,5 @@
-export {}
-const Player = require('../entities/player')
+export { Players }
+import { Player } from '../entities/player'
 
 class Players {
   private players: any
@@ -52,5 +52,3 @@ class Players {
     this.players[socketID].resetData(playerData)
   }
 }
-
-module.exports = new Players().getInstance()

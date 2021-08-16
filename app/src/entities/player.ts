@@ -42,5 +42,3 @@ class Player {
     return this.isSpectatorVal
   }
 }
-
-module.exports = Player

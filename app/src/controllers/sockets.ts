@@ -1,12 +1,13 @@
 import { Application, Request, Response, NextFunction } from 'express'
 import { Socket } from 'socket.io'
 import { Rooms } from '../helpers/rooms'
+import { Players } from '../helpers/players'
 const validator = require('validator')
-const players = require('../helpers/players')
 const _ = require('lodash')
 
 module.exports = function (app: Application, io: Socket) {
   const rooms = new Rooms().getInstance()
+  const players = new Players().getInstance()
 
   io.on('connection', (socket) => {
     socket.on('update-player-data', (data: any) => {

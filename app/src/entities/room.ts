@@ -1,7 +1,7 @@
 export { RoomBasicData, Room }
 import { Player } from './player'
 import { MasterGame } from '../games/master-game'
-const players = require('../helpers/players')
+import { Players } from '../helpers/players'
 const _ = require('lodash')
 
 const games = {
@@ -106,6 +106,7 @@ class Room {
   }
 
   refreshPlayers(disconnectedPlayerSocketID = null) {
+    const players = new Players().getInstance()
     let game = this.getGame()
 
     let globalRanking = game.getRanking()
