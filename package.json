@@ -7,7 +7,7 @@
     "start": "node build/index.js",
     "dev": "nodemon build/index.js",
     "startvue": "cd vueapp && npm start",
-    "build": "cd vueapp && NODE_ENV=production npm install && NODE_ENV=production npm run build && cd ../ && tsc",
+    "build": "npm i && tsc && cd vueapp && npm i && npm run build",
     "inspect": "nodemon build/index.js --inspect",
     "watch": "npx gulpfile.js",
     "test": "jest --watch --NODE_ENV=test"
