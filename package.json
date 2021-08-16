@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
+    "dev": "nodemon build/index.js",
+    "startvue": "cd vueapp && npm start",
     "build": "cd vueapp && NODE_ENV=production npm install && NODE_ENV=production npm run build && cd ../ && tsc",
     "inspect": "nodemon build/index.js --inspect",
     "watch": "npx gulpfile.js",
