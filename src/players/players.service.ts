@@ -28,4 +28,18 @@ export class PlayersService implements PlayersServiceInterface {
     }
     this.players.push(player);
   }
+
+  deleteFromId(id: string) {
+    if (this.findById(id) === null) {
+      throw new ConflictException('player-does-not-exist');
+    }
+
+    this.players.map((player, key) => {
+      if (player.id !== id) {
+        return;
+      }
+
+      this.players.splice(key, 1);
+    });
+  }
 }

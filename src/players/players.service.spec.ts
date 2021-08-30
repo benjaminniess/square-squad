@@ -9,6 +9,12 @@ describe('PlayersService', () => {
     color: '#00FF00',
   };
 
+  const validPlayer2 = {
+    id: '78910def',
+    nickName: 'tester 2',
+    color: '#FF0000',
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [PlayersService],
@@ -37,7 +43,7 @@ describe('PlayersService', () => {
 
   it('should show a players list with a size of 2 from the findAll method after creating 2 players in a row', () => {
     service.create(validPlayer);
-    service.create({ ...validPlayer, id: '78910def' });
+    service.create(validPlayer2);
 
     expect(service.findAll()).toHaveLength(2);
   });
@@ -48,6 +54,22 @@ describe('PlayersService', () => {
       service.create(validPlayer);
     } catch (exception) {
       expect(exception.message).toBe('player-already-exists');
+    }
+  });
+
+  it('should delete a players from its ID', () => {
+    service.create(validPlayer);
+    service.create(validPlayer2);
+    service.deleteFromId(validPlayer.id);
+    expect(service.findAll()).toHaveLength(1);
+    expect(service.findAll()[0].id).toBe(validPlayer2.id);
+  });
+
+  it('should throw an error while trying to delete an inexisting player', () => {
+    try {
+      service.deleteFromId(validPlayer.id);
+    } catch (exception) {
+      expect(exception.message).toBe('player-does-not-exist');
     }
   });
 });
