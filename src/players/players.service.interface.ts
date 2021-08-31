@@ -4,5 +4,5 @@ export interface PlayersServiceInterface {
   findAll(): Player[];
   findById(string): Player | null;
   create(Player);
-  deleteFromId(id: string);
+  deleteFromId(string);
 }
