@@ -13,11 +13,11 @@ export default {
   created() {
     particlesJS.load(
       'particles-js',
-      this.$globalEnv.homeUrl + '/assets/js/particles.json'
-    )
+      this.$globalEnv.homeUrl + '/static/assets/js/particles.json',
+    );
   },
-  name: 'App'
-}
+  name: 'App',
+};
 </script>
 
 <style>
