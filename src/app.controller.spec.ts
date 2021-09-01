@@ -14,9 +14,9 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('/env', () => {
+    it('send an object when calling the /env endoint', () => {
+      expect(appController.getEnvJson()).toBeInstanceOf(Object);
     });
   });
 });
