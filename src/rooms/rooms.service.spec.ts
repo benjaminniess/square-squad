@@ -1,3 +1,4 @@
+import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoomsService } from './rooms.service';
 
@@ -67,6 +68,7 @@ describe('RoomsService', () => {
   });
 
   it('should throw an error while trying to delete an inexisting room', () => {
+    expect.assertions(1);
     try {
       service.deleteFromId(validRoom.id);
     } catch (exception) {

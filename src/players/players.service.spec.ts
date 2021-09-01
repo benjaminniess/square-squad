@@ -49,6 +49,7 @@ describe('PlayersService', () => {
   });
 
   it('should throw an error while trying to create a player with an existing ID', () => {
+    expect.assertions(1);
     service.create(validPlayer);
     try {
       service.create(validPlayer);
@@ -66,6 +67,7 @@ describe('PlayersService', () => {
   });
 
   it('should throw an error while trying to delete an inexisting player', () => {
+    expect.assertions(1);
     try {
       service.deleteFromId(validPlayer.id);
     } catch (exception) {
