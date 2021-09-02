@@ -9,6 +9,7 @@ import { join } from 'path';
 import { WebsocketsService } from './websockets/websockets.service';
 import { PlayersService } from './players/players.service';
 import { RoomsService } from './rooms/rooms.service';
+import { WebsocketsAdapterService } from './websockets/websockets-adapter.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RoomsService } from './rooms/rooms.service';
     WebsocketsService,
     PlayersService,
     RoomsService,
+    WebsocketsAdapterService,
   ],
 })
 export class AppModule {}
