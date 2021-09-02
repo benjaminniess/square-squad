@@ -6,6 +6,9 @@ import { RoomsPlayersAssociationService } from './rooms/rooms-players-associatio
 import { RoomsModule } from './rooms/rooms.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { WebsocketsService } from './websockets/websockets.service';
+import { PlayersService } from './players/players.service';
+import { RoomsService } from './rooms/rooms.service';
 
 @Module({
   imports: [
@@ -16,6 +19,12 @@ import { join } from 'path';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, RoomsPlayersAssociationService],
+  providers: [
+    AppService,
+    RoomsPlayersAssociationService,
+    WebsocketsService,
+    PlayersService,
+    RoomsService,
+  ],
 })
 export class AppModule {}
