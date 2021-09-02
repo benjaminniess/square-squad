@@ -40,8 +40,21 @@ const updatePlayer = (user = validUser, socket = socket1) => {
 };
 
 describe('SOCKET - Player Data', () => {
-  it('emits a update-player-data-result socket with a success set to false when missing name', async () => {
+  it('emits a update-player-data-result socket with a Empty name or color message when missing name', async () => {
     const result: any = await updatePlayer({ name: '', color: '#FF0000' });
-    expect(result.success).toBe(false);
+    expect(result.error).toBe('Empty name or color');
+  });
+
+  it('creates a player', async () => {
+    const result: any = await updatePlayer();
+    expect(result.success).toBeTruthy();
+  });
+
+  it("updates a player's data", async () => {
+    const result: any = await updatePlayer({
+      name: 'Tester updated',
+      color: '#00FF00',
+    });
+    expect(result.success).toBeTruthy();
   });
 });
