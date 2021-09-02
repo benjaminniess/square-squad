@@ -29,6 +29,20 @@ export class PlayersService implements PlayersServiceInterface {
     this.players.push(player);
   }
 
+  update(player: Player) {
+    if (this.findById(player.id) === null) {
+      throw new ConflictException('player-does-not-exist');
+    }
+
+    this.players.map((singlePlayer, key) => {
+      if (player.id !== singlePlayer.id) {
+        return;
+      }
+
+      this.players[key] = player;
+    });
+  }
+
   deleteFromId(id: string) {
     if (this.findById(id) === null) {
       throw new ConflictException('player-does-not-exist');

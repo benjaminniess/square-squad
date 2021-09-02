@@ -38,7 +38,7 @@ describe('PlayersService', () => {
 
   it('should retrive a freshliy creater player from the findById method', () => {
     service.create(validPlayer);
-    expect(service.findById('123456abc')).not.toBeNull();
+    expect(service.findById(validPlayer.id)).not.toBeNull();
   });
 
   it('should show a players list with a size of 2 from the findAll method after creating 2 players in a row', () => {
@@ -55,6 +55,23 @@ describe('PlayersService', () => {
       service.create(validPlayer);
     } catch (exception) {
       expect(exception.message).toBe('player-already-exists');
+    }
+  });
+
+  it('should update an existing player name', () => {
+    service.create(validPlayer);
+    service.update({ ...validPlayer, nickName: 'Updated nickname' });
+
+    expect(service.findById(validPlayer.id).nickName).toBe('Updated nickname');
+  });
+
+  it('should throw an error while trying to update a player that is not registered', () => {
+    expect.assertions(1);
+
+    try {
+      service.update(validPlayer);
+    } catch (exception) {
+      expect(exception.message).toBe('player-does-not-exist');
     }
   });
 
