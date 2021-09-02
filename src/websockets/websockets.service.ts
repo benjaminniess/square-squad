@@ -4,13 +4,18 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   ConnectedSocket,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { WebsocketsAdapterService } from './websockets-adapter.service';
 
 @WebSocketGateway()
 @Injectable()
-export class WebsocketsService {
+export class WebsocketsService implements OnGatewayDisconnect {
   constructor(private websocketsAdapter: WebsocketsAdapterService) {}
+
+  handleDisconnect(@ConnectedSocket() client: any) {
+    this.websocketsAdapter.deletePlayer(client.id);
+  }
 
   @SubscribeMessage('update-player-data')
   handleUpdatePlayerData(

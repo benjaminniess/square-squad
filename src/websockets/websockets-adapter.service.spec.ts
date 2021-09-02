@@ -4,48 +4,62 @@ import { PlayersService } from '../players/players.service';
 import { WebsocketsAdapterService } from './websockets-adapter.service';
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
 
+let service: WebsocketsAdapterService;
+let playersService: PlayersService;
+
+const validPlayer = {
+  id: '123456abc',
+  nickName: 'tester 1',
+  color: '#00FF00',
+};
+
+const validPlayer2 = {
+  id: '78910def',
+  nickName: 'tester 2',
+  color: '#FF0000',
+};
+
+beforeEach(async () => {
+  const module: TestingModule = await Test.createTestingModule({
+    providers: [
+      WebsocketsAdapterService,
+      PlayersService,
+      RoomsService,
+      RoomsPlayersAssociationService,
+    ],
+  }).compile();
+
+  service = module.get<WebsocketsAdapterService>(WebsocketsAdapterService);
+  playersService = module.get<PlayersService>(PlayersService);
+});
+
 describe('WebsocketsAdapterService', () => {
-  let service: WebsocketsAdapterService;
-  let playersService: PlayersService;
-
-  const validPlayer = {
-    id: '123456abc',
-    nickName: 'tester 1',
-    color: '#00FF00',
-  };
-
-  const validPlayer2 = {
-    id: '78910def',
-    nickName: 'tester 2',
-    color: '#FF0000',
-  };
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        WebsocketsAdapterService,
-        PlayersService,
-        RoomsService,
-        RoomsPlayersAssociationService,
-      ],
-    }).compile();
-
-    service = module.get<WebsocketsAdapterService>(WebsocketsAdapterService);
-    playersService = module.get<PlayersService>(PlayersService);
-  });
-
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(playersService).toBeDefined();
   });
+});
 
+describe('Socket login/loggout', () => {
+  it('should remove the user when socket connection is lost', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+    service.deletePlayer(validPlayer.id);
+
+    expect(playersService.findAll()).toHaveLength(0);
+  });
+});
+
+describe('Player add and update', () => {
   it('should refuse to add a player with not name', () => {
-    const playerUpdate = service.updatePlayer(validPlayer.id, {
+    const playerAdd = service.updatePlayer(validPlayer.id, {
       name: '',
       color: validPlayer.color,
     });
 
-    expect(playerUpdate).toStrictEqual({
+    expect(playerAdd).toStrictEqual({
       error: 'Empty name or color',
       success: false,
     });
@@ -53,12 +67,12 @@ describe('WebsocketsAdapterService', () => {
   });
 
   it('should refuse to add a player with no color', () => {
-    const playerUpdate = service.updatePlayer(validPlayer.id, {
+    const playerAdd = service.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: '',
     });
 
-    expect(playerUpdate).toStrictEqual({
+    expect(playerAdd).toStrictEqual({
       error: 'Empty name or color',
       success: false,
     });
@@ -66,12 +80,12 @@ describe('WebsocketsAdapterService', () => {
   });
 
   it('should add a player in the players list', () => {
-    const playerUpdate = service.updatePlayer(validPlayer.id, {
+    const playerAdd = service.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
 
-    expect(playerUpdate).toStrictEqual({ success: true });
+    expect(playerAdd).toStrictEqual({ success: true });
     expect(playersService.findAll()).toHaveLength(1);
   });
 

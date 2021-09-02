@@ -49,4 +49,13 @@ export class WebsocketsAdapterService {
       success: true,
     };
   }
+
+  deletePlayer(playerId: string): boolean {
+    try {
+      this.playersService.deleteFromId(playerId);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }
