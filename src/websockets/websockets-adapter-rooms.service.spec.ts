@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoomsService } from '../rooms/rooms.service';
 import { PlayersService } from '../players/players.service';
-import { WebsocketsAdapterService } from './websockets-adapter.service';
+import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
 import { HelpersModule } from '../helpers/helpers.module';
+import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
 
-let service: WebsocketsAdapterService;
+let websocketAdapterRoomService: WebsocketsAdapterRoomsService;
+let websocketAdapterPlayersService: WebsocketsAdapterPlayersService;
 let playersService: PlayersService;
 let roomsService: RoomsService;
 let roomsPlayersAssociationService: RoomsPlayersAssociationService;
@@ -31,14 +33,20 @@ beforeEach(async () => {
   const module: TestingModule = await Test.createTestingModule({
     imports: [HelpersModule],
     providers: [
-      WebsocketsAdapterService,
+      WebsocketsAdapterRoomsService,
+      WebsocketsAdapterPlayersService,
       PlayersService,
       RoomsService,
       RoomsPlayersAssociationService,
     ],
   }).compile();
 
-  service = module.get<WebsocketsAdapterService>(WebsocketsAdapterService);
+  websocketAdapterRoomService = module.get<WebsocketsAdapterRoomsService>(
+    WebsocketsAdapterRoomsService,
+  );
+  websocketAdapterPlayersService = module.get<WebsocketsAdapterPlayersService>(
+    WebsocketsAdapterPlayersService,
+  );
   playersService = module.get<PlayersService>(PlayersService);
   roomsService = module.get<RoomsService>(RoomsService);
   roomsPlayersAssociationService = module.get<RoomsPlayersAssociationService>(
@@ -46,82 +54,19 @@ beforeEach(async () => {
   );
 });
 
-describe('WebsocketsAdapterService', () => {
+describe('WebsocketsAdapterRoomsService', () => {
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(websocketAdapterRoomService).toBeDefined();
     expect(playersService).toBeDefined();
-  });
-});
-
-describe('Socket login/loggout', () => {
-  it('should remove the user when socket connection is lost', () => {
-    service.updatePlayer(validPlayer.id, {
-      name: validPlayer.nickName,
-      color: validPlayer.color,
-    });
-    service.deletePlayer(validPlayer.id);
-
-    expect(playersService.findAll()).toHaveLength(0);
-  });
-});
-
-describe('Player add and update', () => {
-  it('should refuse to add a player with not name', () => {
-    const playerAdd = service.updatePlayer(validPlayer.id, {
-      name: '',
-      color: validPlayer.color,
-    });
-
-    expect(playerAdd).toStrictEqual({
-      error: 'empty-name-or-color',
-      success: false,
-    });
-    expect(playersService.findAll()).toHaveLength(0);
-  });
-
-  it('should refuse to add a player with no color', () => {
-    const playerAdd = service.updatePlayer(validPlayer.id, {
-      name: validPlayer.nickName,
-      color: '',
-    });
-
-    expect(playerAdd).toStrictEqual({
-      error: 'empty-name-or-color',
-      success: false,
-    });
-    expect(playersService.findAll()).toHaveLength(0);
-  });
-
-  it('should add a player in the players list', () => {
-    const playerAdd = service.updatePlayer(validPlayer.id, {
-      name: validPlayer.nickName,
-      color: validPlayer.color,
-    });
-
-    expect(playerAdd).toStrictEqual({ success: true });
-    expect(playersService.findAll()).toHaveLength(1);
-  });
-
-  it('should update an existing player', () => {
-    service.updatePlayer(validPlayer.id, {
-      name: validPlayer.nickName,
-      color: validPlayer.color,
-    });
-
-    const playerUpdate = service.updatePlayer(validPlayer.id, {
-      name: 'New name',
-      color: '#000000',
-    });
-
-    expect(playerUpdate).toStrictEqual({ success: true });
-    expect(playersService.findAll()[0].nickName).toBe('New name');
-    expect(playersService.findAll()[0].color).toBe('#000000');
   });
 });
 
 describe('Rooms add and update', () => {
   it('should refuse to add a room with a wrong player socket ID', () => {
-    const roomAdd = service.createRoom('fakeID123', validRoom.name);
+    const roomAdd = websocketAdapterRoomService.createRoom(
+      'fakeID123',
+      validRoom.name,
+    );
 
     expect(roomAdd).toStrictEqual({
       error: 'wrong-player-id',
@@ -130,14 +75,17 @@ describe('Rooms add and update', () => {
   });
 
   it('should refuse to add a room with player ID already in a room', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
     roomsService.create(validRoom.name);
     roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
 
-    const roomAdd = service.createRoom(validPlayer.id, validRoom.name);
+    const roomAdd = websocketAdapterRoomService.createRoom(
+      validPlayer.id,
+      validRoom.name,
+    );
 
     expect(roomAdd).toStrictEqual({
       error: 'player-already-in-a-room',
@@ -146,12 +94,12 @@ describe('Rooms add and update', () => {
   });
 
   it('should refuse to add a room with an empty name', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
 
-    const roomAdd = service.createRoom(validPlayer.id, '');
+    const roomAdd = websocketAdapterRoomService.createRoom(validPlayer.id, '');
 
     expect(roomAdd).toStrictEqual({
       error: 'room-name-empty',
@@ -160,12 +108,15 @@ describe('Rooms add and update', () => {
   });
 
   it('should create a room when a correct room name is provided', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
 
-    const roomAdd = service.createRoom(validPlayer.id, validRoom.name);
+    const roomAdd = websocketAdapterRoomService.createRoom(
+      validPlayer.id,
+      validRoom.name,
+    );
 
     expect(roomAdd).toStrictEqual({
       success: true,
@@ -174,17 +125,20 @@ describe('Rooms add and update', () => {
   });
 
   it('should refuse to create a room when a slug already exists', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
-    service.createRoom(validPlayer.id, validRoom.name);
+    websocketAdapterRoomService.createRoom(validPlayer.id, validRoom.name);
 
-    service.updatePlayer(validPlayer2.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer2.id, {
       name: validPlayer2.nickName,
       color: validPlayer2.color,
     });
-    const roomAdd = service.createRoom(validPlayer2.id, validRoom.name);
+    const roomAdd = websocketAdapterRoomService.createRoom(
+      validPlayer2.id,
+      validRoom.name,
+    );
 
     expect(roomAdd).toStrictEqual({
       error: 'room-already-exists',
@@ -195,7 +149,10 @@ describe('Rooms add and update', () => {
 
 describe('Rooms join', () => {
   it('should refuse to join a room with a wrong player socket ID', () => {
-    const roomJoin = service.joinRoom('fakeID123', validRoom.name);
+    const roomJoin = websocketAdapterRoomService.joinRoom(
+      'fakeID123',
+      validRoom.name,
+    );
 
     expect(roomJoin).toStrictEqual({
       error: 'wrong-player-id',
@@ -204,14 +161,17 @@ describe('Rooms join', () => {
   });
 
   it('should refuse to join a room with player ID already in a room', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
     roomsService.create(validRoom.name);
     roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
 
-    const roomAdd = service.createRoom(validPlayer.id, validRoom.name);
+    const roomAdd = websocketAdapterRoomService.createRoom(
+      validPlayer.id,
+      validRoom.name,
+    );
 
     expect(roomAdd).toStrictEqual({
       error: 'player-already-in-a-room',
@@ -220,12 +180,15 @@ describe('Rooms join', () => {
   });
 
   it('should refuse to join a room with a wrong slug', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
 
-    const roomAdd = service.joinRoom(validPlayer.id, 'fake-slug');
+    const roomAdd = websocketAdapterRoomService.joinRoom(
+      validPlayer.id,
+      'fake-slug',
+    );
 
     expect(roomAdd).toStrictEqual({
       error: 'wrong-room-slug',
@@ -234,13 +197,16 @@ describe('Rooms join', () => {
   });
 
   it('should join a room when a correct room name is provided', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
-    service.createRoom(validPlayer.id, validRoom.name);
+    websocketAdapterRoomService.createRoom(validPlayer.id, validRoom.name);
 
-    const roomAdd = service.joinRoom(validPlayer.id, validRoom.slug);
+    const roomAdd = websocketAdapterRoomService.joinRoom(
+      validPlayer.id,
+      validRoom.slug,
+    );
 
     expect(roomAdd).toStrictEqual({
       success: true,
@@ -255,19 +221,19 @@ describe('Rooms join', () => {
 
 describe('Rooms refresh', () => {
   it('should send an empty rooms list while there is no room', () => {
-    const roomsList = service.findAllRooms();
+    const roomsList = websocketAdapterRoomService.findAllRooms();
 
-    expect(roomsList).toStrictEqual([]);
+    expect(roomsList).toStrictEqual({ success: true, data: [] });
   });
 
   it('should send an rooms list with a freshly created room', () => {
-    service.updatePlayer(validPlayer.id, {
+    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
       name: validPlayer.nickName,
       color: validPlayer.color,
     });
-    service.createRoom(validPlayer.id, validRoom.name);
-    const roomsList = service.findAllRooms();
+    websocketAdapterRoomService.createRoom(validPlayer.id, validRoom.name);
+    const roomsList = websocketAdapterRoomService.findAllRooms();
 
-    expect(roomsList).toStrictEqual([validRoom]);
+    expect(roomsList).toStrictEqual({ success: true, data: [validRoom] });
   });
 });

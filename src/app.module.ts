@@ -9,8 +9,9 @@ import { join } from 'path';
 import { WebsocketsService } from './websockets/websockets.service';
 import { PlayersService } from './players/players.service';
 import { RoomsService } from './rooms/rooms.service';
-import { WebsocketsAdapterService } from './websockets/websockets-adapter.service';
+import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-rooms.service';
 import { HelpersModule } from './helpers/helpers.module';
+import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter-players.service';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { HelpersModule } from './helpers/helpers.module';
     WebsocketsService,
     PlayersService,
     RoomsService,
-    WebsocketsAdapterService,
+    WebsocketsAdapterRoomsService,
+    WebsocketsAdapterPlayersService,
   ],
 })
 export class AppModule {}

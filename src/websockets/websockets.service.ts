@@ -6,15 +6,19 @@ import {
   ConnectedSocket,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { WebsocketsAdapterService } from './websockets-adapter.service';
+import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
+import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
 
 @WebSocketGateway()
 @Injectable()
 export class WebsocketsService implements OnGatewayDisconnect {
-  constructor(private websocketsAdapter: WebsocketsAdapterService) {}
+  constructor(
+    private websocketsAdapterPlayers: WebsocketsAdapterPlayersService,
+    private websocketsAdapterRooms: WebsocketsAdapterRoomsService,
+  ) {}
 
   handleDisconnect(@ConnectedSocket() client: any) {
-    this.websocketsAdapter.deletePlayer(client.id);
+    this.websocketsAdapterPlayers.deletePlayer(client.id);
   }
 
   @SubscribeMessage('update-player-data')
@@ -24,7 +28,7 @@ export class WebsocketsService implements OnGatewayDisconnect {
   ): void {
     client.emit(
       'update-player-data-result',
-      this.websocketsAdapter.updatePlayer(client.id, data),
+      this.websocketsAdapterPlayers.updatePlayer(client.id, data),
     );
   }
 
@@ -35,7 +39,7 @@ export class WebsocketsService implements OnGatewayDisconnect {
   ): void {
     client.emit(
       'create-room-result',
-      this.websocketsAdapter.createRoom(client.id, roomName),
+      this.websocketsAdapterRooms.createRoom(client.id, roomName),
     );
   }
 
@@ -46,7 +50,7 @@ export class WebsocketsService implements OnGatewayDisconnect {
   ): void {
     client.emit(
       'join-room-result',
-      this.websocketsAdapter.joinRoom(client.id, roomSlug),
+      this.websocketsAdapterRooms.joinRoom(client.id, roomSlug),
     );
   }
 
@@ -55,6 +59,9 @@ export class WebsocketsService implements OnGatewayDisconnect {
     @MessageBody() roomSlug: string,
     @ConnectedSocket() client: any,
   ): void {
-    client.emit('rooms-refresh-result', this.websocketsAdapter.findAllRooms());
+    client.emit(
+      'rooms-refresh-result',
+      this.websocketsAdapterRooms.findAllRooms(),
+    );
   }
 }
