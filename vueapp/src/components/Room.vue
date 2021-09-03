@@ -91,13 +91,13 @@ export default {
       this.$router.push('/?redirect_to=' + this.$route.params.id)
     }
 
-    this.$store.state.socket.emit('room-join', {
-      roomSlug: this.$route.params.id
-    })
+    this.$store.state.socket.emit('join-room', this.$route.params.id)
 
-    this.$store.state.socket.on('room-join-result', (result) => {
+    this.$store.state.socket.on('join-room-result', (result) => {
       if (result.success) {
         this.room = result.data
+      } else {
+        this.$router.push('/')
       }
     })
 
@@ -153,7 +153,7 @@ export default {
   destroyed() {
     // Not to have double listener next time the component is mounted
     this.$store.state.socket.off('refresh-players')
-    this.$store.state.socket.off('room-joined')
+    this.$store.state.socket.off('join-roomed')
     this.$store.state.socket.off('start-game-result')
     this.$store.state.socket.off('countdown-update')
     this.$store.state.socket.off('in-game-countdown-update')

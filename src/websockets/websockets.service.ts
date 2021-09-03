@@ -38,4 +38,15 @@ export class WebsocketsService implements OnGatewayDisconnect {
       this.websocketsAdapter.createRoom(client.id, roomName),
     );
   }
+
+  @SubscribeMessage('join-room')
+  handleJoinRoom(
+    @MessageBody() roomSlug: string,
+    @ConnectedSocket() client: any,
+  ): void {
+    client.emit(
+      'join-room-result',
+      this.websocketsAdapter.joinRoom(client.id, roomSlug),
+    );
+  }
 }

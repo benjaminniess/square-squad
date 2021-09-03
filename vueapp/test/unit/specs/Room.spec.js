@@ -2,7 +2,7 @@ import Room from '@/components/Room'
 import { mount, config, createLocalVue } from '@vue/test-utils'
 
 let stepsToCall = {
-  'room-join-socket': false
+  'join-room-socket': false
 }
 
 let mockRoomSlug = 'the-room-slug'
@@ -23,7 +23,7 @@ config.mocks = {
       socket: {
         id: 'n7BGXs8MCOWDd3hvAAAR',
         on: (action) => {
-          if (action === 'room-join-result') {
+          if (action === 'join-room-result') {
             return {
               data: {
                 roomSlug: mockRoomSlug
@@ -31,9 +31,9 @@ config.mocks = {
             }
           }
         },
-        emit: (event, data = {}) => {
-          if (event === 'room-join' && data.roomSlug === mockRoomSlug) {
-            stepsToCall['room-join-socket'] = true
+        emit: (event, roomSlug = {}) => {
+          if (event === 'join-room' && roomSlug === mockRoomSlug) {
+            stepsToCall['join-room-socket'] = true
           }
         }
       },
@@ -46,7 +46,7 @@ describe('Room.vue', () => {
   const wrapper = mount(Room, { localVue })
 
   it('should emit a socket when mounted', () => {
-    expect(stepsToCall['room-join-socket']).toBe(true)
+    expect(stepsToCall['join-room-socket']).toBe(true)
   })
 
   it('should show the LobbySection component', () => {

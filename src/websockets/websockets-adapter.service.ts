@@ -15,7 +15,7 @@ export class WebsocketsAdapterService {
     if (!data.name || !data.color) {
       return {
         success: false,
-        error: 'Empty name or color',
+        error: 'empty-name-or-color',
       };
     }
 
@@ -30,7 +30,7 @@ export class WebsocketsAdapterService {
       } catch (error) {
         return {
           success: false,
-          error: 'Error while initializing player',
+          error: 'player-init-error',
         };
       }
 
@@ -64,14 +64,14 @@ export class WebsocketsAdapterService {
     if (!existingPlayer) {
       return {
         success: false,
-        error: 'Wrong player ID',
+        error: 'wrong-player-id',
       };
     }
 
     if (this.roomsPlayersAssociation.isPlayerInARoom(playerId)) {
       return {
         success: false,
-        error: 'Player already in a room',
+        error: 'player-already-in-a-room',
       };
     }
 
@@ -80,6 +80,48 @@ export class WebsocketsAdapterService {
       return {
         success: true,
         data: { roomSlug },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  joinRoom(playerId: string, roomSlug: string) {
+    const existingPlayer = this.playersService.findById(playerId);
+    if (!existingPlayer) {
+      return {
+        success: false,
+        error: 'wrong-player-id',
+      };
+    }
+
+    if (this.roomsPlayersAssociation.isPlayerInARoom(playerId)) {
+      return {
+        success: false,
+        error: 'player-already-in-a-room',
+      };
+    }
+
+    const room = this.roomsService.findBySlug(roomSlug);
+    if (!room) {
+      return {
+        success: false,
+        error: 'wrong-room-slug',
+      };
+    }
+
+    try {
+      this.roomsPlayersAssociation.addPlayerToRoom(existingPlayer, roomSlug);
+      return {
+        success: true,
+        data: {
+          roomSlug,
+          roomName: room.name,
+          gameStatus: 'waiting', // TODO: dynamic value
+        },
       };
     } catch (error) {
       return {

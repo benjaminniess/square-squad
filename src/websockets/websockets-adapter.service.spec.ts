@@ -23,7 +23,6 @@ const validPlayer2 = {
 };
 
 const validRoom = {
-  id: 'room1234',
   name: 'Room 1',
   slug: 'room-1',
 };
@@ -74,7 +73,7 @@ describe('Player add and update', () => {
     });
 
     expect(playerAdd).toStrictEqual({
-      error: 'Empty name or color',
+      error: 'empty-name-or-color',
       success: false,
     });
     expect(playersService.findAll()).toHaveLength(0);
@@ -87,7 +86,7 @@ describe('Player add and update', () => {
     });
 
     expect(playerAdd).toStrictEqual({
-      error: 'Empty name or color',
+      error: 'empty-name-or-color',
       success: false,
     });
     expect(playersService.findAll()).toHaveLength(0);
@@ -125,7 +124,7 @@ describe('Rooms add and update', () => {
     const roomAdd = service.createRoom('fakeID123', validRoom.name);
 
     expect(roomAdd).toStrictEqual({
-      error: 'Wrong player ID',
+      error: 'wrong-player-id',
       success: false,
     });
   });
@@ -136,12 +135,12 @@ describe('Rooms add and update', () => {
       color: validPlayer.color,
     });
     roomsService.create(validRoom.name);
-    roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.id);
+    roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
 
     const roomAdd = service.createRoom(validPlayer.id, validRoom.name);
 
     expect(roomAdd).toStrictEqual({
-      error: 'Player already in a room',
+      error: 'player-already-in-a-room',
       success: false,
     });
   });
@@ -190,6 +189,66 @@ describe('Rooms add and update', () => {
     expect(roomAdd).toStrictEqual({
       error: 'room-already-exists',
       success: false,
+    });
+  });
+});
+
+describe('Rooms join', () => {
+  it('should refuse to join a room with a wrong player socket ID', () => {
+    const roomJoin = service.joinRoom('fakeID123', validRoom.name);
+
+    expect(roomJoin).toStrictEqual({
+      error: 'wrong-player-id',
+      success: false,
+    });
+  });
+
+  it('should refuse to join a room with player ID already in a room', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+    roomsService.create(validRoom.name);
+    roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
+
+    const roomAdd = service.createRoom(validPlayer.id, validRoom.name);
+
+    expect(roomAdd).toStrictEqual({
+      error: 'player-already-in-a-room',
+      success: false,
+    });
+  });
+
+  it('should refuse to join a room with a wrong slug', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+
+    const roomAdd = service.joinRoom(validPlayer.id, 'fake-slug');
+
+    expect(roomAdd).toStrictEqual({
+      error: 'wrong-room-slug',
+      success: false,
+    });
+  });
+
+  it('should join a room when a correct room name is provided', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+    service.createRoom(validPlayer.id, validRoom.name);
+
+    const roomAdd = service.joinRoom(validPlayer.id, validRoom.slug);
+
+    expect(roomAdd).toStrictEqual({
+      success: true,
+      data: {
+        gameStatus: 'waiting',
+        roomName: 'Room 1',
+        roomSlug: 'room-1',
+      },
     });
   });
 });

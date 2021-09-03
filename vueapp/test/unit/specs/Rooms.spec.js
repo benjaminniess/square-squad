@@ -13,7 +13,7 @@ config.mocks['$store'] = {
       emit: (event, data = {}) => {
         if (event === 'rooms-refresh') {
           refreshEventHasBeenCalled = true
-        } else if (event === 'rooms-create') {
+        } else if (event === 'create-room') {
           roomCreateHasBeenCalled = true
           newRoomName = data
         }
