@@ -3,6 +3,6 @@ import { Room } from './room.interface';
 export interface RoomsServiceInterface {
   findAll(): Room[];
   findBySlug(string): Room | null;
-  create(Room);
+  create(string): string;
   deleteFromSlug(string);
 }
