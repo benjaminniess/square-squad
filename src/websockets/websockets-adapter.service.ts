@@ -130,4 +130,8 @@ export class WebsocketsAdapterService {
       };
     }
   }
+
+  findAllRooms() {
+    return { success: true, data: this.roomsService.findAll() };
+  }
 }

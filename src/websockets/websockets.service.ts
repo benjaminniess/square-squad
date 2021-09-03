@@ -49,4 +49,12 @@ export class WebsocketsService implements OnGatewayDisconnect {
       this.websocketsAdapter.joinRoom(client.id, roomSlug),
     );
   }
+
+  @SubscribeMessage('rooms-refresh')
+  handleRoomsRefresh(
+    @MessageBody() roomSlug: string,
+    @ConnectedSocket() client: any,
+  ): void {
+    client.emit('rooms-refresh-result', this.websocketsAdapter.findAllRooms());
+  }
 }

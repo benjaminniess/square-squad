@@ -252,3 +252,22 @@ describe('Rooms join', () => {
     });
   });
 });
+
+describe('Rooms refresh', () => {
+  it('should send an empty rooms list while there is no room', () => {
+    const roomsList = service.findAllRooms();
+
+    expect(roomsList).toStrictEqual([]);
+  });
+
+  it('should send an rooms list with a freshly created room', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+    service.createRoom(validPlayer.id, validRoom.name);
+    const roomsList = service.findAllRooms();
+
+    expect(roomsList).toStrictEqual([validRoom]);
+  });
+});
