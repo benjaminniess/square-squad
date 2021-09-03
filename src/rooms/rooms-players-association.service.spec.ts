@@ -75,4 +75,13 @@ describe('RoomsPlayerAssociationService', () => {
     service.removeAllPlayersInRoom(validRoom.id);
     expect(service.findAllPlayersInRoom(validRoom.id)).toStrictEqual([]);
   });
+
+  it('should say that the player is already in a room', () => {
+    service.addPlayerToRoom(validPlayer, validRoom.id);
+    expect(service.isPlayerInARoom(validPlayer.id)).toBe(true);
+  });
+
+  it('should say that the player is not in a room yet', () => {
+    expect(service.isPlayerInARoom(validPlayer.id)).toBe(false);
+  });
 });

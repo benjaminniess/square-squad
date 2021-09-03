@@ -64,6 +64,10 @@ export class RoomsPlayersAssociationService
     this.associations[roomKey].players = [];
   }
 
+  isPlayerInARoom(playerId: string): boolean {
+    return this.getPlayerRoomAssociationKey(playerId) !== null;
+  }
+
   private getRoomAssociationKey(roomId: string): number | null {
     let associationKey = null;
 
