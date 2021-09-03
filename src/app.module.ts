@@ -18,7 +18,7 @@ import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter
     PlayersModule,
     RoomsModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '/../../vueapp/dist'),
+      rootPath: join(__dirname, '/../vueapp/dist'),
     }),
     HelpersModule,
   ],
