@@ -3,9 +3,12 @@ import { RoomsService } from '../rooms/rooms.service';
 import { PlayersService } from '../players/players.service';
 import { WebsocketsAdapterService } from './websockets-adapter.service';
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
+import { HelpersModule } from '../helpers/helpers.module';
 
 let service: WebsocketsAdapterService;
 let playersService: PlayersService;
+let roomsService: RoomsService;
+let roomsPlayersAssociationService: RoomsPlayersAssociationService;
 
 const validPlayer = {
   id: '123456abc',
@@ -19,8 +22,15 @@ const validPlayer2 = {
   color: '#FF0000',
 };
 
+const validRoom = {
+  id: 'room1234',
+  name: 'Room 1',
+  slug: 'room-1',
+};
+
 beforeEach(async () => {
   const module: TestingModule = await Test.createTestingModule({
+    imports: [HelpersModule],
     providers: [
       WebsocketsAdapterService,
       PlayersService,
@@ -31,6 +41,10 @@ beforeEach(async () => {
 
   service = module.get<WebsocketsAdapterService>(WebsocketsAdapterService);
   playersService = module.get<PlayersService>(PlayersService);
+  roomsService = module.get<RoomsService>(RoomsService);
+  roomsPlayersAssociationService = module.get<RoomsPlayersAssociationService>(
+    RoomsPlayersAssociationService,
+  );
 });
 
 describe('WebsocketsAdapterService', () => {
@@ -103,5 +117,79 @@ describe('Player add and update', () => {
     expect(playerUpdate).toStrictEqual({ success: true });
     expect(playersService.findAll()[0].nickName).toBe('New name');
     expect(playersService.findAll()[0].color).toBe('#000000');
+  });
+});
+
+describe('Rooms add and update', () => {
+  it('should refuse to add a room with a wrong player socket ID', () => {
+    const roomAdd = service.createRoom('fakeID123', validRoom.name);
+
+    expect(roomAdd).toStrictEqual({
+      error: 'Wrong player ID',
+      success: false,
+    });
+  });
+
+  it('should refuse to add a room with player ID already in a room', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+    roomsService.create(validRoom.name);
+    roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.id);
+
+    const roomAdd = service.createRoom(validPlayer.id, validRoom.name);
+
+    expect(roomAdd).toStrictEqual({
+      error: 'Player already in a room',
+      success: false,
+    });
+  });
+
+  it('should refuse to add a room with an empty name', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+
+    const roomAdd = service.createRoom(validPlayer.id, '');
+
+    expect(roomAdd).toStrictEqual({
+      error: 'room-name-empty',
+      success: false,
+    });
+  });
+
+  it('should create a room when a correct room name is provided', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+
+    const roomAdd = service.createRoom(validPlayer.id, validRoom.name);
+
+    expect(roomAdd).toStrictEqual({
+      success: true,
+      data: { roomSlug: validRoom.slug },
+    });
+  });
+
+  it('should refuse to create a room when a slug already exists', () => {
+    service.updatePlayer(validPlayer.id, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
+    service.createRoom(validPlayer.id, validRoom.name);
+
+    service.updatePlayer(validPlayer2.id, {
+      name: validPlayer2.nickName,
+      color: validPlayer2.color,
+    });
+    const roomAdd = service.createRoom(validPlayer2.id, validRoom.name);
+
+    expect(roomAdd).toStrictEqual({
+      error: 'room-already-exists',
+      success: false,
+    });
   });
 });

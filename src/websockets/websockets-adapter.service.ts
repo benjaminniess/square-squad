@@ -58,4 +58,34 @@ export class WebsocketsAdapterService {
       return false;
     }
   }
+
+  createRoom(playerId: string, roomName: string) {
+    const existingPlayer = this.playersService.findById(playerId);
+    if (!existingPlayer) {
+      return {
+        success: false,
+        error: 'Wrong player ID',
+      };
+    }
+
+    if (this.roomsPlayersAssociation.isPlayerInARoom(playerId)) {
+      return {
+        success: false,
+        error: 'Player already in a room',
+      };
+    }
+
+    try {
+      const roomSlug = this.roomsService.create(roomName);
+      return {
+        success: true,
+        data: { roomSlug },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
 }

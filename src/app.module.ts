@@ -10,6 +10,7 @@ import { WebsocketsService } from './websockets/websockets.service';
 import { PlayersService } from './players/players.service';
 import { RoomsService } from './rooms/rooms.service';
 import { WebsocketsAdapterService } from './websockets/websockets-adapter.service';
+import { HelpersModule } from './helpers/helpers.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { WebsocketsAdapterService } from './websockets/websockets-adapter.servic
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '/../../vueapp/dist'),
     }),
+    HelpersModule,
   ],
   controllers: [AppController],
   providers: [

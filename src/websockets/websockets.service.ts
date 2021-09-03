@@ -27,4 +27,15 @@ export class WebsocketsService implements OnGatewayDisconnect {
       this.websocketsAdapter.updatePlayer(client.id, data),
     );
   }
+
+  @SubscribeMessage('create-room')
+  handleCreateRoom(
+    @MessageBody() roomName: string,
+    @ConnectedSocket() client: any,
+  ): void {
+    client.emit(
+      'create-room-result',
+      this.websocketsAdapter.createRoom(client.id, roomName),
+    );
+  }
 }

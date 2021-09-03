@@ -1,5 +1,6 @@
 import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { HelpersModule } from '../helpers/helpers.module';
 import { RoomsService } from './rooms.service';
 
 describe('RoomsService', () => {
@@ -17,6 +18,7 @@ describe('RoomsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [HelpersModule],
       providers: [RoomsService],
     }).compile();
 
@@ -32,34 +34,34 @@ describe('RoomsService', () => {
   });
 
   it('should show a rooms list with a size of 1 from the findAll method after creating a new room', () => {
-    service.create(validRoom);
+    service.create(validRoom.name);
     expect(service.findAll()).toHaveLength(1);
   });
 
   it('should retrive a freshliy creater room from the findBySlug method', () => {
-    service.create(validRoom);
+    service.create(validRoom.name);
     expect(service.findBySlug(validRoom.slug)).not.toBeNull();
   });
 
   it('should show a rooms list with a size of 2 from the findAll method after creating 2 rooms in a row', () => {
-    service.create(validRoom);
-    service.create(validRoom2);
+    service.create(validRoom.name);
+    service.create(validRoom2.name);
 
     expect(service.findAll()).toHaveLength(2);
   });
 
   it('should throw an error while trying to create a room with an existing slug', () => {
-    service.create(validRoom);
+    service.create(validRoom.name);
     try {
-      service.create(validRoom);
+      service.create(validRoom.name);
     } catch (exception) {
       expect(exception.message).toBe('room-already-exists');
     }
   });
 
   it('should delete a room from its slug', () => {
-    service.create(validRoom);
-    service.create(validRoom2);
+    service.create(validRoom.name);
+    service.create(validRoom2.name);
     service.deleteFromSlug(validRoom.slug);
     expect(service.findAll()).toHaveLength(1);
     expect(service.findAll()[0].slug).toBe(validRoom2.slug);

@@ -105,7 +105,7 @@ export default {
     })
 
     // SOCKET CALLBACK: The room creation result
-    this.$store.state.socket.on('rooms-create-result', (result) => {
+    this.$store.state.socket.on('create-room-result', (result) => {
       if (!result.success) {
         this.goToHome()
         return
@@ -124,7 +124,7 @@ export default {
   },
   destroyed() {
     this.$store.state.socket.off('rooms-refresh-result')
-    this.$store.state.socket.off('rooms-create-result')
+    this.$store.state.socket.off('create-room-result')
   },
   components: {
     Logo,
@@ -143,7 +143,7 @@ export default {
       this.$store.state.socket.emit('rooms-refresh')
     },
     checkForm() {
-      this.$store.state.socket.emit('rooms-create', this.newRoomName)
+      this.$store.state.socket.emit('create-room', this.newRoomName)
     },
     goToRoom(slug) {
       this.$router.push('/rooms/' + slug)
