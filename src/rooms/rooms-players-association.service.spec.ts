@@ -70,6 +70,12 @@ describe('RoomsPlayerAssociationService', () => {
     expect(service.findAllPlayersInRoom(validRoom.slug)).toStrictEqual([]);
   });
 
+  it('should returns an empty players list after adding and removing a player globally from all rooms', () => {
+    service.addPlayerToRoom(validPlayer, validRoom.slug);
+    service.removePlayerFromRooms(validPlayer.id);
+    expect(service.findAllPlayersInRoom(validRoom.slug)).toStrictEqual([]);
+  });
+
   it('should remove both players from room', () => {
     service.addPlayerToRoom(validPlayer, validRoom.slug);
     service.addPlayerToRoom(validPlayer2, validRoom.slug);

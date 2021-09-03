@@ -237,20 +237,3 @@ describe('Rooms refresh', () => {
     expect(roomsList).toStrictEqual({ success: true, data: [validRoom] });
   });
 });
-
-describe('Socket login/loggout - Rooms', () => {
-  it('should remove the user from its current room', () => {
-    websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-      name: validPlayer.nickName,
-      color: validPlayer.color,
-    });
-    websocketAdapterRoomService.createRoom(validPlayer.id, validRoom.name);
-    websocketAdapterRoomService.joinRoom(validPlayer.id, validRoom.slug);
-
-    roomsPlayersAssociationService.removePlayerFromRooms(validPlayer.id);
-
-    expect(
-      roomsPlayersAssociationService.findAllPlayersInRoom(validRoom.slug),
-    ).toStrictEqual([]);
-  });
-});
