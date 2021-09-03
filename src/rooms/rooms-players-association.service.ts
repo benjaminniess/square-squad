@@ -55,6 +55,12 @@ export class RoomsPlayersAssociationService
     });
   }
 
+  removePlayerFromRooms(playerId: string) {
+    this.associations.map((association) => {
+      this.removePlayerFromRoom(playerId, association.roomSlug);
+    });
+  }
+
   removeAllPlayersInRoom(roomSlug: string) {
     const roomKey = this.getRoomAssociationKey(roomSlug);
     if (roomKey === null) {

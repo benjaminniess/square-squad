@@ -18,6 +18,7 @@ export class WebsocketsService implements OnGatewayDisconnect {
   ) {}
 
   handleDisconnect(@ConnectedSocket() client: any) {
+    this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
     this.websocketsAdapterPlayers.deletePlayer(client.id);
   }
 

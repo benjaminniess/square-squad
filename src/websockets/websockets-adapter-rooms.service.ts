@@ -86,4 +86,8 @@ export class WebsocketsAdapterRoomsService {
   findAllRooms() {
     return { success: true, data: this.roomsService.findAll() };
   }
+
+  removePlayerFromRooms(playerId: string) {
+    this.roomsPlayersAssociation.removePlayerFromRooms(playerId);
+  }
 }
