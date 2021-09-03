@@ -24,6 +24,19 @@ export class RoomsPlayersAssociationService
     return foundPlayers;
   }
 
+  findEmptyRoomsSlugs(): string[] {
+    const roomSlugs = [];
+    this.associations.map((association) => {
+      if (association.players.length > 0) {
+        return;
+      }
+
+      roomSlugs.push(association.roomSlug);
+    });
+
+    return roomSlugs;
+  }
+
   addPlayerToRoom(player: Player, roomSlug: string) {
     if (this.getPlayerRoomAssociationKey(player.id) !== null) {
       throw new ConflictException('player-already-in-room');

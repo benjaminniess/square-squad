@@ -91,4 +91,11 @@ describe('RoomsPlayerAssociationService', () => {
   it('should say that the player is not in a room yet', () => {
     expect(service.isPlayerInARoom(validPlayer.id)).toBe(false);
   });
+
+  it('should returns a list of empty rooms after a player has left the room', () => {
+    service.addPlayerToRoom(validPlayer, validRoom.slug);
+    service.removePlayerFromRoom(validPlayer.id, validRoom.slug);
+
+    expect(service.findEmptyRoomsSlugs()).toStrictEqual([validRoom.slug]);
+  });
 });

@@ -153,12 +153,12 @@ export default {
   destroyed() {
     // Not to have double listener next time the component is mounted
     this.$store.state.socket.off('refresh-players')
-    this.$store.state.socket.off('join-roomed')
+    this.$store.state.socket.off('join-room')
     this.$store.state.socket.off('start-game-result')
     this.$store.state.socket.off('countdown-update')
     this.$store.state.socket.off('in-game-countdown-update')
 
-    this.$store.state.socket.emit('room-leave')
+    this.$store.state.socket.emit('leave-room')
   }
 }
 </script>

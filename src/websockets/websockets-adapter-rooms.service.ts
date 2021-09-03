@@ -90,4 +90,12 @@ export class WebsocketsAdapterRoomsService {
   removePlayerFromRooms(playerId: string) {
     this.roomsPlayersAssociation.removePlayerFromRooms(playerId);
   }
+
+  removeEmptyRooms() {
+    this.roomsPlayersAssociation.findEmptyRoomsSlugs().map((roomSlug) => {
+      try {
+        this.roomsService.deleteFromSlug(roomSlug);
+      } catch (error) {}
+    });
+  }
 }

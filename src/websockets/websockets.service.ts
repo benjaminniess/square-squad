@@ -55,6 +55,15 @@ export class WebsocketsService implements OnGatewayDisconnect {
     );
   }
 
+  @SubscribeMessage('leave-room')
+  handleLeaveRoom(
+    @MessageBody() roomSlug: string,
+    @ConnectedSocket() client: any,
+  ): void {
+    this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
+    this.websocketsAdapterRooms.removeEmptyRooms();
+  }
+
   @SubscribeMessage('rooms-refresh')
   handleRoomsRefresh(
     @MessageBody() roomSlug: string,
