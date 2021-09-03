@@ -10,11 +10,11 @@ export class RoomsService implements RoomsServiceInterface {
     return this.rooms;
   }
 
-  findById(id: string) {
+  findBySlug(slug: string) {
     let foundRoom: Room | null = null;
 
     this.rooms.map((room) => {
-      if (room.id === id) {
+      if (room.slug === slug) {
         foundRoom = room;
       }
     });
@@ -23,19 +23,19 @@ export class RoomsService implements RoomsServiceInterface {
   }
 
   create(room: Room) {
-    if (this.findById(room.id) !== null) {
+    if (this.findBySlug(room.slug) !== null) {
       throw new ConflictException('room-already-exists');
     }
     this.rooms.push(room);
   }
 
-  deleteFromId(id: string) {
-    if (this.findById(id) === null) {
+  deleteFromSlug(slug: string) {
+    if (this.findBySlug(slug) === null) {
       throw new ConflictException('room-does-not-exist');
     }
 
     this.rooms.map((room, key) => {
-      if (room.id !== id) {
+      if (room.slug !== slug) {
         return;
       }
 

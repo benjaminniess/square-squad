@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { Player } from 'src/players/player.interface';
 
 type roomPlayersAssociation = {
-  roomId: string;
+  roomSlug: string;
   players: Player[];
 };
 
@@ -11,11 +11,11 @@ export class RoomsPlayersAssociationService
   implements RoomsPlayersAssociationService {
   private associations: roomPlayersAssociation[] = [];
 
-  findAllPlayersInRoom(roomId: string): Player[] {
+  findAllPlayersInRoom(roomSlug: string): Player[] {
     let foundPlayers: Player[] = [];
 
     this.associations.map((association) => {
-      if (association.roomId !== roomId) {
+      if (association.roomSlug !== roomSlug) {
         return;
       }
       foundPlayers = association.players;
@@ -24,15 +24,15 @@ export class RoomsPlayersAssociationService
     return foundPlayers;
   }
 
-  addPlayerToRoom(player: Player, roomId: string) {
+  addPlayerToRoom(player: Player, roomSlug: string) {
     if (this.getPlayerRoomAssociationKey(player.id) !== null) {
       throw new ConflictException('player-already-in-room');
     }
 
-    const associationKey = this.getRoomAssociationKey(roomId);
+    const associationKey = this.getRoomAssociationKey(roomSlug);
     if (associationKey === null) {
       this.associations.push({
-        roomId: roomId,
+        roomSlug: roomSlug,
         players: [player],
       });
     } else {
@@ -40,8 +40,8 @@ export class RoomsPlayersAssociationService
     }
   }
 
-  removePlayerFromRoom(playerId: string, roomId: string) {
-    const roomKey = this.getRoomAssociationKey(roomId);
+  removePlayerFromRoom(playerId: string, roomSlug: string) {
+    const roomKey = this.getRoomAssociationKey(roomSlug);
     if (roomKey === null) {
       throw new ConflictException('room-does-not-exist');
     }
@@ -55,8 +55,8 @@ export class RoomsPlayersAssociationService
     });
   }
 
-  removeAllPlayersInRoom(roomId: string) {
-    const roomKey = this.getRoomAssociationKey(roomId);
+  removeAllPlayersInRoom(roomSlug: string) {
+    const roomKey = this.getRoomAssociationKey(roomSlug);
     if (roomKey === null) {
       throw new ConflictException('room-does-not-exist');
     }
@@ -68,11 +68,11 @@ export class RoomsPlayersAssociationService
     return this.getPlayerRoomAssociationKey(playerId) !== null;
   }
 
-  private getRoomAssociationKey(roomId: string): number | null {
+  private getRoomAssociationKey(roomSlug: string): number | null {
     let associationKey = null;
 
     this.associations.map((association, arrayKey) => {
-      if (association.roomId !== roomId) {
+      if (association.roomSlug !== roomSlug) {
         return;
       }
       associationKey = arrayKey;

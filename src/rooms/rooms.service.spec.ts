@@ -6,13 +6,11 @@ describe('RoomsService', () => {
   let service: RoomsService;
 
   const validRoom = {
-    id: 'aaa789',
     name: 'Room 1',
     slug: 'room-1',
   };
 
   const validRoom2 = {
-    id: 'bbb123',
     name: 'Room 2',
     slug: 'room-2',
   };
@@ -38,9 +36,9 @@ describe('RoomsService', () => {
     expect(service.findAll()).toHaveLength(1);
   });
 
-  it('should retrive a freshliy creater room from the findById method', () => {
+  it('should retrive a freshliy creater room from the findBySlug method', () => {
     service.create(validRoom);
-    expect(service.findById(validRoom.id)).not.toBeNull();
+    expect(service.findBySlug(validRoom.slug)).not.toBeNull();
   });
 
   it('should show a rooms list with a size of 2 from the findAll method after creating 2 rooms in a row', () => {
@@ -50,7 +48,7 @@ describe('RoomsService', () => {
     expect(service.findAll()).toHaveLength(2);
   });
 
-  it('should throw an error while trying to create a room with an existing ID', () => {
+  it('should throw an error while trying to create a room with an existing slug', () => {
     service.create(validRoom);
     try {
       service.create(validRoom);
@@ -59,18 +57,18 @@ describe('RoomsService', () => {
     }
   });
 
-  it('should delete a room from its ID', () => {
+  it('should delete a room from its slug', () => {
     service.create(validRoom);
     service.create(validRoom2);
-    service.deleteFromId(validRoom.id);
+    service.deleteFromSlug(validRoom.slug);
     expect(service.findAll()).toHaveLength(1);
-    expect(service.findAll()[0].id).toBe(validRoom2.id);
+    expect(service.findAll()[0].slug).toBe(validRoom2.slug);
   });
 
   it('should throw an error while trying to delete an inexisting room', () => {
     expect.assertions(1);
     try {
-      service.deleteFromId(validRoom.id);
+      service.deleteFromSlug(validRoom.slug);
     } catch (exception) {
       expect(exception.message).toBe('room-does-not-exist');
     }
