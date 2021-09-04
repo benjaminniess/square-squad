@@ -12,6 +12,7 @@ import { RoomsService } from './rooms/rooms.service';
 import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-rooms.service';
 import { HelpersModule } from './helpers/helpers.module';
 import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter-players.service';
+import { RoomsLeadersService } from './rooms/rooms-leaders.service';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter
     RoomsService,
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
+    RoomsLeadersService,
   ],
 })
 export class AppModule {}

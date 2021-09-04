@@ -5,12 +5,14 @@ import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.servic
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
 import { HelpersModule } from '../helpers/helpers.module';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
+import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 
 let websocketAdapterRoomService: WebsocketsAdapterRoomsService;
 let websocketAdapterPlayersService: WebsocketsAdapterPlayersService;
 let playersService: PlayersService;
 let roomsService: RoomsService;
 let roomsPlayersAssociationService: RoomsPlayersAssociationService;
+let roomsLeadersService: RoomsLeadersService;
 
 const validPlayer = {
   id: '123456abc',
@@ -38,6 +40,7 @@ beforeEach(async () => {
       PlayersService,
       RoomsService,
       RoomsPlayersAssociationService,
+      RoomsLeadersService,
     ],
   }).compile();
 
@@ -52,6 +55,7 @@ beforeEach(async () => {
   roomsPlayersAssociationService = module.get<RoomsPlayersAssociationService>(
     RoomsPlayersAssociationService,
   );
+  roomsLeadersService = module.get<RoomsLeadersService>(RoomsLeadersService);
 });
 
 describe('WebsocketsAdapterRoomsService', () => {
@@ -216,6 +220,18 @@ describe('Rooms join', () => {
         roomSlug: 'room-1',
       },
     });
+  });
+
+  it('automatically set the new player as leader when no leader is defined', () => {
+    playersService.create(validPlayer);
+    roomsService.create(validRoom.slug);
+    roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
+
+    websocketAdapterRoomService.maybeResetLeader(validRoom.slug);
+
+    expect(roomsLeadersService.getLeaderForRoom(validRoom.slug)).toStrictEqual(
+      validPlayer,
+    );
   });
 });
 

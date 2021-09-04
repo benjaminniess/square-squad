@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 import { PlayersService } from '../players/players.service';
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
 import { RoomsService } from '../rooms/rooms.service';
@@ -9,6 +10,7 @@ export class WebsocketsAdapterRoomsService {
     private playersService: PlayersService,
     private roomsService: RoomsService,
     private roomsPlayersAssociation: RoomsPlayersAssociationService,
+    private roomsLeadersAssociation: RoomsLeadersService,
   ) {}
 
   createRoom(playerId: string, roomName: string) {
@@ -97,5 +99,21 @@ export class WebsocketsAdapterRoomsService {
         this.roomsService.deleteFromSlug(roomSlug);
       } catch (error) {}
     });
+  }
+
+  maybeResetLeader(roomSlug: string) {
+    if (this.roomsLeadersAssociation.getLeaderForRoom(roomSlug) !== null) {
+      return;
+    }
+
+    const roomPlayers = this.roomsPlayersAssociation.findAllPlayersInRoom(
+      roomSlug,
+    );
+
+    if (roomPlayers.length === 0) {
+      return;
+    }
+
+    this.roomsLeadersAssociation.setLeaderForRoom(roomPlayers[0], roomSlug);
   }
 }
