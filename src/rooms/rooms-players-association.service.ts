@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { Player } from 'src/players/player.interface';
+import { Player } from '../players/player.interface';
 
 type roomPlayersAssociation = {
   roomSlug: string;
