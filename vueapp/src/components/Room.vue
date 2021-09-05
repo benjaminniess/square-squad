@@ -8,6 +8,10 @@
         style="width: 100%; height: 100%;"
       ></canvas>
     </div>
+    <p v-show="status == 'joining'">Joining room...</p>
+    <SimpleMessage
+      :messageContent="'Joining room ' + room.roomName + '...'"
+    ></SimpleMessage>
     <LobbySection
       v-bind:players="players"
       v-bind:room="room"
@@ -38,6 +42,7 @@ import GameSection from './GameSection'
 import RankSection from './RankSection'
 import Logo from './common/Logo'
 import Footer from './common/Footer'
+import SimpleMessage from './SimpleMessage'
 
 export default {
   name: 'App',
@@ -46,7 +51,8 @@ export default {
     GameSection,
     RankSection,
     Logo,
-    Footer
+    Footer,
+    SimpleMessage
   },
   data() {
     return {

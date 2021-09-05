@@ -65,7 +65,7 @@ function bootVueApp(envData) {
 
   Vue.prototype.$globalEnv = {
     version: packageJson.version,
-    homeUrl,
+    homeUrl
   }
 
   const store = new Vuex.Store({
@@ -73,7 +73,7 @@ function bootVueApp(envData) {
       socket,
       playerData: null,
       gameID: 'panic-attack',
-      gameStatus: 'waiting',
+      gameStatus: 'joining',
       gameOptions: {
         roundsNumber: 3,
         obstaclesSpeed: 10,
