@@ -252,3 +252,24 @@ describe('Rooms refresh', () => {
     expect(roomsList).toStrictEqual({ success: true, data: [validRoom] });
   });
 });
+
+describe('Rooms players', () => {
+  it('send the room players list', () => {
+    playersService.create(validPlayer);
+    playersService.create(validPlayer2);
+
+    roomsService.create(validRoom.slug);
+
+    roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
+    roomsPlayersAssociationService.addPlayerToRoom(
+      validPlayer2,
+      validRoom.slug,
+    );
+
+    roomsLeadersService.setLeaderForRoom(validPlayer, validRoom.slug);
+
+    expect(
+      websocketAdapterRoomService.getRoomPlayers(validRoom.slug),
+    ).toStrictEqual([validPlayer, validPlayer2]);
+  });
+});

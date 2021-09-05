@@ -5,7 +5,9 @@ import {
   WebSocketGateway,
   ConnectedSocket,
   OnGatewayDisconnect,
+  WebSocketServer,
 } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
 import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
 
@@ -16,6 +18,9 @@ export class WebsocketsService implements OnGatewayDisconnect {
     private websocketsAdapterPlayers: WebsocketsAdapterPlayersService,
     private websocketsAdapterRooms: WebsocketsAdapterRoomsService,
   ) {}
+
+  @WebSocketServer()
+  server: Server;
 
   handleDisconnect(@ConnectedSocket() client: any) {
     this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
@@ -49,11 +54,25 @@ export class WebsocketsService implements OnGatewayDisconnect {
     @MessageBody() roomSlug: string,
     @ConnectedSocket() client: any,
   ): void {
-    client.emit(
-      'join-room-result',
-      this.websocketsAdapterRooms.joinRoom(client.id, roomSlug),
+    const roomJoinResult = this.websocketsAdapterRooms.joinRoom(
+      client.id,
+      roomSlug,
     );
+
+    client.emit('join-room-result', roomJoinResult);
+    if (roomJoinResult.success !== true) {
+      return;
+    }
+
     this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
+    client.emit('refresh-game-status', { gameStatus: 'waiting' });
+    client.join(roomSlug);
+    this.server
+      .to(roomSlug)
+      .emit(
+        'refresh-players',
+        this.websocketsAdapterRooms.getRoomPlayers(roomSlug),
+      );
   }
 
   @SubscribeMessage('leave-room')

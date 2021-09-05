@@ -3,6 +3,7 @@ import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 import { PlayersService } from '../players/players.service';
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
 import { RoomsService } from '../rooms/rooms.service';
+import { Player } from '../players/player.interface';
 
 @Injectable()
 export class WebsocketsAdapterRoomsService {
@@ -114,5 +115,9 @@ export class WebsocketsAdapterRoomsService {
     }
 
     this.roomsLeadersAssociation.setLeaderForRoom(roomPlayers[0], roomSlug);
+  }
+
+  getRoomPlayers(roomSlug: string): Player[] {
+    return this.roomsPlayersAssociation.findAllPlayersInRoom(roomSlug);
   }
 }
