@@ -8,8 +8,8 @@
         style="width: 100%; height: 100%;"
       ></canvas>
     </div>
-    <p v-show="status == 'joining'">Joining room...</p>
     <SimpleMessage
+      v-show="status == 'joining'"
       :messageContent="'Joining room ' + room.roomName + '...'"
     ></SimpleMessage>
     <LobbySection
@@ -105,6 +105,10 @@ export default {
       } else {
         this.$router.push('/')
       }
+    })
+
+    this.$store.state.socket.on('refresh-game-status', (data) => {
+      this.$store.commit('updateGameStatus', data.gameStatus)
     })
 
     this.$store.state.socket.on('refresh-players', (data) => {
