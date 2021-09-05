@@ -76,20 +76,28 @@ export class WebsocketsService implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage('leave-room')
-  handleLeaveRoom(
-    @MessageBody() roomSlug: string,
-    @ConnectedSocket() client: any,
-  ): void {
+  handleLeaveRoom(@ConnectedSocket() client: any): void {
     this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
-    this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
+
+    client.rooms.forEach((roomSlug) => {
+      if (roomSlug === client.id) {
+        return;
+      }
+
+      this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
+      this.server
+        .to(roomSlug)
+        .emit(
+          'refresh-players',
+          this.websocketsAdapterRooms.getRoomPlayers(roomSlug),
+        );
+    });
+
     this.websocketsAdapterRooms.removeEmptyRooms();
   }
 
   @SubscribeMessage('rooms-refresh')
-  handleRoomsRefresh(
-    @MessageBody() roomSlug: string,
-    @ConnectedSocket() client: any,
-  ): void {
+  handleRoomsRefresh(@ConnectedSocket() client: any): void {
     client.emit(
       'rooms-refresh-result',
       this.websocketsAdapterRooms.findAllRooms(),
