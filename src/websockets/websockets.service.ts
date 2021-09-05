@@ -52,8 +52,8 @@ export class WebsocketsService implements OnGatewayDisconnect {
     client.emit(
       'join-room-result',
       this.websocketsAdapterRooms.joinRoom(client.id, roomSlug),
-      this.websocketsAdapterRooms.maybeResetLeader(roomSlug),
     );
+    this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
   }
 
   @SubscribeMessage('leave-room')
