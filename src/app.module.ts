@@ -13,6 +13,7 @@ import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-r
 import { HelpersModule } from './helpers/helpers.module';
 import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter-players.service';
 import { RoomsLeadersService } from './rooms/rooms-leaders.service';
+import { GamesModule } from './games/games.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RoomsLeadersService } from './rooms/rooms-leaders.service';
       rootPath: join(__dirname, '/../vueapp/dist'),
     }),
     HelpersModule,
+    GamesModule,
   ],
   controllers: [AppController],
   providers: [
