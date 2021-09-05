@@ -74,7 +74,6 @@ export class WebsocketsAdapterRoomsService {
         data: {
           roomSlug,
           roomName: room.name,
-          gameStatus: 'waiting', // TODO: dynamic value
         },
       };
     } catch (error) {

@@ -215,7 +215,6 @@ describe('Rooms join', () => {
     expect(roomAdd).toStrictEqual({
       success: true,
       data: {
-        gameStatus: 'waiting',
         roomName: 'Room 1',
         roomSlug: 'room-1',
       },
