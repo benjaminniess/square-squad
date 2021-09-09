@@ -1,6 +1,5 @@
-import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HelpersModule } from '../helpers/helpers.module';
+import { Helpers } from '../helpers/helpers';
 import { RoomsService } from './rooms.service';
 
 describe('RoomsService', () => {
@@ -18,8 +17,7 @@ describe('RoomsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [HelpersModule],
-      providers: [RoomsService],
+      providers: [RoomsService, Helpers],
     }).compile();
 
     service = module.get<RoomsService>(RoomsService);

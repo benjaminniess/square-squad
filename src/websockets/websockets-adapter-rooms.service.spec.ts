@@ -3,9 +3,9 @@ import { RoomsService } from '../rooms/rooms.service';
 import { PlayersService } from '../players/players.service';
 import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
-import { HelpersModule } from '../helpers/helpers.module';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
 import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
+import { Helpers } from '../helpers/helpers';
 
 let websocketAdapterRoomService: WebsocketsAdapterRoomsService;
 let websocketAdapterPlayersService: WebsocketsAdapterPlayersService;
@@ -33,8 +33,8 @@ const validRoom = {
 
 beforeEach(async () => {
   const module: TestingModule = await Test.createTestingModule({
-    imports: [HelpersModule],
     providers: [
+      Helpers,
       WebsocketsAdapterRoomsService,
       WebsocketsAdapterPlayersService,
       PlayersService,

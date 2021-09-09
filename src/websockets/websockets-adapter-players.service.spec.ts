@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoomsService } from '../rooms/rooms.service';
 import { PlayersService } from '../players/players.service';
 import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
-import { HelpersModule } from '../helpers/helpers.module';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
+import { Helpers } from '../helpers/helpers';
 
 let service: WebsocketsAdapterPlayersService;
 let playersService: PlayersService;
@@ -16,12 +16,12 @@ const validPlayer = {
 
 beforeEach(async () => {
   const module: TestingModule = await Test.createTestingModule({
-    imports: [HelpersModule],
     providers: [
       WebsocketsAdapterPlayersService,
       PlayersService,
       RoomsService,
       RoomsPlayersAssociationService,
+      Helpers,
     ],
   }).compile();
 
