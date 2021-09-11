@@ -11,9 +11,17 @@ import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-r
 import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter-players.service';
 import { RoomsLeadersService } from './rooms/rooms-leaders.service';
 import { Helpers } from './helpers/helpers';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Player } from './players/player.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: ':memory:',
+      entities: [Player],
+      synchronize: true,
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '/../vueapp/dist'),
     }),

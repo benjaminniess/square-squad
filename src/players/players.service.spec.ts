@@ -1,92 +1,134 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { find } from 'rxjs';
+import {
+  createConnection,
+  getConnection,
+  getRepository,
+  Repository,
+} from 'typeorm';
+import { Player } from './player.entity';
 import { PlayersService } from './players.service';
 
 describe('PlayersService', () => {
   let service: PlayersService;
+  let repository: Repository<Player>;
+  const connectionName = 'test';
+
   const validPlayer = {
-    id: '123456abc',
+    socketId: '123456abc',
     nickName: 'tester 1',
     color: '#00FF00',
   };
 
   const validPlayer2 = {
-    id: '78910def',
+    socketId: '78910def',
     nickName: 'tester 2',
     color: '#FF0000',
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [PlayersService],
+    await Test.createTestingModule({
+      providers: [
+        PlayersService,
+        {
+          provide: getRepositoryToken(Player),
+          useClass: Repository,
+        },
+      ],
     }).compile();
 
-    service = module.get<PlayersService>(PlayersService);
+    const connection = await createConnection({
+      type: 'sqlite',
+      database: ':memory:',
+      dropSchema: true,
+      entities: [Player],
+      synchronize: true,
+      logging: false,
+      name: connectionName,
+    });
+
+    repository = getRepository(Player, connectionName);
+    service = new PlayersService(repository);
+
+    return connection;
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  afterEach(async () => {
+    await getConnection(connectionName).close();
   });
 
-  it('should show an empty players list from the findAll method', () => {
-    expect(service.findAll()).toEqual([]);
+  it('should show an empty players list from the findAll method', async () => {
+    expect(await service.findAll()).toEqual([]);
   });
 
-  it('should show a players list with a size of 1 from the findAll method after creating a new player', () => {
-    service.create(validPlayer);
-    expect(service.findAll()).toHaveLength(1);
+  it('should show a players list with a size of 1 from the findAll method after creating a new player', async () => {
+    await service.create(validPlayer);
+    expect(await service.findAll()).toHaveLength(1);
   });
 
-  it('should retrive a freshliy creater player from the findById method', () => {
-    service.create(validPlayer);
-    expect(service.findById(validPlayer.id)).not.toBeNull();
+  it('should retrive a freshliy creater player from the findById method', async () => {
+    await service.create(validPlayer);
+
+    const player = await service.findById(validPlayer.socketId);
+
+    expect(player).toBeInstanceOf(Player);
+    expect(player.socketId).toBe(validPlayer.socketId);
   });
 
-  it('should show a players list with a size of 2 from the findAll method after creating 2 players in a row', () => {
-    service.create(validPlayer);
-    service.create(validPlayer2);
+  it('should show a players list with a size of 2 from the findAll method after creating 2 players in a row', async () => {
+    await service.create(validPlayer);
+    await service.create(validPlayer2);
 
-    expect(service.findAll()).toHaveLength(2);
+    expect(await service.findAll()).toHaveLength(2);
   });
 
-  it('should throw an error while trying to create a player with an existing ID', () => {
+  it('should throw an error while trying to create a player with an existing ID', async () => {
     expect.assertions(1);
-    service.create(validPlayer);
+    await service.create(validPlayer);
     try {
-      service.create(validPlayer);
+      await service.create(validPlayer);
     } catch (exception) {
       expect(exception.message).toBe('player-already-exists');
     }
   });
 
-  it('should update an existing player name', () => {
-    service.create(validPlayer);
-    service.update({ ...validPlayer, nickName: 'Updated nickname' });
+  it('should update an existing player name', async () => {
+    await service.create(validPlayer);
+    await service.update(validPlayer.socketId, {
+      ...validPlayer,
+      nickName: 'Updated nickname',
+    });
 
-    expect(service.findById(validPlayer.id).nickName).toBe('Updated nickname');
+    const player = await service.findById(validPlayer.socketId);
+
+    expect(player.nickName).toBe('Updated nickname');
   });
 
-  it('should throw an error while trying to update a player that is not registered', () => {
+  it('should throw an error while trying to update a player that is not registered', async () => {
     expect.assertions(1);
 
     try {
-      service.update(validPlayer);
+      await service.update(validPlayer.socketId, validPlayer);
     } catch (exception) {
       expect(exception.message).toBe('player-does-not-exist');
     }
   });
 
-  it('should delete a players from its ID', () => {
-    service.create(validPlayer);
-    service.create(validPlayer2);
-    service.deleteFromId(validPlayer.id);
-    expect(service.findAll()).toHaveLength(1);
-    expect(service.findAll()[0].id).toBe(validPlayer2.id);
+  it('should delete a players from its ID', async () => {
+    await service.create(validPlayer);
+    await service.create(validPlayer2);
+    await service.deleteFromId(validPlayer.socketId);
+
+    const allPlayers = await service.findAll();
+    expect(allPlayers).toHaveLength(1);
+    expect(allPlayers[0].socketId).toBe(validPlayer2.socketId);
   });
 
-  it('should throw an error while trying to delete an inexisting player', () => {
+  it('should throw an error while trying to delete an inexisting player', async () => {
     expect.assertions(1);
     try {
-      service.deleteFromId(validPlayer.id);
+      await service.deleteFromId(validPlayer.socketId);
     } catch (exception) {
       expect(exception.message).toBe('player-does-not-exist');
     }

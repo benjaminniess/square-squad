@@ -1,5 +1,5 @@
 export interface PlayerDto {
-  id: string;
+  socketId: string;
   nickName: string;
   color: string;
 }
