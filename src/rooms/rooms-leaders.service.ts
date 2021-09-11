@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Player } from 'src/players/player.interface';
+import { PlayerDto } from 'src/players/player.dto.interface';
 
 type roomLeadersAssociation = {
   roomSlug: string;
-  leader: Player;
+  leader: PlayerDto;
 };
 
 @Injectable()
 export class RoomsLeadersService implements RoomsLeadersService {
   private associations: roomLeadersAssociation[] = [];
 
-  getLeaderForRoom(roomSlug: string): Player | null {
+  getLeaderForRoom(roomSlug: string): PlayerDto | null {
     let player = null;
 
     this.associations.map((association) => {
@@ -24,7 +24,7 @@ export class RoomsLeadersService implements RoomsLeadersService {
     return player;
   }
 
-  setLeaderForRoom(leader: Player, roomSlug: string) {
+  setLeaderForRoom(leader: PlayerDto, roomSlug: string) {
     const associationKey = this.getRoomAssociationKey(roomSlug);
     if (associationKey === null) {
       this.associations.push({ roomSlug, leader });
@@ -43,7 +43,7 @@ export class RoomsLeadersService implements RoomsLeadersService {
     this.associations.splice(associationKey, 1);
   }
 
-  isPlayerLeaderOfRoom(player: Player, roomSlug: string): boolean {
+  isPlayerLeaderOfRoom(player: PlayerDto, roomSlug: string): boolean {
     const associationKey = this.getRoomAssociationKey(roomSlug);
     if (associationKey === null) {
       return false;

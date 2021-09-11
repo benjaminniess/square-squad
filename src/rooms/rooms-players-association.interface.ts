@@ -1,8 +1,8 @@
-import { Player } from 'src/players/player.interface';
+import { PlayerDto } from 'src/players/player.dto.interface';
 
 export interface RoomsPlayersAssociation {
-  findAllPlayersInRoom(roomSlug: string): Player[];
+  findAllPlayersInRoom(roomSlug: string): PlayerDto[];
   removeAllPlayersInRoom(roomSlug: string);
-  addPlayerToRoom(player: Player, roomSlug: string);
+  addPlayerToRoom(player: PlayerDto, roomSlug: string);
   removePlayerFromRoom(playerId: string, roomSlug: string);
 }

@@ -1,17 +1,17 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { Player } from './player.interface';
 import { PlayersServiceInterface } from './players.service.interface';
+import { PlayerDto } from './player.dto.interface';
 
 @Injectable()
 export class PlayersService implements PlayersServiceInterface {
-  private players: Player[] = [];
+  private players: PlayerDto[] = [];
 
-  findAll(): Player[] {
+  findAll(): PlayerDto[] {
     return this.players;
   }
 
   findById(id: string) {
-    let foundPlayer: Player | null = null;
+    let foundPlayer: PlayerDto | null = null;
 
     this.players.map((player) => {
       if (player.id === id) {
@@ -22,14 +22,14 @@ export class PlayersService implements PlayersServiceInterface {
     return foundPlayer;
   }
 
-  create(player: Player) {
+  create(player: PlayerDto) {
     if (this.findById(player.id) !== null) {
       throw new ConflictException('player-already-exists');
     }
     this.players.push(player);
   }
 
-  update(player: Player) {
+  update(player: PlayerDto) {
     if (this.findById(player.id) === null) {
       throw new ConflictException('player-does-not-exist');
     }

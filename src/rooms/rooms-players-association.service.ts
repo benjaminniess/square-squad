@@ -1,9 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { Player } from '../players/player.interface';
+import { PlayerDto } from '../players/player.dto.interface';
 
 type roomPlayersAssociation = {
   roomSlug: string;
-  players: Player[];
+  players: PlayerDto[];
 };
 
 @Injectable()
@@ -11,8 +11,8 @@ export class RoomsPlayersAssociationService
   implements RoomsPlayersAssociationService {
   private associations: roomPlayersAssociation[] = [];
 
-  findAllPlayersInRoom(roomSlug: string): Player[] {
-    let foundPlayers: Player[] = [];
+  findAllPlayersInRoom(roomSlug: string): PlayerDto[] {
+    let foundPlayers: PlayerDto[] = [];
 
     this.associations.map((association) => {
       if (association.roomSlug !== roomSlug) {
@@ -37,7 +37,7 @@ export class RoomsPlayersAssociationService
     return roomSlugs;
   }
 
-  addPlayerToRoom(player: Player, roomSlug: string) {
+  addPlayerToRoom(player: PlayerDto, roomSlug: string) {
     if (this.getPlayerRoomAssociationKey(player.id) !== null) {
       throw new ConflictException('player-already-in-room');
     }

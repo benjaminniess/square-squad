@@ -1,8 +1,8 @@
-import { Player } from './player.interface';
+import { PlayerDto } from './player.dto.interface';
 
 export interface PlayersServiceInterface {
-  findAll(): Player[];
-  findById(string): Player | null;
+  findAll(): PlayerDto[];
+  findById(string): PlayerDto | null;
   create(Player);
   update(Player);
   deleteFromId(string);
