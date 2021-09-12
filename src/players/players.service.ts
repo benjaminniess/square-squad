@@ -20,14 +20,29 @@ export class PlayersService {
     return this.playersRepository.findOne(args);
   }
 
-  findById(socketId: string) {
+  findBySocketId(socketId: string) {
     return this.findOne({
       where: { socketId: socketId },
     });
   }
 
+  findById(id: number) {
+    return this.findOne({
+      where: { id: id },
+    });
+  }
+
+  async findPlayerRoom(id: number) {
+    const player = await this.findOne({
+      where: { id: id },
+      relations: ['room'],
+    });
+
+    return player.room;
+  }
+
   async update(socketId: string, playerDto: PlayerDto) {
-    const player = await this.findById(socketId);
+    const player = await this.findBySocketId(socketId);
     if (!player) {
       throw new ConflictException('player-does-not-exist');
     }
@@ -38,7 +53,7 @@ export class PlayersService {
   }
 
   async deleteFromId(socketId: string): Promise<void> {
-    const player = await this.findById(socketId);
+    const player = await this.findBySocketId(socketId);
     if (!player) {
       throw new ConflictException('player-does-not-exist');
     }

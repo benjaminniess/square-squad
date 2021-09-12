@@ -67,10 +67,10 @@ describe('PlayersService', () => {
     expect(await service.findAll()).toHaveLength(1);
   });
 
-  it('should retrive a freshliy creater player from the findById method', async () => {
+  it('should retrive a freshliy creater player from the findBySocketId method', async () => {
     await service.create(validPlayer);
 
-    const player = await service.findById(validPlayer.socketId);
+    const player = await service.findBySocketId(validPlayer.socketId);
 
     expect(player).toBeInstanceOf(Player);
     expect(player.socketId).toBe(validPlayer.socketId);
@@ -100,7 +100,7 @@ describe('PlayersService', () => {
       nickName: 'Updated nickname',
     });
 
-    const player = await service.findById(validPlayer.socketId);
+    const player = await service.findBySocketId(validPlayer.socketId);
 
     expect(player.nickName).toBe('Updated nickname');
   });

@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Room } from '../rooms/room.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  Unique,
+  ManyToOne,
+} from 'typeorm';
 
 @Entity()
 @Unique(['socketId'])
@@ -14,4 +21,7 @@ export class Player {
 
   @Column()
   socketId: string;
+
+  @ManyToOne(() => Room, (room) => room.players)
+  room: Room;
 }
