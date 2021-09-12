@@ -12,79 +12,79 @@ import { Helpers } from '../helpers/helpers';
 import { Player } from '../players/player.entity';
 import { PlayersService } from '../players/players.service';
 
-describe('RoomsService', () => {
-  let service: RoomsService;
-  let playersService: PlayersService;
-  let repository: Repository<Room>;
-  let playersRepository: Repository<Player>;
+let service: RoomsService;
+let playersService: PlayersService;
+let repository: Repository<Room>;
+let playersRepository: Repository<Player>;
 
-  const connectionName = 'test';
+const connectionName = 'test';
 
-  const validPlayer = {
-    socketId: '123456abc',
-    nickName: 'tester 1',
-    color: '#00FF00',
-  };
+const validPlayer = {
+  socketId: '123456abc',
+  nickName: 'tester 1',
+  color: '#00FF00',
+};
 
-  const validPlayer2 = {
-    socketId: '78910def',
-    nickName: 'tester 2',
-    color: '#FF0000',
-  };
+const validPlayer2 = {
+  socketId: '78910def',
+  nickName: 'tester 2',
+  color: '#FF0000',
+};
 
-  const validRoom = {
-    name: 'Room 1',
-    slug: 'room-1',
-  };
+const validRoom = {
+  name: 'Room 1',
+  slug: 'room-1',
+};
 
-  const validRoom2 = {
-    name: 'Room 2',
-    slug: 'room-2',
-  };
+const validRoom2 = {
+  name: 'Room 2',
+  slug: 'room-2',
+};
 
-  beforeEach(async () => {
-    await Test.createTestingModule({
-      providers: [
-        RoomsService,
-        PlayersService,
-        Helpers,
-        {
-          provide: getRepositoryToken(Room),
-          useClass: Repository,
-        },
-        {
-          provide: getRepositoryToken(Player),
-          useClass: Repository,
-        },
-      ],
-    }).compile();
+beforeEach(async () => {
+  await Test.createTestingModule({
+    providers: [
+      RoomsService,
+      PlayersService,
+      Helpers,
+      {
+        provide: getRepositoryToken(Room),
+        useClass: Repository,
+      },
+      {
+        provide: getRepositoryToken(Player),
+        useClass: Repository,
+      },
+    ],
+  }).compile();
 
-    const connection = await createConnection({
-      type: 'sqlite',
-      database: ':memory:',
-      dropSchema: true,
-      entities: [Room, Player],
-      synchronize: true,
-      logging: false,
-      name: connectionName,
-    });
-
-    repository = getRepository(Room, connectionName);
-    playersRepository = getRepository(Player, connectionName);
-    service = new RoomsService(
-      repository,
-      new PlayersService(playersRepository),
-      new Helpers(),
-    );
-    playersService = new PlayersService(playersRepository);
-
-    return connection;
+  const connection = await createConnection({
+    type: 'sqlite',
+    database: ':memory:',
+    dropSchema: true,
+    entities: [Room, Player],
+    synchronize: true,
+    logging: false,
+    name: connectionName,
   });
 
-  afterEach(async () => {
-    await getConnection(connectionName).close();
-  });
+  repository = getRepository(Room, connectionName);
+  playersRepository = getRepository(Player, connectionName);
+  service = new RoomsService(
+    repository,
+    new PlayersService(playersRepository),
+    new Helpers(),
+  );
+  playersService = new PlayersService(playersRepository);
 
+  return connection;
+});
+
+afterEach(async () => {
+  await getConnection(connectionName).close();
+});
+
+describe('Rooms crud', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -123,7 +123,9 @@ describe('RoomsService', () => {
 
   it('deletes a room from its slug', async () => {
     await service.create(validRoom.name);
+
     await service.deleteFromSlug(validRoom.slug);
+
     expect(await service.findAll()).toStrictEqual([]);
   });
 
@@ -135,7 +137,17 @@ describe('RoomsService', () => {
       expect(exception.message).toBe('room-does-not-exist');
     }
   });
+});
 
+const createPlayerAndRoomAndAssociation = async () => {
+  const roomSlug = await service.create(validRoom.name);
+  const playerId = await playersService.create(validPlayer);
+
+  await service.addPlayerToRoom(playerId, roomSlug);
+  return { roomSlug, playerId };
+};
+
+describe('Rooms players relation', () => {
   it('returns the freshly added player', async () => {
     const roomSlug = await service.create(validRoom.name);
     const playerId = await playersService.create(validPlayer);
@@ -148,74 +160,66 @@ describe('RoomsService', () => {
   });
 
   it('has a count of 2 players in the same room after adding 2 players', async () => {
-    const roomSlug = await service.create(validRoom.name);
-
-    const playerId1 = await playersService.create(validPlayer);
+    const playerAndRoom = await createPlayerAndRoomAndAssociation();
     const playerId2 = await playersService.create(validPlayer2);
 
-    await service.addPlayerToRoom(playerId1, roomSlug);
-    await service.addPlayerToRoom(playerId2, roomSlug);
+    await service.addPlayerToRoom(playerId2, playerAndRoom.roomSlug);
 
     expect(await service.findAllPlayersInRoom(validRoom.slug)).toHaveLength(2);
   });
 
   it('avoids content duplication when trying to add a player who is already in the room', async () => {
-    const roomSlug = await service.create(validRoom.name);
-    const playerId = await playersService.create(validPlayer);
+    const playerAndRoom = await createPlayerAndRoomAndAssociation();
 
-    await service.addPlayerToRoom(playerId, roomSlug);
-    await service.addPlayerToRoom(playerId, roomSlug);
+    await service.addPlayerToRoom(
+      playerAndRoom.playerId,
+      playerAndRoom.roomSlug,
+    );
 
     expect(await service.findAllPlayersInRoom(validRoom.slug)).toHaveLength(1);
   });
 
   it('returns an empty players list after adding and removing a player from a room', async () => {
-    const roomSlug = await service.create(validRoom.name);
-    const playerId = await playersService.create(validPlayer);
+    const playerAndRoom = await createPlayerAndRoomAndAssociation();
 
-    await service.addPlayerToRoom(playerId, roomSlug);
-    await service.removePlayerFromRoom(playerId, validRoom.slug);
+    await service.removePlayerFromRoom(playerAndRoom.playerId, validRoom.slug);
+
     expect(await service.findAllPlayersInRoom(validRoom.slug)).toStrictEqual(
       [],
     );
   });
 
   it('returns an empty players list after adding and removing a player globally from all rooms', async () => {
-    const roomSlug = await service.create(validRoom.name);
-    const playerId = await playersService.create(validPlayer);
+    const playerAndRoom = await createPlayerAndRoomAndAssociation();
 
-    await service.addPlayerToRoom(playerId, roomSlug);
-    await service.removePlayerFromRooms(playerId);
+    await service.removePlayerFromRooms(playerAndRoom.playerId);
+
     expect(await service.findAllPlayersInRoom(validRoom.slug)).toStrictEqual(
       [],
     );
   });
 
   it('removes both players from room', async () => {
-    const roomSlug = await service.create(validRoom.name);
-
-    const playerId1 = await playersService.create(validPlayer);
+    const playerAndRoom = await createPlayerAndRoomAndAssociation();
     const playerId2 = await playersService.create(validPlayer2);
-
-    await service.addPlayerToRoom(playerId1, roomSlug);
-    await service.addPlayerToRoom(playerId2, roomSlug);
+    await service.addPlayerToRoom(playerId2, playerAndRoom.roomSlug);
 
     await service.removeAllPlayersInRoom(validRoom.slug);
+
     expect(await service.findAllPlayersInRoom(validRoom.slug)).toStrictEqual(
       [],
     );
   });
 
   it('says that the player is already in a room', async () => {
-    const roomSlug = await service.create(validRoom.name);
-    const playerId = await playersService.create(validPlayer);
+    const playerAndRoom = await createPlayerAndRoomAndAssociation();
 
-    await service.addPlayerToRoom(playerId, roomSlug);
-    expect(await service.isPlayerInARoom(playerId)).toBe(true);
+    expect(await service.isPlayerInARoom(playerAndRoom.playerId)).toBe(true);
   });
 
   it('says that the player is not in a room yet', async () => {
     const playerId = await playersService.create(validPlayer);
+
     expect(await service.isPlayerInARoom(playerId)).toBe(false);
   });
 });
