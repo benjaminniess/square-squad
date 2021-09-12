@@ -1,32 +1,33 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { Room } from './room.interface';
-import { RoomsServiceInterface } from './rooms.service.interface';
 import validator from 'validator';
 import { Helpers } from '../helpers/helpers';
+import { Room } from './room.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
-export class RoomsService implements RoomsServiceInterface {
-  constructor(private helpers: Helpers) {}
+export class RoomsService {
+  constructor(
+    @InjectRepository(Room)
+    private roomsRepository: Repository<Room>,
+    private helpers: Helpers,
+  ) {}
 
-  private rooms: Room[] = [];
-
-  findAll(): Room[] {
-    return this.rooms;
+  findAll(): Promise<Room[]> {
+    return this.roomsRepository.find();
   }
 
-  findBySlug(slug: string) {
-    let foundRoom: Room | null = null;
+  findOne(args: any = null): Promise<Room> {
+    return this.roomsRepository.findOne(args);
+  }
 
-    this.rooms.map((room) => {
-      if (room.slug === slug) {
-        foundRoom = room;
-      }
+  findBySlug(roomSlug: string) {
+    return this.findOne({
+      where: { slug: roomSlug },
     });
-
-    return foundRoom;
   }
 
-  create(roomName: string): string {
+  async create(roomName: string): Promise<string> {
     if (!roomName || roomName.length <= 0) {
       throw new ConflictException('room-name-empty');
     }
@@ -34,25 +35,30 @@ export class RoomsService implements RoomsServiceInterface {
     roomName = validator.blacklist(roomName, "<>\\/'");
     const roomSlug = this.convertNameToSlug(roomName);
 
-    if (this.findBySlug(roomSlug) !== null) {
-      throw new ConflictException('room-already-exists');
+    const room = new Room();
+    room.name = roomName;
+    room.slug = roomSlug;
+
+    try {
+      await this.roomsRepository.save(room);
+    } catch (error) {
+      if (error.code === 'SQLITE_CONSTRAINT') {
+        throw new ConflictException('room-already-exists');
+      }
+
+      throw error;
     }
-    this.rooms.push({ name: roomName, slug: roomSlug });
 
     return roomSlug;
   }
 
-  deleteFromSlug(slug: string) {
-    if (this.findBySlug(slug) === null) {
+  async deleteFromSlug(slug: string) {
+    if (!(await this.findBySlug(slug))) {
       throw new ConflictException('room-does-not-exist');
     }
 
-    this.rooms.map((room, key) => {
-      if (room.slug !== slug) {
-        return;
-      }
-
-      this.rooms.splice(key, 1);
+    await this.roomsRepository.delete({
+      slug: slug,
     });
   }
 

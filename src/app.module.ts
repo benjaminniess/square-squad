@@ -13,13 +13,14 @@ import { RoomsLeadersService } from './rooms/rooms-leaders.service';
 import { Helpers } from './helpers/helpers';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Player } from './players/player.entity';
+import { Room } from './rooms/room.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
-      entities: [Player],
+      entities: [Player, Room],
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
