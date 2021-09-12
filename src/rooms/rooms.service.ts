@@ -4,12 +4,15 @@ import { Helpers } from '../helpers/helpers';
 import { Room } from './room.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Player } from '../players/player.entity';
+import { PlayersService } from '../players/players.service';
 
 @Injectable()
 export class RoomsService {
   constructor(
     @InjectRepository(Room)
     private roomsRepository: Repository<Room>,
+    private playersService: PlayersService,
     private helpers: Helpers,
   ) {}
 
@@ -21,7 +24,7 @@ export class RoomsService {
     return this.roomsRepository.findOne(args);
   }
 
-  findBySlug(roomSlug: string) {
+  findBySlug(roomSlug: string): Promise<Room> {
     return this.findOne({
       where: { slug: roomSlug },
     });
@@ -52,6 +55,10 @@ export class RoomsService {
     return roomSlug;
   }
 
+  private convertNameToSlug(roomName: string): string {
+    return this.helpers.stringToSlug(roomName);
+  }
+
   async deleteFromSlug(slug: string) {
     if (!(await this.findBySlug(slug))) {
       throw new ConflictException('room-does-not-exist');
@@ -62,7 +69,86 @@ export class RoomsService {
     });
   }
 
-  private convertNameToSlug(roomName: string): string {
-    return this.helpers.stringToSlug(roomName);
+  async findAllPlayersInRoom(roomSlug: string): Promise<Player[]> {
+    const room = await this.findBySlug(roomSlug);
+    if (!room) {
+      return [];
+    }
+
+    return room.players;
+  }
+
+  // findEmptyRoomsSlugs(): string[] {
+  //   const roomSlugs = [];
+  //   this.associations.map((association) => {
+  //     if (association.players.length > 0) {
+  //       return;
+  //     }
+
+  //     roomSlugs.push(association.roomSlug);
+  //   });
+
+  //   return roomSlugs;
+  // }
+
+  async addPlayerToRoom(playerId: number, roomSlug: string) {
+    const room = await this.findBySlug(roomSlug);
+    if (!room) {
+      throw new ConflictException('room-does-not-exist');
+    }
+
+    const player = await this.playersService.findById(playerId);
+    if (!player) {
+      throw new ConflictException('player-does-not-exist');
+    }
+
+    if (!room.players) {
+      room.players = [];
+    }
+
+    room.players.push(player);
+
+    await this.roomsRepository.save(room);
+  }
+
+  async removePlayerFromRoom(playerId: number, roomSlug: string) {
+    const room = await this.findBySlug(roomSlug);
+    if (!room) {
+      throw new ConflictException('room-does-not-exist');
+    }
+
+    room.players = room.players.filter((player) => {
+      return player.id !== playerId;
+    });
+
+    await this.roomsRepository.save(room);
+  }
+
+  async removePlayerFromRooms(playerId: number) {
+    const room = await this.playersService.findPlayerRoom(playerId);
+    if (!room) {
+      return;
+    }
+
+    await this.removePlayerFromRoom(playerId, room.slug);
+  }
+
+  async removeAllPlayersInRoom(roomSlug: string) {
+    const room = await this.findBySlug(roomSlug);
+    if (!room) {
+      throw new ConflictException('room-does-not-exist');
+    }
+
+    room.players = [];
+    await this.roomsRepository.save(room);
+  }
+
+  async isPlayerInARoom(playerId: number): Promise<boolean> {
+    const room = await this.playersService.findPlayerRoom(playerId);
+    if (!room) {
+      return false;
+    }
+
+    return true;
   }
 }

@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Player } from '../players/player.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  Unique,
+  OneToMany,
+} from 'typeorm';
 
 @Entity()
 @Unique(['slug'])
@@ -11,4 +18,7 @@ export class Room {
 
   @Column()
   slug: string;
+
+  @OneToMany(() => Player, (player) => player.room, { eager: true })
+  players: Player[];
 }
