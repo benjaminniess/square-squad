@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { find } from 'rxjs';
+import { Room } from '../rooms/room.entity';
 import {
   createConnection,
   getConnection,
@@ -42,7 +43,7 @@ describe('PlayersService', () => {
       type: 'sqlite',
       database: ':memory:',
       dropSchema: true,
-      entities: [Player],
+      entities: [Player, Room],
       synchronize: true,
       logging: false,
       name: connectionName,
