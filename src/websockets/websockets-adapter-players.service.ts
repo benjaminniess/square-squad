@@ -5,7 +5,7 @@ import { PlayersService } from '../players/players.service';
 export class WebsocketsAdapterPlayersService {
   constructor(private playersService: PlayersService) {}
 
-  updatePlayer(playerId: string, data: any) {
+  async updatePlayer(socketId: string, data: any) {
     if (!data.name || !data.color) {
       return {
         success: false,
@@ -13,11 +13,11 @@ export class WebsocketsAdapterPlayersService {
       };
     }
 
-    const existingPlayer = this.playersService.findById(playerId);
+    const existingPlayer = await this.playersService.findBySocketId(socketId);
     if (!existingPlayer) {
       try {
-        this.playersService.create({
-          id: playerId,
+        await this.playersService.create({
+          socketId: socketId,
           nickName: data.name,
           color: data.color,
         });
@@ -33,8 +33,8 @@ export class WebsocketsAdapterPlayersService {
       };
     }
 
-    this.playersService.update({
-      id: playerId,
+    await this.playersService.update(socketId, {
+      socketId: socketId,
       nickName: data.name,
       color: data.color,
     });
@@ -44,9 +44,9 @@ export class WebsocketsAdapterPlayersService {
     };
   }
 
-  deletePlayer(playerId: string): boolean {
+  async deletePlayer(socketId: string): Promise<boolean> {
     try {
-      this.playersService.deleteFromId(playerId);
+      await this.playersService.deleteFromId(socketId);
       return true;
     } catch (error) {
       return false;

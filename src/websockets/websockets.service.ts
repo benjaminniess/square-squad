@@ -22,9 +22,9 @@ export class WebsocketsService implements OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  handleDisconnect(@ConnectedSocket() client: any) {
-    this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
-    this.websocketsAdapterPlayers.deletePlayer(client.id);
+  async handleDisconnect(@ConnectedSocket() client: any) {
+    await this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
+    await this.websocketsAdapterPlayers.deletePlayer(client.id);
   }
 
   @SubscribeMessage('update-player-data')
@@ -50,11 +50,11 @@ export class WebsocketsService implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage('join-room')
-  handleJoinRoom(
+  async handleJoinRoom(
     @MessageBody() roomSlug: string,
     @ConnectedSocket() client: any,
-  ): void {
-    const roomJoinResult = this.websocketsAdapterRooms.joinRoom(
+  ): Promise<void> {
+    const roomJoinResult = await this.websocketsAdapterRooms.joinRoom(
       client.id,
       roomSlug,
     );
@@ -64,43 +64,43 @@ export class WebsocketsService implements OnGatewayDisconnect {
       return;
     }
 
-    this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
+    await this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
     client.emit('refresh-game-status', { gameStatus: 'waiting' });
     client.join(roomSlug);
     this.server
       .to(roomSlug)
       .emit(
         'refresh-players',
-        this.websocketsAdapterRooms.getRoomPlayers(roomSlug),
+        await this.websocketsAdapterRooms.getRoomPlayers(roomSlug),
       );
   }
 
   @SubscribeMessage('leave-room')
-  handleLeaveRoom(@ConnectedSocket() client: any): void {
-    this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
+  async handleLeaveRoom(@ConnectedSocket() client: any): Promise<void> {
+    await this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
 
-    client.rooms.forEach((roomSlug) => {
+    client.rooms.forEach(async (roomSlug) => {
       if (roomSlug === client.id) {
         return;
       }
 
-      this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
+      await this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
       this.server
         .to(roomSlug)
         .emit(
           'refresh-players',
-          this.websocketsAdapterRooms.getRoomPlayers(roomSlug),
+          await this.websocketsAdapterRooms.getRoomPlayers(roomSlug),
         );
     });
 
-    this.websocketsAdapterRooms.removeEmptyRooms();
+    await this.websocketsAdapterRooms.removeEmptyRooms();
   }
 
   @SubscribeMessage('rooms-refresh')
-  handleRoomsRefresh(@ConnectedSocket() client: any): void {
+  async handleRoomsRefresh(@ConnectedSocket() client: any): Promise<void> {
     client.emit(
       'rooms-refresh-result',
-      this.websocketsAdapterRooms.findAllRooms(),
+      await this.websocketsAdapterRooms.findAllRooms(),
     );
   }
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 import { PlayersService } from '../players/players.service';
-import { RoomsPlayersAssociationService } from '../rooms/rooms-players-association.service';
 import { RoomsService } from '../rooms/rooms.service';
 import { PlayerDto } from '../players/player.dto.interface';
 
@@ -10,12 +9,11 @@ export class WebsocketsAdapterRoomsService {
   constructor(
     private playersService: PlayersService,
     private roomsService: RoomsService,
-    private roomsPlayersAssociation: RoomsPlayersAssociationService,
     private roomsLeadersAssociation: RoomsLeadersService,
   ) {}
 
-  createRoom(playerId: string, roomName: string) {
-    const existingPlayer = this.playersService.findById(playerId);
+  async createRoom(socketId: string, roomName: string) {
+    const existingPlayer = await this.playersService.findBySocketId(socketId);
     if (!existingPlayer) {
       return {
         success: false,
@@ -23,7 +21,7 @@ export class WebsocketsAdapterRoomsService {
       };
     }
 
-    if (this.roomsPlayersAssociation.isPlayerInARoom(playerId)) {
+    if (await this.roomsService.isPlayerInARoom(existingPlayer.id)) {
       return {
         success: false,
         error: 'player-already-in-a-room',
@@ -31,7 +29,7 @@ export class WebsocketsAdapterRoomsService {
     }
 
     try {
-      const roomSlug = this.roomsService.create(roomName);
+      const roomSlug = await this.roomsService.create(roomName);
       return {
         success: true,
         data: { roomSlug },
@@ -44,8 +42,8 @@ export class WebsocketsAdapterRoomsService {
     }
   }
 
-  joinRoom(playerId: string, roomSlug: string) {
-    const existingPlayer = this.playersService.findById(playerId);
+  async joinRoom(socketId: string, roomSlug: string) {
+    const existingPlayer = await this.playersService.findBySocketId(socketId);
     if (!existingPlayer) {
       return {
         success: false,
@@ -53,14 +51,14 @@ export class WebsocketsAdapterRoomsService {
       };
     }
 
-    if (this.roomsPlayersAssociation.isPlayerInARoom(playerId)) {
+    if (await this.roomsService.isPlayerInARoom(existingPlayer.id)) {
       return {
         success: false,
         error: 'player-already-in-a-room',
       };
     }
 
-    const room = this.roomsService.findBySlug(roomSlug);
+    const room = await this.roomsService.findBySlug(roomSlug);
     if (!room) {
       return {
         success: false,
@@ -69,7 +67,7 @@ export class WebsocketsAdapterRoomsService {
     }
 
     try {
-      this.roomsPlayersAssociation.addPlayerToRoom(existingPlayer, roomSlug);
+      await this.roomsService.addPlayerToRoom(existingPlayer.id, roomSlug);
       return {
         success: true,
         data: {
@@ -85,39 +83,45 @@ export class WebsocketsAdapterRoomsService {
     }
   }
 
-  findAllRooms() {
-    return { success: true, data: this.roomsService.findAll() };
+  async findAllRooms() {
+    return { success: true, data: await this.roomsService.findAll() };
   }
 
-  removePlayerFromRooms(playerId: string) {
-    this.roomsPlayersAssociation.removePlayerFromRooms(playerId);
-  }
-
-  removeEmptyRooms() {
-    this.roomsPlayersAssociation.findEmptyRoomsSlugs().map((roomSlug) => {
-      try {
-        this.roomsService.deleteFromSlug(roomSlug);
-      } catch (error) {}
-    });
-  }
-
-  maybeResetLeader(roomSlug: string) {
-    if (this.roomsLeadersAssociation.getLeaderForRoom(roomSlug) !== null) {
-      return;
+  async removePlayerFromRooms(socketId: string) {
+    const existingPlayer = await this.playersService.findBySocketId(socketId);
+    if (!existingPlayer) {
+      return {
+        success: false,
+        error: 'wrong-player-id',
+      };
     }
 
-    const roomPlayers = this.roomsPlayersAssociation.findAllPlayersInRoom(
-      roomSlug,
-    );
+    await this.roomsService.removePlayerFromRooms(existingPlayer.id);
+  }
 
-    if (roomPlayers.length === 0) {
-      return;
-    }
+  async removeEmptyRooms() {
+    // this.roomsService.findEmptyRoomsSlugs().map((roomSlug) => {
+    //   try {
+    //     this.roomsService.deleteFromSlug(roomSlug);
+    //   } catch (error) {}
+    // });
+  }
 
-    this.roomsLeadersAssociation.setLeaderForRoom(roomPlayers[0], roomSlug);
+  async maybeResetLeader(roomSlug: string) {
+    // if (this.roomsLeadersAssociation.getLeaderForRoom(roomSlug) !== null) {
+    //   return;
+    // }
+    // const roomPlayers = this.roomsPlayersAssociation.findAllPlayersInRoom(
+    //   roomSlug,
+    // );
+    // if (roomPlayers.length === 0) {
+    //   return;
+    // }
+    // this.roomsLeadersAssociation.setLeaderForRoom(roomPlayers[0], roomSlug);
   }
 
   getRoomPlayers(roomSlug: string): PlayerDto[] {
-    return this.roomsPlayersAssociation.findAllPlayersInRoom(roomSlug);
+    return [];
+    // return this.roomsPlayersAssociation.findAllPlayersInRoom(roomSlug);
   }
 }

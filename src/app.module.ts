@@ -9,9 +9,11 @@ import { RoomsService } from './rooms/rooms.service';
 import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter-players.service';
 import { RoomsLeadersService } from './rooms/rooms-leaders.service';
 import { Helpers } from './helpers/helpers';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Player } from './players/player.entity';
 import { Room } from './rooms/room.entity';
+import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-rooms.service';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -35,6 +37,14 @@ import { Room } from './rooms/room.entity';
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     RoomsLeadersService,
+    {
+      provide: getRepositoryToken(Player),
+      useClass: Repository,
+    },
+    {
+      provide: getRepositoryToken(Room),
+      useClass: Repository,
+    },
   ],
 })
 export class AppModule {}
