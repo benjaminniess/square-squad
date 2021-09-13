@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlayerDto } from 'src/players/player.dto.interface';
+import { PlayerDto } from '../players/player.dto.interface';
 
 type roomLeadersAssociation = {
   roomSlug: string;

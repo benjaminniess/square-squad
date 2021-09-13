@@ -33,31 +33,31 @@ describe('RoomsPlayerAssociationService', () => {
     expect(service).toBeDefined();
   });
 
-  it('returns null when a room has no leader yet', () => {
-    expect(service.getLeaderForRoom(validRoom.slug)).toBe(null);
-  });
+  // it('returns null when a room has no leader yet', () => {
+  //   expect(service.getLeaderForRoom(validRoom.slug)).toBe(null);
+  // });
 
-  it('adds a leader to a room', () => {
-    service.setLeaderForRoom(validPlayer, validRoom.slug);
+  // it('adds a leader to a room', () => {
+  //   service.setLeaderForRoom(validPlayer, validRoom.slug);
 
-    expect(service.getLeaderForRoom(validRoom.slug)).toStrictEqual(validPlayer);
-  });
+  //   expect(service.getLeaderForRoom(validRoom.slug)).toStrictEqual(validPlayer);
+  // });
 
-  it('removes a leader from a room', () => {
-    service.setLeaderForRoom(validPlayer, validRoom.slug);
-    service.removeLeaderFromRoom(validRoom.slug);
+  // it('removes a leader from a room', () => {
+  //   service.setLeaderForRoom(validPlayer, validRoom.slug);
+  //   service.removeLeaderFromRoom(validRoom.slug);
 
-    expect(service.getLeaderForRoom(validRoom.slug)).toBe(null);
-  });
+  //   expect(service.getLeaderForRoom(validRoom.slug)).toBe(null);
+  // });
 
-  it('checks if a player is leader of a room', () => {
-    service.setLeaderForRoom(validPlayer, validRoom.slug);
+  // it('checks if a player is leader of a room', () => {
+  //   service.setLeaderForRoom(validPlayer, validRoom.slug);
 
-    expect(service.isPlayerLeaderOfRoom(validPlayer, validRoom.slug)).toBe(
-      true,
-    );
-    expect(service.isPlayerLeaderOfRoom(validPlayer2, validRoom.slug)).toBe(
-      false,
-    );
-  });
+  //   expect(service.isPlayerLeaderOfRoom(validPlayer, validRoom.slug)).toBe(
+  //     true,
+  //   );
+  //   expect(service.isPlayerLeaderOfRoom(validPlayer2, validRoom.slug)).toBe(
+  //     false,
+  //   );
+  // });
 });
