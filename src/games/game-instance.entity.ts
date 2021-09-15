@@ -1,11 +1,4 @@
-import { Room } from '../rooms/room.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-  OneToOne,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class GameInstance {
@@ -17,8 +10,4 @@ export class GameInstance {
 
   @Column()
   status: string;
-
-  @OneToOne(() => Room)
-  @JoinColumn()
-  room: Room;
 }

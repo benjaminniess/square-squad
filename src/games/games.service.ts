@@ -15,37 +15,31 @@ export class GamesService {
     return this.gameInstanceRepository.find();
   }
 
-  // findBySlug(roomSlug: string) {
-  //   let foundInstance: GameInstance | null = null;
+  findOne(args: any = null): Promise<GameInstance> {
+    return this.gameInstanceRepository.findOne(args);
+  }
 
-  //   this.gameInstances.map((instance) => {
-  //     if (instance.roomSlug === roomSlug) {
-  //       foundInstance = instance;
-  //     }
-  //   });
+  findById(id: number) {
+    return this.findOne({
+      where: { id: id },
+    });
+  }
 
-  //   return foundInstance;
-  // }
+  async deleteFromId(id: number): Promise<void> {
+    const gameInstance = await this.findById(id);
+    if (!gameInstance) {
+      throw new ConflictException('game-instance-does-not-exist');
+    }
 
-  // deleteFromSlug(roomSlug: string) {
-  //   if (this.findBySlug(roomSlug) === null) {
-  //     throw new ConflictException('instance-does-not-exist');
-  //   }
-
-  //   this.gameInstances.map((instance, key) => {
-  //     if (instance.roomSlug !== roomSlug) {
-  //       return;
-  //     }
-
-  //     this.gameInstances.splice(key, 1);
-  //   });
-  // }
+    await this.gameInstanceRepository.delete({
+      id: id,
+    });
+  }
 
   async create(instanceDto: GameInstanceDto) {
     const gameInstance = new GameInstance();
     gameInstance.type = instanceDto.game;
     gameInstance.status = instanceDto.status;
-    gameInstance.room = instanceDto.room;
 
     try {
       await this.gameInstanceRepository.save(gameInstance);
