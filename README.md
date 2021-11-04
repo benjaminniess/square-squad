@@ -14,7 +14,11 @@ npm run dev
 
 # serve the front end site at localhost:1080
 
-npm startvue
+npm run startvue
+
+# run the typescript watch system
+
+tsc -w
 
 ```
 
