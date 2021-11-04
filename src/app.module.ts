@@ -17,11 +17,13 @@ import { Repository } from 'typeorm';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([Player, Room]),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
       entities: [Player, Room],
       synchronize: true,
+      keepConnectionAlive: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '/../vueapp/dist'),
@@ -37,14 +39,6 @@ import { Repository } from 'typeorm';
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     RoomsLeadersService,
-    {
-      provide: getRepositoryToken(Player),
-      useClass: Repository,
-    },
-    {
-      provide: getRepositoryToken(Room),
-      useClass: Repository,
-    },
   ],
 })
 export class AppModule {}
