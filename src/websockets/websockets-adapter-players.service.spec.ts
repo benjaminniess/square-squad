@@ -3,21 +3,15 @@ import { RoomsService } from '../rooms/rooms.service';
 import { PlayersService } from '../players/players.service';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
 import { Helpers } from '../helpers/helpers';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-  createConnection,
-  getConnection,
-  getRepository,
-  Repository,
-} from 'typeorm';
+import { createConnection, getConnection } from 'typeorm';
 import { Room } from '../rooms/room.entity';
 import { Player } from '../players/player.entity';
+import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
+import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 let service: WebsocketsAdapterPlayersService;
-let roomsService: RoomsService;
 let playersService: PlayersService;
-let repository: Repository<Room>;
-let playersRepo: Repository<Player>;
 
 const validPlayer = {
   socketId: '123456abc',
@@ -25,29 +19,27 @@ const validPlayer = {
   color: '#00FF00',
 };
 
-const validPlayer2 = {
-  socketId: '78910def',
-  nickName: 'tester 2',
-  color: '#FF0000',
-};
-
 const connectionName = 'test';
 
 beforeEach(async () => {
   const module: TestingModule = await Test.createTestingModule({
+    imports: [
+      TypeOrmModule.forFeature([Player, Room]),
+      TypeOrmModule.forRoot({
+        type: 'sqlite',
+        database: ':memory:',
+        entities: [Player, Room],
+        synchronize: true,
+        keepConnectionAlive: true,
+      }),
+    ],
     providers: [
       RoomsService,
       PlayersService,
+      WebsocketsAdapterRoomsService,
       WebsocketsAdapterPlayersService,
+      RoomsLeadersService,
       Helpers,
-      {
-        provide: getRepositoryToken(Room),
-        useClass: Repository,
-      },
-      {
-        provide: getRepositoryToken(Player),
-        useClass: Repository,
-      },
     ],
   }).compile();
 
@@ -61,14 +53,7 @@ beforeEach(async () => {
     name: connectionName,
   });
 
-  repository = getRepository(Room, connectionName);
-  playersRepo = getRepository(Player, connectionName);
-  roomsService = new RoomsService(
-    repository,
-    new PlayersService(playersRepo),
-    new Helpers(),
-  );
-  playersService = new PlayersService(playersRepo);
+  playersService = module.get<PlayersService>(PlayersService);
 
   service = module.get<WebsocketsAdapterPlayersService>(
     WebsocketsAdapterPlayersService,
@@ -88,69 +73,72 @@ describe('WebsocketsAdapterService', () => {
   });
 });
 
-// describe('Socket login/loggout', () => {
-//   it('remove the user when socket connection is lost', async () => {
-//     await service.updatePlayer(validPlayer.socketId, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
+describe('Socket login/loggout', () => {
+  it('remove the user when socket connection is lost', async () => {
+    await service.updatePlayer(validPlayer.socketId, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
 
-//     // await service.deletePlayer(validPlayer.socketId);
+    await service.deletePlayer(validPlayer.socketId);
 
-//     // expect(playersService.findAll()).toHaveLength(0);
-//   });
-// });
+    expect(await playersService.findAll()).toHaveLength(0);
+  });
+});
 
-// describe('Player add and update', () => {
-//   it('should refuse to add a player with not name', () => {
-//     const playerAdd = service.updatePlayer(validPlayer.id, {
-//       name: '',
-//       color: validPlayer.color,
-//     });
+describe('Player add and update', () => {
+  it('should refuse to add a player with not name', async () => {
+    const playerAdd = await service.updatePlayer(validPlayer.socketId, {
+      name: '',
+      color: validPlayer.color,
+    });
 
-//     expect(playerAdd).toStrictEqual({
-//       error: 'empty-name-or-color',
-//       success: false,
-//     });
-//     expect(playersService.findAll()).toHaveLength(0);
-//   });
+    expect(playerAdd).toStrictEqual({
+      error: 'empty-name-or-color',
+      success: false,
+    });
+    expect(await playersService.findAll()).toHaveLength(0);
+  });
 
-//   it('should refuse to add a player with no color', () => {
-//     const playerAdd = service.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: '',
-//     });
+  it('should refuse to add a player with no color', async () => {
+    const playerAdd = await service.updatePlayer(validPlayer.socketId, {
+      name: validPlayer.nickName,
+      color: '',
+    });
 
-//     expect(playerAdd).toStrictEqual({
-//       error: 'empty-name-or-color',
-//       success: false,
-//     });
-//     expect(playersService.findAll()).toHaveLength(0);
-//   });
+    expect(playerAdd).toStrictEqual({
+      error: 'empty-name-or-color',
+      success: false,
+    });
+    expect(await playersService.findAll()).toHaveLength(0);
+  });
 
-//   it('should add a player in the players list', () => {
-//     const playerAdd = service.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
+  it('should add a player in the players list', async () => {
+    const playerAdd = await service.updatePlayer(validPlayer.socketId, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
 
-//     expect(playerAdd).toStrictEqual({ success: true });
-//     expect(playersService.findAll()).toHaveLength(1);
-//   });
+    expect(playerAdd).toStrictEqual({ success: true });
+    expect(await playersService.findAll()).toHaveLength(1);
+  });
 
-//   it('should update an existing player', () => {
-//     service.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
+  it('should update an existing player', async () => {
+    await service.updatePlayer(validPlayer.socketId, {
+      name: validPlayer.nickName,
+      color: validPlayer.color,
+    });
 
-//     const playerUpdate = service.updatePlayer(validPlayer.id, {
-//       name: 'New name',
-//       color: '#000000',
-//     });
+    const playerUpdate = await service.updatePlayer(validPlayer.socketId, {
+      name: 'New name',
+      color: '#000000',
+    });
 
-//     expect(playerUpdate).toStrictEqual({ success: true });
-//     expect(playersService.findAll()[0].nickName).toBe('New name');
-//     expect(playersService.findAll()[0].color).toBe('#000000');
-//   });
-//});
+    expect(playerUpdate).toStrictEqual({ success: true });
+    const players = await playersService.findAll();
+    players.map((player) => {
+      expect(player.nickName).toBe('New name');
+      expect(player.color).toBe('#000000');
+    });
+  });
+});
