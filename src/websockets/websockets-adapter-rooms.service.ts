@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 import { PlayersService } from '../players/players.service';
 import { RoomsService } from '../rooms/rooms.service';
-import { PlayerDto } from '../players/player.dto.interface';
 
 @Injectable()
 export class WebsocketsAdapterRoomsService {
@@ -120,8 +119,15 @@ export class WebsocketsAdapterRoomsService {
     // this.roomsLeadersAssociation.setLeaderForRoom(roomPlayers[0], roomSlug);
   }
 
-  getRoomPlayers(roomSlug: string): PlayerDto[] {
-    return [];
-    // return this.roomsPlayersAssociation.findAllPlayersInRoom(roomSlug);
+  async getRoomPlayers(roomSlug: string) {
+    const room = await this.roomsService.findBySlug(roomSlug);
+    if (!room) {
+      return {
+        success: false,
+        error: 'wrong-room-slug',
+      };
+    }
+
+    return room.players;
   }
 }
