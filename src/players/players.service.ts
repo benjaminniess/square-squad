@@ -81,4 +81,10 @@ export class PlayersService {
 
     return player.id;
   }
+
+  // /!\ For test usage only
+  async clear() {
+    await this.playersRepository.query(`DELETE FROM player;`);
+    //await this.playersRepository.clear();
+  }
 }

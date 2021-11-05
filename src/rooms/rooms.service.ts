@@ -151,4 +151,9 @@ export class RoomsService {
 
     return true;
   }
+
+  // /!\ For test usage only
+  async clear() {
+    await this.roomsRepository.query(`DELETE FROM room;`);
+  }
 }
