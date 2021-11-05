@@ -5,22 +5,14 @@ import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.servic
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
 import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 import { Helpers } from '../helpers/helpers';
-import {
-  createConnection,
-  getConnection,
-  getRepository,
-  Repository,
-} from 'typeorm';
+import { createConnection, getConnection } from 'typeorm';
 import { Room } from '../rooms/room.entity';
 import { Player } from '../players/player.entity';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 let websocketAdapterRoomService: WebsocketsAdapterRoomsService;
-let websocketAdapterPlayersService: WebsocketsAdapterPlayersService;
-let service: RoomsService;
+let roomsService: RoomsService;
 let playersService: PlayersService;
-let repository: Repository<Room>;
-let playersRepo: Repository<Player>;
 
 const connectionName = 'test';
 
@@ -41,13 +33,18 @@ const validRoom = {
   slug: 'room-1',
 };
 
-const validRoom2 = {
-  name: 'Room 2',
-  slug: 'room-2',
-};
-
 beforeEach(async () => {
   const module: TestingModule = await Test.createTestingModule({
+    imports: [
+      TypeOrmModule.forFeature([Player, Room]),
+      TypeOrmModule.forRoot({
+        type: 'sqlite',
+        database: ':memory:',
+        entities: [Player, Room],
+        synchronize: true,
+        keepConnectionAlive: true,
+      }),
+    ],
     providers: [
       RoomsService,
       PlayersService,
@@ -55,14 +52,6 @@ beforeEach(async () => {
       WebsocketsAdapterPlayersService,
       RoomsLeadersService,
       Helpers,
-      {
-        provide: getRepositoryToken(Room),
-        useClass: Repository,
-      },
-      {
-        provide: getRepositoryToken(Player),
-        useClass: Repository,
-      },
     ],
   }).compile();
 
@@ -76,20 +65,11 @@ beforeEach(async () => {
     name: connectionName,
   });
 
-  repository = getRepository(Room, connectionName);
-  playersRepo = getRepository(Player, connectionName);
-  service = new RoomsService(
-    repository,
-    new PlayersService(playersRepo),
-    new Helpers(),
-  );
-  playersService = new PlayersService(playersRepo);
+  roomsService = module.get<RoomsService>(RoomsService);
+  playersService = module.get<PlayersService>(PlayersService);
 
   websocketAdapterRoomService = module.get<WebsocketsAdapterRoomsService>(
     WebsocketsAdapterRoomsService,
-  );
-  websocketAdapterPlayersService = module.get<WebsocketsAdapterPlayersService>(
-    WebsocketsAdapterPlayersService,
   );
 
   return connection;
@@ -97,6 +77,8 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await getConnection(connectionName).close();
+  playersService.clear();
+  roomsService.clear();
 });
 
 describe('WebsocketsAdapterRoomsService', () => {
@@ -106,211 +88,193 @@ describe('WebsocketsAdapterRoomsService', () => {
   });
 });
 
-// describe('Rooms add and update', () => {
-//   it('should refuse to add a room with a wrong player socket ID', () => {
-//     const roomAdd = websocketAdapterRoomService.createRoom(
-//       'fakeID123',
-//       validRoom.name,
-//     );
+describe('Rooms add and update', () => {
+  it('should refuse to add a room with a wrong player socket ID', async () => {
+    const roomAdd = await websocketAdapterRoomService.createRoom(
+      'fakeID123',
+      validRoom.name,
+    );
 
-//     expect(roomAdd).toStrictEqual({
-//       error: 'wrong-player-id',
-//       success: false,
-//     });
-//   });
+    expect(roomAdd).toStrictEqual({
+      error: 'wrong-player-id',
+      success: false,
+    });
+  });
 
-//   it('should refuse to add a room with player ID already in a room', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
-//     roomsService.create(validRoom.name);
-//     roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
+  it('should refuse to add a room with player ID already in a room', async () => {
+    const playerId = await playersService.create(validPlayer);
 
-//     const roomAdd = websocketAdapterRoomService.createRoom(
-//       validPlayer.id,
-//       validRoom.name,
-//     );
+    await roomsService.create(validRoom.name);
+    await roomsService.addPlayerToRoom(playerId, validRoom.slug);
 
-//     expect(roomAdd).toStrictEqual({
-//       error: 'player-already-in-a-room',
-//       success: false,
-//     });
-//   });
+    const roomAdd = await websocketAdapterRoomService.createRoom(
+      validPlayer.socketId,
+      validRoom.name,
+    );
 
-//   it('should refuse to add a room with an empty name', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
+    expect(roomAdd).toStrictEqual({
+      error: 'player-already-in-a-room',
+      success: false,
+    });
+  });
 
-//     const roomAdd = websocketAdapterRoomService.createRoom(validPlayer.id, '');
+  it('should refuse to add a room with an empty name', async () => {
+    await playersService.create(validPlayer);
 
-//     expect(roomAdd).toStrictEqual({
-//       error: 'room-name-empty',
-//       success: false,
-//     });
-//   });
+    const roomAdd = await websocketAdapterRoomService.createRoom(
+      validPlayer.socketId,
+      '',
+    );
 
-//   it('should create a room when a correct room name is provided', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
+    expect(roomAdd).toStrictEqual({
+      error: 'room-name-empty',
+      success: false,
+    });
+  });
 
-//     const roomAdd = websocketAdapterRoomService.createRoom(
-//       validPlayer.id,
-//       validRoom.name,
-//     );
+  it('should create a room when a correct room name is provided', async () => {
+    await playersService.create(validPlayer);
 
-//     expect(roomAdd).toStrictEqual({
-//       success: true,
-//       data: { roomSlug: validRoom.slug },
-//     });
-//   });
+    const roomAdd = await websocketAdapterRoomService.createRoom(
+      validPlayer.socketId,
+      validRoom.name,
+    );
 
-//   it('should refuse to create a room when a slug already exists', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
-//     websocketAdapterRoomService.createRoom(validPlayer.id, validRoom.name);
+    expect(roomAdd).toStrictEqual({
+      success: true,
+      data: { roomSlug: validRoom.slug },
+    });
+  });
 
-//     websocketAdapterPlayersService.updatePlayer(validPlayer2.id, {
-//       name: validPlayer2.nickName,
-//       color: validPlayer2.color,
-//     });
-//     const roomAdd = websocketAdapterRoomService.createRoom(
-//       validPlayer2.id,
-//       validRoom.name,
-//     );
+  it('should refuse to create a room when a slug already exists', async () => {
+    const player1Id = await playersService.create(validPlayer);
+    await playersService.create(validPlayer2);
+    await roomsService.create(validRoom.name);
+    await roomsService.addPlayerToRoom(player1Id, validRoom.slug);
 
-//     expect(roomAdd).toStrictEqual({
-//       error: 'room-already-exists',
-//       success: false,
-//     });
-//   });
-// });
+    const roomAdd = await websocketAdapterRoomService.createRoom(
+      validPlayer2.socketId,
+      validRoom.name,
+    );
 
-// describe('Rooms join', () => {
-//   it('should refuse to join a room with a wrong player socket ID', () => {
-//     const roomJoin = websocketAdapterRoomService.joinRoom(
-//       'fakeID123',
-//       validRoom.name,
-//     );
+    expect(roomAdd).toStrictEqual({
+      error: 'room-already-exists',
+      success: false,
+    });
+  });
+});
 
-//     expect(roomJoin).toStrictEqual({
-//       error: 'wrong-player-id',
-//       success: false,
-//     });
-//   });
+describe('Rooms join', () => {
+  it('should refuse to join a room with a wrong player socket ID', async () => {
+    const roomJoin = await websocketAdapterRoomService.joinRoom(
+      'fakeID123',
+      validRoom.name,
+    );
 
-//   it('should refuse to join a room with player ID already in a room', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
-//     roomsService.create(validRoom.name);
-//     roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
+    expect(roomJoin).toStrictEqual({
+      error: 'wrong-player-id',
+      success: false,
+    });
+  });
 
-//     const roomAdd = websocketAdapterRoomService.createRoom(
-//       validPlayer.id,
-//       validRoom.name,
-//     );
+  it('should refuse to join a room with player ID already in a room', async () => {
+    const playerId = await playersService.create(validPlayer);
+    await roomsService.create(validRoom.name);
+    await roomsService.addPlayerToRoom(playerId, validRoom.slug);
 
-//     expect(roomAdd).toStrictEqual({
-//       error: 'player-already-in-a-room',
-//       success: false,
-//     });
-//   });
+    const roomAdd = await websocketAdapterRoomService.createRoom(
+      validPlayer.socketId,
+      validRoom.name,
+    );
 
-//   it('should refuse to join a room with a wrong slug', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
+    expect(roomAdd).toStrictEqual({
+      error: 'player-already-in-a-room',
+      success: false,
+    });
+  });
 
-//     const roomAdd = websocketAdapterRoomService.joinRoom(
-//       validPlayer.id,
-//       'fake-slug',
-//     );
+  it('should refuse to join a room with a wrong slug', async () => {
+    await playersService.create(validPlayer);
 
-//     expect(roomAdd).toStrictEqual({
-//       error: 'wrong-room-slug',
-//       success: false,
-//     });
-//   });
+    const roomAdd = await websocketAdapterRoomService.joinRoom(
+      validPlayer.socketId,
+      'fake-slug',
+    );
 
-//   it('should join a room when a correct room name is provided', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
-//     websocketAdapterRoomService.createRoom(validPlayer.id, validRoom.name);
+    expect(roomAdd).toStrictEqual({
+      error: 'wrong-room-slug',
+      success: false,
+    });
+  });
 
-//     const roomAdd = websocketAdapterRoomService.joinRoom(
-//       validPlayer.id,
-//       validRoom.slug,
-//     );
+  it('should join a room when a correct room name is provided', async () => {
+    await playersService.create(validPlayer);
+    await roomsService.create(validRoom.name);
 
-//     expect(roomAdd).toStrictEqual({
-//       success: true,
-//       data: {
-//         roomName: 'Room 1',
-//         roomSlug: 'room-1',
-//       },
-//     });
-//   });
+    const roomAdd = await websocketAdapterRoomService.joinRoom(
+      validPlayer.socketId,
+      validRoom.slug,
+    );
 
-//   it('automatically set the new player as leader when no leader is defined', () => {
-//     playersService.create(validPlayer);
-//     roomsService.create(validRoom.slug);
-//     roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
+    expect(roomAdd).toStrictEqual({
+      success: true,
+      data: {
+        roomName: validRoom.name,
+        roomSlug: validRoom.slug,
+      },
+    });
+  });
 
-//     websocketAdapterRoomService.maybeResetLeader(validRoom.slug);
+  // it('automatically set the new player as leader when no leader is defined', async () => {
+  //   const playerId = await playersService.create(validPlayer);
+  //   await roomsService.create(validRoom.name);
+  //   await roomsService.addPlayerToRoom(playerId, validRoom.slug);
 
-//     expect(roomsLeadersService.getLeaderForRoom(validRoom.slug)).toStrictEqual(
-//       validPlayer,
-//     );
-//   });
-// });
+  //   await websocketAdapterRoomService.maybeResetLeader(validRoom.slug);
 
-// describe('Rooms refresh', () => {
-//   it('should send an empty rooms list while there is no room', () => {
-//     const roomsList = websocketAdapterRoomService.findAllRooms();
+  //   expect(roomsLeadersService.getLeaderForRoom(validRoom.slug)).toStrictEqual(
+  //     validPlayer,
+  //   );
+  // });
+});
 
-//     expect(roomsList).toStrictEqual({ success: true, data: [] });
-//   });
+describe('Rooms refresh', () => {
+  it('should send an empty rooms list while there is no room', async () => {
+    const roomsList = await websocketAdapterRoomService.findAllRooms();
 
-//   it('should send an rooms list with a freshly created room', () => {
-//     websocketAdapterPlayersService.updatePlayer(validPlayer.id, {
-//       name: validPlayer.nickName,
-//       color: validPlayer.color,
-//     });
-//     websocketAdapterRoomService.createRoom(validPlayer.id, validRoom.name);
-//     const roomsList = websocketAdapterRoomService.findAllRooms();
+    expect(roomsList).toStrictEqual({ success: true, data: [] });
+  });
 
-//     expect(roomsList).toStrictEqual({ success: true, data: [validRoom] });
-//   });
-// });
+  it('should send an rooms list with a freshly created room', async () => {
+    await playersService.create(validPlayer);
+    await roomsService.create(validRoom.name);
 
-// describe('Rooms players', () => {
-//   it('send the room players list', () => {
-//     playersService.create(validPlayer);
-//     playersService.create(validPlayer2);
+    const roomsList = await websocketAdapterRoomService.findAllRooms();
 
-//     roomsService.create(validRoom.slug);
+    expect(roomsList.success).toBe(true);
+    expect(roomsList.data).toHaveLength(1);
+    roomsList.data.map((room) => {
+      expect(room.players).toBeDefined();
+      expect(room.players).toHaveLength(0);
+    });
+  });
+});
 
-//     roomsPlayersAssociationService.addPlayerToRoom(validPlayer, validRoom.slug);
-//     roomsPlayersAssociationService.addPlayerToRoom(
-//       validPlayer2,
-//       validRoom.slug,
-//     );
+describe('Rooms players', () => {
+  it('send the room players list', async () => {
+    const player1Id = await playersService.create(validPlayer);
+    const player2Id = await playersService.create(validPlayer2);
+    await roomsService.create(validRoom.name);
+    await roomsService.addPlayerToRoom(player1Id, validRoom.slug);
+    await roomsService.addPlayerToRoom(player2Id, validRoom.slug);
 
-//     roomsLeadersService.setLeaderForRoom(validPlayer, validRoom.slug);
-
-//     expect(
-//       websocketAdapterRoomService.getRoomPlayers(validRoom.slug),
-//     ).toStrictEqual([validPlayer, validPlayer2]);
-//   });
-//});
+    const players = await websocketAdapterRoomService.getRoomPlayers(
+      validRoom.slug,
+    );
+    expect(players).toHaveLength(2);
+    expect(players[0].nickName).toBe(validPlayer.nickName);
+    expect(players[1].nickName).toBe(validPlayer2.nickName);
+    expect(players[0].socketId).toBe(validPlayer.socketId);
+    expect(players[1].socketId).toBe(validPlayer2.socketId);
+  });
+});
