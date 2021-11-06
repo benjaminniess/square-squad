@@ -60,7 +60,8 @@ export class RoomsService {
   }
 
   async deleteFromSlug(slug: string) {
-    if (!(await this.findBySlug(slug))) {
+    const room = await this.findBySlug(slug);
+    if (!room) {
       throw new ConflictException('room-does-not-exist');
     }
 
@@ -78,18 +79,20 @@ export class RoomsService {
     return room.players;
   }
 
-  // findEmptyRoomsSlugs(): string[] {
-  //   const roomSlugs = [];
-  //   this.associations.map((association) => {
-  //     if (association.players.length > 0) {
-  //       return;
-  //     }
+  async findEmptyRoomsSlugs(): Promise<string[]> {
+    const roomSlugs = [];
 
-  //     roomSlugs.push(association.roomSlug);
-  //   });
+    const rooms = await this.findAll();
+    rooms.map((room) => {
+      if (room.players.length > 0) {
+        return;
+      }
 
-  //   return roomSlugs;
-  // }
+      roomSlugs.push(room.slug);
+    });
+
+    return roomSlugs;
+  }
 
   async addPlayerToRoom(playerId: number, roomSlug: string) {
     const room = await this.findBySlug(roomSlug);

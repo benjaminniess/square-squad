@@ -99,11 +99,22 @@ export class WebsocketsAdapterRoomsService {
   }
 
   async removeEmptyRooms() {
-    // this.roomsService.findEmptyRoomsSlugs().map((roomSlug) => {
-    //   try {
-    //     this.roomsService.deleteFromSlug(roomSlug);
-    //   } catch (error) {}
-    // });
+    const emptyRoomsSlugs = await this.roomsService.findEmptyRoomsSlugs();
+    let deleted = 0;
+
+    await Promise.all(
+      emptyRoomsSlugs.map(async (roomSlug) => {
+        try {
+          await this.roomsService.deleteFromSlug(roomSlug);
+          deleted++;
+        } catch (error) {}
+      }),
+    );
+
+    return {
+      success: true,
+      data: { deleted: deleted },
+    };
   }
 
   async maybeResetLeader(roomSlug: string) {

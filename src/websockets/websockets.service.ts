@@ -28,24 +28,24 @@ export class WebsocketsService implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage('update-player-data')
-  handleUpdatePlayerData(
+  async handleUpdatePlayerData(
     @MessageBody() data: any,
     @ConnectedSocket() client: any,
-  ): void {
+  ) {
     client.emit(
       'update-player-data-result',
-      this.websocketsAdapterPlayers.updatePlayer(client.id, data),
+      await this.websocketsAdapterPlayers.updatePlayer(client.id, data),
     );
   }
 
   @SubscribeMessage('create-room')
-  handleCreateRoom(
+  async handleCreateRoom(
     @MessageBody() roomName: string,
     @ConnectedSocket() client: any,
-  ): void {
+  ) {
     client.emit(
       'create-room-result',
-      this.websocketsAdapterRooms.createRoom(client.id, roomName),
+      await this.websocketsAdapterRooms.createRoom(client.id, roomName),
     );
   }
 

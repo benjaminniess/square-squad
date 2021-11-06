@@ -278,3 +278,16 @@ describe('Rooms players', () => {
     expect(players[1].socketId).toBe(validPlayer2.socketId);
   });
 });
+
+describe('Clean empty rooms', () => {
+  it('removes empty rooms', async () => {
+    await roomsService.create(validRoom.name);
+    expect(await roomsService.findAll()).toHaveLength(1);
+
+    const removeEmptyRooms = await websocketAdapterRoomService.removeEmptyRooms();
+
+    expect(removeEmptyRooms.success).toBe(true);
+    expect(removeEmptyRooms.data.deleted).toBe(1);
+    expect(await roomsService.findAll()).toHaveLength(0);
+  });
+});
