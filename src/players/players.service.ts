@@ -84,7 +84,9 @@ export class PlayersService {
 
   // /!\ For test usage only
   async clear() {
-    await this.playersRepository.query(`DELETE FROM player;`);
-    //await this.playersRepository.clear();
+    await this.playersRepository.query(
+      `PRAGMA foreign_keys=off;DELETE FROM player;`,
+    );
+    await this.playersRepository.clear();
   }
 }

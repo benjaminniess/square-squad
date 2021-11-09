@@ -157,6 +157,9 @@ export class RoomsService {
 
   // /!\ For test usage only
   async clear() {
-    await this.roomsRepository.query(`DELETE FROM room;`);
+    await this.roomsRepository.query(
+      `PRAGMA foreign_keys=off; DELETE FROM room;`,
+    );
+    await this.roomsRepository.clear();
   }
 }
