@@ -1,71 +1,83 @@
 import { Injectable } from '@nestjs/common';
+import { PlayersService } from '../players/players.service';
 import { PlayerDto } from '../players/player.dto.interface';
-
-type roomLeadersAssociation = {
-  roomSlug: string;
-  leader: PlayerDto;
-};
+import { RoomsService } from './rooms.service';
+import { Repository } from 'typeorm';
+import { Room } from './room.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class RoomsLeadersService implements RoomsLeadersService {
-  private associations: roomLeadersAssociation[] = [];
+  constructor(
+    @InjectRepository(Room)
+    private roomsRepository: Repository<Room>,
+    private playersService: PlayersService,
+    private roomsService: RoomsService,
+  ) {}
 
-  getLeaderForRoom(roomSlug: string): PlayerDto | null {
-    let player = null;
+  async getLeaderForRoom(roomSlug: string): Promise<PlayerDto> | null {
+    let room = undefined;
 
-    this.associations.map((association) => {
-      if (association.roomSlug !== roomSlug) {
-        return;
+    try {
+      room = await this.roomsService.findBySlug(roomSlug);
+      if (!room) {
+        return undefined;
       }
 
-      player = association.leader;
-    });
-
-    return player;
-  }
-
-  setLeaderForRoom(leader: PlayerDto, roomSlug: string) {
-    const associationKey = this.getRoomAssociationKey(roomSlug);
-    if (associationKey === null) {
-      this.associations.push({ roomSlug, leader });
-      return;
+      if (!room.leader) {
+        return undefined;
+      }
+    } catch (error) {
+      return undefined;
     }
 
-    this.associations[associationKey].leader = leader;
+    return room.leader;
   }
 
-  removeLeaderFromRoom(roomSlug: string) {
-    const associationKey = this.getRoomAssociationKey(roomSlug);
-    if (associationKey === null) {
-      return;
+  async setLeaderForRoom(playerId: number, roomSlug: string) {
+    const room = await this.roomsService.findBySlug(roomSlug);
+    if (!room) {
+      return {
+        success: false,
+        error: 'wrong-room-slug',
+      };
     }
 
-    this.associations.splice(associationKey, 1);
+    const player = await this.playersService.findById(playerId);
+    if (!player) {
+      return {
+        success: false,
+        error: 'wrong-player-id',
+      };
+    }
+
+    room.leader = player;
+    await this.roomsRepository.save(room);
   }
 
-  isPlayerLeaderOfRoom(player: PlayerDto, roomSlug: string): boolean {
-    const associationKey = this.getRoomAssociationKey(roomSlug);
-    if (associationKey === null) {
+  async removeLeaderFromRoom(roomSlug: string) {
+    const room = await this.roomsService.findBySlug(roomSlug);
+    if (!room) {
+      return {
+        success: false,
+        error: 'wrong-room-slug',
+      };
+    }
+
+    room.leader = null;
+
+    await this.roomsRepository.save(room);
+  }
+
+  async isPlayerLeaderOfRoom(
+    player: PlayerDto,
+    roomSlug: string,
+  ): Promise<boolean> {
+    const leader = await this.getLeaderForRoom(roomSlug);
+    if (!leader) {
       return false;
     }
 
-    if (this.associations[associationKey].leader !== player) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private getRoomAssociationKey(roomSlug: string): number | null {
-    let associationKey = null;
-
-    this.associations.map((association, arrayKey) => {
-      if (association.roomSlug !== roomSlug) {
-        return;
-      }
-      associationKey = arrayKey;
-    });
-
-    return associationKey;
+    return leader.socketId === player.socketId;
   }
 }

@@ -14,7 +14,7 @@ let websocketAdapterRoomService: WebsocketsAdapterRoomsService;
 let roomsService: RoomsService;
 let playersService: PlayersService;
 
-const connectionName = 'test';
+const connectionName = 'test-rooms-service';
 
 const validPlayer = {
   socketId: '123456abc',
@@ -224,18 +224,6 @@ describe('Rooms join', () => {
       },
     });
   });
-
-  // it('automatically set the new player as leader when no leader is defined', async () => {
-  //   const playerId = await playersService.create(validPlayer);
-  //   await roomsService.create(validRoom.name);
-  //   await roomsService.addPlayerToRoom(playerId, validRoom.slug);
-
-  //   await websocketAdapterRoomService.maybeResetLeader(validRoom.slug);
-
-  //   expect(roomsLeadersService.getLeaderForRoom(validRoom.slug)).toStrictEqual(
-  //     validPlayer,
-  //   );
-  // });
 });
 
 describe('Rooms refresh', () => {

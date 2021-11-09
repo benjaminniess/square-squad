@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   ManyToOne,
+  OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -24,4 +26,7 @@ export class Player {
 
   @ManyToOne(() => Room, (room) => room.players)
   room: Room;
+
+  @OneToMany(() => Room, (room) => room.leader)
+  adminOf: Room[];
 }

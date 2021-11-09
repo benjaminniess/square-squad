@@ -118,16 +118,22 @@ export class WebsocketsAdapterRoomsService {
   }
 
   async maybeResetLeader(roomSlug: string) {
-    // if (this.roomsLeadersAssociation.getLeaderForRoom(roomSlug) !== null) {
-    //   return;
-    // }
-    // const roomPlayers = this.roomsPlayersAssociation.findAllPlayersInRoom(
-    //   roomSlug,
-    // );
-    // if (roomPlayers.length === 0) {
-    //   return;
-    // }
-    // this.roomsLeadersAssociation.setLeaderForRoom(roomPlayers[0], roomSlug);
+    if (
+      (await this.roomsLeadersAssociation.getLeaderForRoom(roomSlug)) !==
+      undefined
+    ) {
+      return;
+    }
+
+    const roomPlayers = await this.roomsService.findAllPlayersInRoom(roomSlug);
+    if (roomPlayers.length === 0) {
+      return;
+    }
+
+    await this.roomsLeadersAssociation.setLeaderForRoom(
+      roomPlayers[0].id,
+      roomSlug,
+    );
   }
 
   async getRoomPlayers(roomSlug: string) {
