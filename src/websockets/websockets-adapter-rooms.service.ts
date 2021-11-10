@@ -85,7 +85,16 @@ export class WebsocketsAdapterRoomsService {
   }
 
   async findAllRooms() {
-    return { success: true, data: await this.roomsService.findAll() };
+    const rooms = await this.roomsService.findAll();
+
+    if (rooms.length > 0) {
+      rooms.map((room) => {
+        delete room.players;
+        delete room.id;
+        delete room.leader;
+      });
+    }
+    return { success: true, data: rooms };
   }
 
   async removePlayerFromRooms(socketId: string) {

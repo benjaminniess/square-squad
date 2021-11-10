@@ -242,8 +242,9 @@ describe('Rooms refresh', () => {
     expect(roomsList.success).toBe(true);
     expect(roomsList.data).toHaveLength(1);
     roomsList.data.map((room) => {
-      expect(room.players).toBeDefined();
-      expect(room.players).toHaveLength(0);
+      expect(room.slug).toStrictEqual(validRoom.slug);
+      expect(room.name).toStrictEqual(validRoom.name);
+      expect(room.players).toBeUndefined();
     });
   });
 });
