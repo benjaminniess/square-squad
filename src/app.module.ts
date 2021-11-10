@@ -9,11 +9,11 @@ import { RoomsService } from './rooms/rooms.service';
 import { WebsocketsAdapterPlayersService } from './websockets/websockets-adapter-players.service';
 import { RoomsLeadersService } from './rooms/rooms-leaders.service';
 import { Helpers } from './helpers/helpers';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Player } from './players/player.entity';
 import { Room } from './rooms/room.entity';
 import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-rooms.service';
-import { Repository } from 'typeorm';
+import { WebsocketsAdapterGameService } from './websockets/websockets-adapter-games.service';
 
 @Module({
   imports: [
@@ -38,6 +38,7 @@ import { Repository } from 'typeorm';
     RoomsService,
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
+    WebsocketsAdapterGameService,
     RoomsLeadersService,
   ],
 })

@@ -8,6 +8,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { WebsocketsAdapterGameService } from './websockets-adapter-games.service';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
 import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
 
@@ -17,6 +18,7 @@ export class WebsocketsService implements OnGatewayDisconnect {
   constructor(
     private websocketsAdapterPlayers: WebsocketsAdapterPlayersService,
     private websocketsAdapterRooms: WebsocketsAdapterRoomsService,
+    private websocketAdapterGames: WebsocketsAdapterGameService,
   ) {}
 
   @WebSocketServer()
@@ -102,5 +104,23 @@ export class WebsocketsService implements OnGatewayDisconnect {
       'rooms-refresh-result',
       await this.websocketsAdapterRooms.findAllRooms(),
     );
+  }
+
+  @SubscribeMessage('start-game')
+  async handleStartGame(
+    @MessageBody() gameData: any,
+    @ConnectedSocket() client: any,
+  ): Promise<void> {
+    client.emit(
+      'start-game-result',
+      await this.websocketAdapterGames.startGame(),
+    );
+
+    this.server
+      .to(gameData.roomSlug)
+      .emit(
+        'refresh-players',
+        await this.websocketsAdapterRooms.getRoomPlayers(gameData.roomSlug),
+      );
   }
 }
