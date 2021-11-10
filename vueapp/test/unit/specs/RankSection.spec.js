@@ -27,7 +27,7 @@ describe('RankSection.vue', () => {
       players: [
         {
           id: 'h7Ud54bbL-z6qx1oAAAF',
-          nickname: 'Player 2',
+          nickName: 'Player 2',
           color: '#aa00bb',
           score: 5,
           alive: false,
@@ -35,7 +35,7 @@ describe('RankSection.vue', () => {
         },
         {
           id: 'KslmArFZKGWLAlsjAAAH',
-          nickname: 'Player 1',
+          nickName: 'Player 1',
           color: '#22964a',
           score: 12,
           alive: false,

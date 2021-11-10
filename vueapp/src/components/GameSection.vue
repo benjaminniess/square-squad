@@ -14,7 +14,7 @@
               :key="player_key"
               :style="{ color: player.color }"
             >
-              {{ player.nickname }}
+              {{ player.nickName }}
               <!--<span v-if="player.isAdmin">[Admin]</span>-->
               <span v-if="player.id == currentPlayer">[You]</span>
               <span v-if="player.alive !== true">[Dead]</span>

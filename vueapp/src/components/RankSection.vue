@@ -11,7 +11,7 @@
             <td>Winner</td>
             <td>
               <span class="user-name" v-bind:style="{ color: winner.color }"
-                ><span>{{ winner.nickname }}</span></span
+                ><span>{{ winner.nickName }}</span></span
               >
             </td>
           </tr>
@@ -30,7 +30,7 @@
           :key="rank.id"
           v-bind:style="{ color: rank.color }"
         >
-          {{ rank.nickname }} ({{ rank.score }} points)
+          {{ rank.nickName }} ({{ rank.score }} points)
         </li>
       </ul>
       <h3>Global ranking</h3>
@@ -40,7 +40,7 @@
           :key="rank.id"
           v-bind:style="{ color: rank.color }"
         >
-          {{ rank.nickname }} ({{ rank.score }} points)
+          {{ rank.nickName }} ({{ rank.score }} points)
         </li>
       </ul>
       <button v-if="gameIsOver" class="btn" id="back-button" @click="back">

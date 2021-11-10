@@ -75,14 +75,14 @@ describe('LobbySection.vue', () => {
           color: '#FF0000',
           id: 'n7BGXs8MCOWDd3hvAAAR',
           isAdmin: false, // Not admin anymore
-          nickname: 'Tester Admin',
+          nickName: 'Tester Admin',
           score: 0
         },
         {
           color: '#00FF00',
           id: '"a6fJks8MCOWDd5ucBBBV"',
           isAdmin: false, // is now admin
-          nickname: 'Tester client',
+          nickName: 'Tester client',
           score: 0
         }
       ],
