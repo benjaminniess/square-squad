@@ -262,8 +262,8 @@ describe('Rooms players', () => {
     expect(players).toHaveLength(2);
     expect(players[0].nickName).toBe(validPlayer.nickName);
     expect(players[1].nickName).toBe(validPlayer2.nickName);
-    expect(players[0].socketId).toBe(validPlayer.socketId);
-    expect(players[1].socketId).toBe(validPlayer2.socketId);
+    expect(players[0].id).toBe(validPlayer.socketId);
+    expect(players[1].id).toBe(validPlayer2.socketId);
   });
 });
 

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 import { PlayersService } from '../players/players.service';
 import { RoomsService } from '../rooms/rooms.service';
+import { PlayerOutputDto } from 'src/players/player.output.dto.interface';
+import { Error } from 'src/contracts/error.interface';
 
 @Injectable()
 export class WebsocketsAdapterRoomsService {
@@ -136,7 +138,7 @@ export class WebsocketsAdapterRoomsService {
     );
   }
 
-  async getRoomPlayers(roomSlug: string) {
+  async getRoomPlayers(roomSlug: string): Promise<PlayerOutputDto[] | Error> {
     const room = await this.roomsService.findBySlug(roomSlug);
     if (!room) {
       return {
@@ -145,6 +147,20 @@ export class WebsocketsAdapterRoomsService {
       };
     }
 
-    return room.players;
+    const leader = await this.roomsLeadersAssociation.getLeaderForRoom(
+      roomSlug,
+    );
+
+    const roomPlayers: PlayerOutputDto[] = [];
+    room.players.map((player) => {
+      roomPlayers.push({
+        id: player.socketId,
+        color: player.color,
+        nickName: player.nickName,
+        isAdmin: leader && leader.socketId === player.socketId,
+      });
+    });
+
+    return roomPlayers;
   }
 }
