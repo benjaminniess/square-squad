@@ -120,17 +120,38 @@ export class WebsocketsAdapterRoomsService {
   }
 
   async maybeResetLeader(roomSlug: string) {
-    if (
-      (await this.roomsLeadersAssociation.getLeaderForRoom(roomSlug)) !==
-      undefined
-    ) {
-      return;
-    }
-
     const roomPlayers = await this.roomsService.findAllPlayersInRoom(roomSlug);
     if (roomPlayers.length === 0) {
       return;
     }
+
+    const currentLeader = await this.roomsLeadersAssociation.getLeaderForRoom(
+      roomSlug,
+    );
+
+    if (currentLeader !== undefined) {
+      let isCurrentLeaderStillInTheRoom = false;
+      roomPlayers.map((player) => {
+        if (player.socketId === currentLeader.socketId) {
+          isCurrentLeaderStillInTheRoom = true;
+        }
+      });
+
+      if (isCurrentLeaderStillInTheRoom) {
+        return;
+      }
+    }
+
+    await this.resetLeader(roomSlug);
+  }
+
+  async resetLeader(roomSlug: string) {
+    const roomPlayers = await this.roomsService.findAllPlayersInRoom(roomSlug);
+    if (roomPlayers.length === 0) {
+      return;
+    }
+
+    await this.roomsLeadersAssociation.removeLeaderFromRoom(roomSlug);
 
     await this.roomsLeadersAssociation.setLeaderForRoom(
       roomPlayers[0].id,

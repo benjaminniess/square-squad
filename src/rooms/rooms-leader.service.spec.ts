@@ -137,6 +137,23 @@ describe('RoomsPlayerAssociationService', () => {
     expect(leader.nickName).toBe(validPlayer.nickName);
   });
 
+  it('automatically set another player as leader when the leader leaves the room', async () => {
+    const playerId = await playersService.create(validPlayer);
+    const playerId2 = await playersService.create(validPlayer2);
+    await roomsService.create(validRoom.name);
+    await roomsService.addPlayerToRoom(playerId, validRoom.slug);
+    await roomsLeadersService.setLeaderForRoom(playerId, validRoom.slug);
+    await roomsService.addPlayerToRoom(playerId2, validRoom.slug);
+    await roomsService.removePlayerFromRoom(playerId, validRoom.slug);
+
+    await websocketAdapterRoomService.maybeResetLeader(validRoom.slug);
+
+    const leader = await roomsLeadersService.getLeaderForRoom(validRoom.slug);
+
+    expect(leader.socketId).toBe(validPlayer2.socketId);
+    expect(leader.nickName).toBe(validPlayer2.nickName);
+  });
+
   it('removes a leader from a room', async () => {
     const playerId = await playersService.create(validPlayer);
     await roomsService.create(validRoom.name);
