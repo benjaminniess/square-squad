@@ -53,4 +53,12 @@ export class GamesService {
 
     return gameInstance.id;
   }
+
+  // /!\ For test usage only
+  async clear() {
+    await this.gameInstanceRepository.query(
+      `PRAGMA foreign_keys=off; DELETE FROM game_instance;`,
+    );
+    await this.gameInstanceRepository.clear();
+  }
 }

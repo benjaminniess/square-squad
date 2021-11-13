@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Room } from '../rooms/room.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 export class GameInstance {
@@ -10,4 +18,8 @@ export class GameInstance {
 
   @Column()
   status: string;
+
+  @OneToOne(() => Room, null, { eager: true })
+  @JoinColumn()
+  room: Room;
 }
