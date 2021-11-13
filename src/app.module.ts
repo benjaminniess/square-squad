@@ -14,14 +14,16 @@ import { Player } from './players/player.entity';
 import { Room } from './rooms/room.entity';
 import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-rooms.service';
 import { WebsocketsAdapterGameService } from './websockets/websockets-adapter-games.service';
+import { GamesService } from './games/games.service';
+import { GameInstance } from './games/game-instance.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Player, Room]),
+    TypeOrmModule.forFeature([Player, Room, GameInstance]),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
-      entities: [Player, Room],
+      entities: [Player, Room, GameInstance],
       synchronize: true,
       keepConnectionAlive: true,
     }),
@@ -36,6 +38,7 @@ import { WebsocketsAdapterGameService } from './websockets/websockets-adapter-ga
     WebsocketsService,
     PlayersService,
     RoomsService,
+    GamesService,
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
