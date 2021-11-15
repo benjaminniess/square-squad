@@ -40,6 +40,7 @@ export class GamesService {
     const gameInstance = new GameInstance();
     gameInstance.type = instanceDto.game;
     gameInstance.status = instanceDto.status;
+    gameInstance.room = instanceDto.room;
 
     try {
       await this.gameInstanceRepository.save(gameInstance);

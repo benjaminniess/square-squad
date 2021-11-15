@@ -132,4 +132,18 @@ describe('Game creation', () => {
     expect(gameInstances).toHaveLength(1);
     expect(gameInstances[0].id).toBe(gameInstanceCreation.data.gameInstanceId);
   });
+
+  it('should retrieve the room from the game instance', async () => {
+    await roomsService.create(validRoom.name);
+
+    const gameInstanceCreation = await websocketAdapterGames.startGame(
+      validGameInstanceDto,
+    );
+
+    const gameInstance = await gameService.findById(
+      gameInstanceCreation.data.gameInstanceId,
+    );
+
+    expect(gameInstance.room.slug).toBe(validRoom.slug);
+  });
 });

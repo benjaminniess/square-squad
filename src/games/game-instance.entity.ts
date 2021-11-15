@@ -19,7 +19,7 @@ export class GameInstance {
   @Column()
   status: string;
 
-  @OneToOne(() => Room, null, { eager: true })
+  @OneToOne(() => Room, (room) => null, { eager: true })
   @JoinColumn()
   room: Room;
 }
