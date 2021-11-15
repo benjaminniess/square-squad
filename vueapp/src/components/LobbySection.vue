@@ -72,6 +72,7 @@ export default {
     startGame() {
       this.$store.state.socket.emit('start-game', {
         roomSlug: this.room.roomSlug,
+        gameType: 'panic-attack',
         ...this.$store.state.gameOptions
       })
 

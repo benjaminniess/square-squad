@@ -111,10 +111,12 @@ export class WebsocketsService implements OnGatewayDisconnect {
     @MessageBody() gameData: any,
     @ConnectedSocket() client: any,
   ): Promise<void> {
-    client.emit(
-      'start-game-result',
-      await this.websocketAdapterGames.startGame(),
-    );
+    const newGame = await this.websocketAdapterGames.startGame(gameData);
+    client.emit('start-game-result', newGame);
+
+    if (!newGame.success) {
+      return;
+    }
 
     this.server
       .to(gameData.roomSlug)
