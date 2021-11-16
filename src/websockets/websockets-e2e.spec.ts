@@ -3,13 +3,13 @@ import io from 'socket.io-client';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
+import { getConnection } from 'typeorm';
 
 let socket1, socket2;
 
 let app: INestApplication;
 
-// @ts-ignore
-beforeAll(async () => {
+beforeEach(async () => {
   const moduleFixture = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
@@ -23,6 +23,10 @@ beforeAll(async () => {
   socket2 = io(`http://localhost:${port}`);
 });
 
+afterEach(async () => {
+  await clearDB();
+});
+
 const validUser = {
   name: 'Tester',
   color: '#00FF00',
@@ -34,12 +38,23 @@ const validRoom = {
 };
 
 const validGameData = {
-  roomSlug: 'room-name',
+  roomSlug: validRoom.slug,
   gameType: 'panic-attack',
   roundsNumber: '4',
   obstaclesSpeed: '19',
   bonusFrequency: '2',
 };
+
+export async function clearDB() {
+  const entities = getConnection().entityMetadatas;
+  for (const entity of entities) {
+    const repository = await getConnection().getRepository(entity.name);
+    await repository.query(
+      `PRAGMA foreign_keys=off; DELETE FROM ${entity.tableName};`,
+    );
+    await repository.clear();
+  }
+}
 
 /**
  * Emit a 'update-player-data' socket and wait for 'update-player-data-result'
@@ -79,7 +94,7 @@ const refreshRooms = (socket = socket1): any => {
  * @param {*} socket: the user socket.io socket
  * @returns void
  */
-const createRoom = (roomName = 'Room name', socket = socket1): any => {
+const createRoom = (roomName = validRoom.name, socket = socket1): any => {
   return new Promise((resolve, reject) => {
     socket.emit('create-room', roomName);
     socket.on('create-room-result', (result) => {
@@ -143,6 +158,8 @@ describe('SOCKET - Player Data', () => {
   });
 
   it("updates a player's data", async () => {
+    await updatePlayer();
+
     const result = await updatePlayer({
       name: 'Tester updated',
       color: '#00FF00',
@@ -160,13 +177,18 @@ describe('SOCKET - Rooms', () => {
   });
 
   it('creates a room when no room exist with this name and returns a success staus with room data', async () => {
+    await updatePlayer();
+
     const result = await createRoom();
 
     expect(result.success).toBeTruthy();
-    expect(result.data).toStrictEqual({ roomSlug: 'room-name' });
+    expect(result.data).toStrictEqual({ roomSlug: validRoom.slug });
   });
 
   it('fails to create existing room and send an error message', async () => {
+    await updatePlayer();
+    await createRoom();
+
     const result = await createRoom();
 
     expect(result.success).toBe(false);
@@ -174,7 +196,9 @@ describe('SOCKET - Rooms', () => {
   });
 
   it('joins an existing room and send a success state and an array of 1 player', async () => {
-    const room = await createRoom(validRoom.name);
+    await updatePlayer();
+    await createRoom(validRoom.name);
+
     const result = await joinRoom(validRoom.slug);
 
     expect(result['join-room-result'].success).toBeTruthy();
@@ -188,6 +212,7 @@ describe('SOCKET - Rooms', () => {
 
 describe('SOCKET - Player 2 is joining', () => {
   it('creates a second player with a new socket and returns a success status', async () => {
+    await updatePlayer();
     const result = await updatePlayer(
       {
         name: 'Tester 2 ',
@@ -197,8 +222,21 @@ describe('SOCKET - Player 2 is joining', () => {
     );
     expect(result.success).toBeTruthy();
   });
+
   it('joins a room with the second socket and returns a success state and an array of 2 players', async () => {
+    await updatePlayer();
+    await createRoom();
+    await joinRoom(validRoom.slug, socket1);
+    await updatePlayer(
+      {
+        name: 'Tester 2 ',
+        color: '#0000FF',
+      },
+      socket2,
+    );
+
     const result = await joinRoom(validRoom.slug, socket2);
+
     expect(result['join-room-result'].success).toEqual(true);
     expect(result['join-room-result'].data).toStrictEqual({
       roomName: validRoom.name,
@@ -210,34 +248,42 @@ describe('SOCKET - Player 2 is joining', () => {
 
 describe('SOCKET - Start game', () => {
   it('Fails to create a game if not admin', async () => {
-    const result = await startGame(validGameData, socket2);
-
+    const result = await startGame(validGameData, socket1);
     expect(result.success).toBe(false);
     expect(result.error).toBe('user-is-not-admin');
   });
 
-  // it('Fails to create a game if missing data', async () => {
-  //   const result = await startGame({}, socket2);
-  //   expect(result.success).toBe(false);
-  //   expect(result.error).toBe('This room does not exist');
-  // });
+  it('Fails to create a game if missing data', async () => {
+    await updatePlayer();
+    await createRoom();
+    await joinRoom(validRoom.slug, socket1);
 
-  //   it('Creates a game', async () => {
-  //     const result = await startGame();
-  //     expect(result.success).toBeTruthy();
-  //     expect(result.data.currentRound).toBe(1);
-  //     expect(result.data.totalRounds).toBe(4);
-  //   });
+    const result = await startGame({}, socket1);
 
-  //   for (let i = 3; i >= 0; i--) {
-  //     it('Wait for the game to start in ' + i, () => {
-  //       return new Promise((resolve, reject) => {
-  //         socket1.on('countdown-update', (data: any) => {
-  //           resolve(data);
-  //         });
-  //       }).then((result) => {
-  //         expect(result.timeleft).toBe(i);
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('missing-room-slug');
+  });
+
+  it('Creates a game', async () => {
+    await updatePlayer();
+    await createRoom();
+    await joinRoom(validRoom.slug, socket1);
+
+    const result = await startGame();
+
+    expect(result.success).toBeTruthy();
+    expect(result.data.gameInstanceId).toBeGreaterThan(0);
+  });
+
+  // for (let i = 3; i >= 0; i--) {
+  //   it('Wait for the game to start in ' + i, () => {
+  //     return new Promise((resolve, reject) => {
+  //       socket1.on('countdown-update', (data: any) => {
+  //         resolve(data);
   //       });
+  //     }).then((result: any) => {
+  //       expect(result.timeleft).toBe(i);
   //     });
-  //   }
+  //   });
+  // }
 });

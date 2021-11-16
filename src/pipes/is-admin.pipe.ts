@@ -16,6 +16,13 @@ export class IsAdminPipe implements PipeTransform {
       return value;
     }
 
+    if (!value.roomSlug) {
+      return {
+        success: false,
+        error: 'missing-room-slug',
+      };
+    }
+
     const room = await this.roomsService.findBySlug(value.roomSlug);
     if (!room || !room.leader) {
       return {
