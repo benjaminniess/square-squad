@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UsePipes } from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
@@ -6,8 +6,10 @@ import {
   ConnectedSocket,
   OnGatewayDisconnect,
   WebSocketServer,
+  WsResponse,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { IsAdminPipe } from '../pipes/is-admin.pipe';
 import { WebsocketsAdapterGameService } from './websockets-adapter-games.service';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
 import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
@@ -106,11 +108,17 @@ export class WebsocketsService implements OnGatewayDisconnect {
     );
   }
 
+  @UsePipes(IsAdminPipe)
   @SubscribeMessage('start-game')
   async handleStartGame(
     @MessageBody() gameData: any,
     @ConnectedSocket() client: any,
   ): Promise<void> {
+    if (gameData.error) {
+      client.emit('start-game-result', gameData);
+      return;
+    }
+
     const newGame = await this.websocketAdapterGames.startGame(gameData);
     client.emit('start-game-result', newGame);
 

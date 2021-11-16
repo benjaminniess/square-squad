@@ -208,35 +208,36 @@ describe('SOCKET - Player 2 is joining', () => {
   });
 });
 
-// describe('SOCKET - Start game', () => {
-//   it('Fails to create a game if not admin', async () => {
-//     const result = await startGame(validGameData, socket2);
-//     expect(result.success).toBe(false);
-//     expect(result.error).toBe('You are not admin of this room');
-//   });
+describe('SOCKET - Start game', () => {
+  it('Fails to create a game if not admin', async () => {
+    const result = await startGame(validGameData, socket2);
 
-//   it('Fails to create a game if missing data', async () => {
-//     const result = await startGame({}, socket2);
-//     expect(result.success).toBe(false);
-//     expect(result.error).toBe('This room does not exist');
-//   });
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('user-is-not-admin');
+  });
 
-//   it('Creates a game', async () => {
-//     const result = await startGame();
-//     expect(result.success).toBeTruthy();
-//     expect(result.data.currentRound).toBe(1);
-//     expect(result.data.totalRounds).toBe(4);
-//   });
+  // it('Fails to create a game if missing data', async () => {
+  //   const result = await startGame({}, socket2);
+  //   expect(result.success).toBe(false);
+  //   expect(result.error).toBe('This room does not exist');
+  // });
 
-//   for (let i = 3; i >= 0; i--) {
-//     it('Wait for the game to start in ' + i, () => {
-//       return new Promise((resolve, reject) => {
-//         socket1.on('countdown-update', (data: any) => {
-//           resolve(data);
-//         });
-//       }).then((result) => {
-//         expect(result.timeleft).toBe(i);
-//       });
-//     });
-//   }
-// });
+  //   it('Creates a game', async () => {
+  //     const result = await startGame();
+  //     expect(result.success).toBeTruthy();
+  //     expect(result.data.currentRound).toBe(1);
+  //     expect(result.data.totalRounds).toBe(4);
+  //   });
+
+  //   for (let i = 3; i >= 0; i--) {
+  //     it('Wait for the game to start in ' + i, () => {
+  //       return new Promise((resolve, reject) => {
+  //         socket1.on('countdown-update', (data: any) => {
+  //           resolve(data);
+  //         });
+  //       }).then((result) => {
+  //         expect(result.timeleft).toBe(i);
+  //       });
+  //     });
+  //   }
+});
