@@ -120,6 +120,6 @@ export class WebsocketsService implements OnGatewayDisconnect {
     }
 
     const newGame = await this.websocketAdapterGames.startGame(gameData);
-    client.emit('start-game-result', newGame);
+    this.server.to(gameData.roomSlug).emit('start-game-result', newGame);
   }
 }

@@ -141,6 +141,14 @@ const startGame = (gameData: any = validGameData, socket = socket1): any => {
   });
 };
 
+const startGameForNonAdmins = (socket = socket2): any => {
+  return new Promise((resolve, reject) => {
+    socket.on('start-game-result', (result) => {
+      resolve(result);
+    });
+  });
+};
+
 describe('SOCKET - Player Data', () => {
   it('emits a update-player-data-result socket with a success set to false when missing name', async () => {
     const result = await updatePlayer({ name: '', color: '#FF0000' });
@@ -273,6 +281,29 @@ describe('SOCKET - Start game', () => {
 
     expect(result.success).toBeTruthy();
     expect(result.data.gameInstanceId).toBeGreaterThan(0);
+  });
+
+  it('Sends a create game confirmation to all the players of the room', async () => {
+    await updatePlayer();
+    await createRoom();
+    await joinRoom(validRoom.slug, socket1);
+    await updatePlayer(
+      {
+        name: 'Tester 2 ',
+        color: '#0000FF',
+      },
+      socket2,
+    );
+    await joinRoom(validRoom.slug, socket2);
+
+    const result = await startGame();
+
+    expect(result.success).toBeTruthy();
+    expect(result.data.gameInstanceId).toBeGreaterThan(0);
+
+    const nonAdminResult = await startGameForNonAdmins();
+    expect(nonAdminResult.success).toBeTruthy();
+    expect(nonAdminResult.data.gameInstanceId).toBeGreaterThan(0);
   });
 
   // for (let i = 3; i >= 0; i--) {
