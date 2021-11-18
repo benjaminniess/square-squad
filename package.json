@@ -23,7 +23,7 @@
     "tab:start": "ttab -t 'start:dev' npm run start:dev",
     "tab:tests": "ttab -t 'start tests' npm run test:watch",
     "tab:vueapp": "ttab -t 'start vue app' 'cd vueapp/ && npm start'",
-    "tab:vueapp-tests": "ttab -t 'vue app tests' 'npm test'"
+    "tab:vueapp-tests": "ttab -t 'vue app tests' 'cd vueapp/ && npm test'"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
