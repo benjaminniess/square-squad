@@ -8,7 +8,9 @@ import {
   OneToOne,
   JoinColumn,
   ManyToOne,
+  JoinTable,
 } from 'typeorm';
+import { GameInstance } from '../games/game-instance.entity';
 
 @Entity()
 @Unique(['slug'])
@@ -31,4 +33,7 @@ export class Room {
 
   @ManyToOne(() => Player, (player) => player.adminOf, { eager: true })
   leader: Player;
+
+  @OneToOne(() => GameInstance, (game) => game.room, { eager: true })
+  game: GameInstance;
 }

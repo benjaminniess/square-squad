@@ -12,7 +12,13 @@ export class GamesService {
   ) {}
 
   findAll(): Promise<GameInstance[]> {
-    return this.gameInstanceRepository.find();
+    return this.gameInstanceRepository.find({ relations: ['room'] });
+  }
+
+  findActives(): Promise<GameInstance[]> {
+    return this.gameInstanceRepository.find({
+      where: { status: 'playing' },
+    });
   }
 
   findOne(args: any = null): Promise<GameInstance> {
@@ -22,6 +28,7 @@ export class GamesService {
   findById(id: number) {
     return this.findOne({
       where: { id: id },
+      relations: ['room'],
     });
   }
 
