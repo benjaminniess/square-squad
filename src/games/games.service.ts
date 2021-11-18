@@ -18,6 +18,7 @@ export class GamesService {
   findActives(): Promise<GameInstance[]> {
     return this.gameInstanceRepository.find({
       where: { status: 'playing' },
+      relations: ['room'],
     });
   }
 

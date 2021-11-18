@@ -69,4 +69,17 @@ describe('Game creation', () => {
 
     expect(gameInstance.room.slug).toBe(testingSamples.validRoom.slug);
   });
+
+  it('should list active games instance', async () => {
+    await boot.roomsService.create(testingSamples.validRoom.name);
+    await boot.gameService.create({
+      game: testingSamples.validGameInstanceDto.gameType,
+      status: 'playing',
+      room: testingSamples.validRoom.slug,
+    });
+
+    const activeGames = await boot.websocketAdapterGames.getActiveGameInstances();
+
+    expect(activeGames).toHaveLength(1);
+  });
 });

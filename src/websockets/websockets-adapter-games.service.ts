@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
-import { PlayersService } from '../players/players.service';
 import { RoomsService } from '../rooms/rooms.service';
-import { PlayerOutputDto } from 'src/players/player.output.dto.interface';
 import { Error } from 'src/contracts/error.interface';
 import { Success } from 'src/contracts/success.interface';
 import { GamesService } from '../games/games.service';
-import { GameInstance } from '../games/game-instance.entity';
 
 @Injectable()
 export class WebsocketsAdapterGameService {
   constructor(
     private gamesService: GamesService,
     private roomsService: RoomsService,
-    private roomsLeadersAssociation: RoomsLeadersService,
   ) {}
 
   async startGame(gameData: any): Promise<Success | Error> {
@@ -54,5 +50,9 @@ export class WebsocketsAdapterGameService {
       success: true,
       data: { gameInstanceId: gameInstanceId },
     };
+  }
+
+  getActiveGameInstances() {
+    return this.gamesService.findActives();
   }
 }
