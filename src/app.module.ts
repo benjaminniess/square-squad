@@ -16,10 +16,12 @@ import { WebsocketsAdapterRoomsService } from './websockets/websockets-adapter-r
 import { WebsocketsAdapterGameService } from './websockets/websockets-adapter-games.service';
 import { GamesService } from './games/games.service';
 import { GameInstance } from './games/game-instance.entity';
+import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Player, Room, GameInstance]),
+    EventEmitterModule.forRoot({ wildcard: true, maxListeners: 30 }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
@@ -43,6 +45,7 @@ import { GameInstance } from './games/game-instance.entity';
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
     RoomsLeadersService,
+    EventEmitter2,
   ],
 })
 export class AppModule {}
