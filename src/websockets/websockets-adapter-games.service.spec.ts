@@ -82,4 +82,18 @@ describe('Game creation', () => {
 
     expect(activeGames).toHaveLength(1);
   });
+
+  it('should update a game instance status', async () => {
+    await boot.roomsService.create(testingSamples.validRoom.name);
+    const gameInstanceId = await boot.gameService.create({
+      game: testingSamples.validGameInstanceDto.gameType,
+      status: 'waiting',
+      room: testingSamples.validRoom.slug,
+    });
+
+    await boot.websocketAdapterGames.setStatus(gameInstanceId, 'playing');
+
+    const game = await boot.gameService.findById(gameInstanceId);
+    expect(game.status).toBe('playing');
+  });
 });

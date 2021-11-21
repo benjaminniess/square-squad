@@ -63,6 +63,11 @@ export class GamesService {
     return gameInstance.id;
   }
 
+  async setStatus(game: GameInstance, status: string) {
+    game.status = status;
+    await this.gameInstanceRepository.save(game);
+  }
+
   // /!\ For test usage only
   async clear() {
     await this.gameInstanceRepository.query(
