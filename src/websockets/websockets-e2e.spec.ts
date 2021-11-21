@@ -306,15 +306,18 @@ describe('SOCKET - Start game', () => {
     expect(nonAdminResult.data.gameInstanceId).toBeGreaterThan(0);
   });
 
-  // for (let i = 3; i >= 0; i--) {
-  //   it('Wait for the game to start in ' + i, () => {
-  //     return new Promise((resolve, reject) => {
-  //       socket1.on('countdown-update', (data: any) => {
-  //         resolve(data);
-  //       });
-  //     }).then((result: any) => {
-  //       expect(result.timeleft).toBe(i);
+  // it('Triggers the countdown system after game init', async () => {
+  //   await updatePlayer();
+  //   await createRoom();
+  //   await joinRoom(validRoom.slug, socket1);
+  //   await startGame();
+
+  //   return new Promise((resolve, reject) => {
+  //     socket1.on('countdown-update', (data: any) => {
+  //       resolve(data);
   //     });
+  //   }).then((result: any) => {
+  //     expect(result.timeleft).toBe(3);
   //   });
-  // }
+  // });
 });

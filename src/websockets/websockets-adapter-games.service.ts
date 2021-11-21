@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
 import { RoomsService } from '../rooms/rooms.service';
 import { Error } from 'src/contracts/error.interface';
 import { Success } from 'src/contracts/success.interface';
@@ -39,17 +38,48 @@ export class WebsocketsAdapterGameService {
     try {
       gameInstanceId = await this.gamesService.create({
         game: gameData.gameType,
-        status: 'playing',
+        status: 'waiting',
         room: room,
       });
     } catch (error) {
       return { success: false, error: error };
     }
 
+    this.startCountdown({ roomSlug: gameData.roomSlug, gameInstanceId });
+
     return {
       success: true,
       data: { gameInstanceId: gameInstanceId },
     };
+  }
+
+  startCountdown(eventData: any) {
+    let timeleft = 3;
+    const countdownTimer = setInterval(
+      async function (eventData) {
+        if (timeleft <= 0) {
+          clearInterval(countdownTimer);
+
+          this.eventEmitter.emit('countdown-over', {
+            gameInstanceId: eventData.gameInstanceId,
+          });
+        }
+
+        this.eventEmitter.emit('countdown-update', {
+          roomSlug: eventData.roomSlug,
+          timeleft,
+        });
+
+        timeleft -= 1;
+      }.bind(this),
+      1000,
+      eventData,
+    );
+  }
+
+  async setStatus(gameInstanceId: number, status: string) {
+    const game = await this.gamesService.findById(gameInstanceId);
+    await this.gamesService.setStatus(game, status);
   }
 
   getActiveGameInstances() {

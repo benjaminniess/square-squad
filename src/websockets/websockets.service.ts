@@ -1,4 +1,5 @@
 import { Injectable, UsePipes } from '@nestjs/common';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import {
   MessageBody,
   SubscribeMessage,
@@ -6,9 +7,9 @@ import {
   ConnectedSocket,
   OnGatewayDisconnect,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { GameInstance } from 'src/games/game-instance.entity';
 import { IsAdminPipe } from '../pipes/is-admin.pipe';
 import { WebsocketsAdapterGameService } from './websockets-adapter-games.service';
 import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
@@ -17,11 +18,24 @@ import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.servic
 @WebSocketGateway()
 @Injectable()
 export class WebsocketsService implements OnGatewayDisconnect {
+  private lockedRefresh = false;
+
   constructor(
     private websocketsAdapterPlayers: WebsocketsAdapterPlayersService,
     private websocketsAdapterRooms: WebsocketsAdapterRoomsService,
     private websocketAdapterGames: WebsocketsAdapterGameService,
-  ) {}
+    private eventEmitter: EventEmitter2,
+  ) {
+    setInterval(this.refreshData.bind(this), 10);
+
+    this.eventEmitter.on('countdown-update', (eventData) => {
+      this.handleCountdownUpdate(eventData);
+    });
+
+    this.eventEmitter.on('countdown-over', async (eventData) => {
+      await this.handleCountdownOver(eventData);
+    });
+  }
 
   @WebSocketServer()
   server: Server;
@@ -121,5 +135,33 @@ export class WebsocketsService implements OnGatewayDisconnect {
 
     const newGame = await this.websocketAdapterGames.startGame(gameData);
     this.server.to(gameData.roomSlug).emit('start-game-result', newGame);
+  }
+
+  refreshData() {
+    if (this.lockedRefresh) {
+      return;
+    }
+
+    this.lockedRefresh = true;
+    this.websocketAdapterGames.getActiveGameInstances().then((instances) => {
+      instances.map((instance: GameInstance) => {
+        this.server.to(instance.room.slug).emit('refresh-canvas', {});
+      });
+    });
+
+    this.lockedRefresh = false;
+  }
+
+  handleCountdownUpdate(eventData: any) {
+    this.server.to(eventData.roomSlug).emit('countdown-update', {
+      timeleft: eventData.timeleft,
+    });
+  }
+
+  async handleCountdownOver(eventData: any) {
+    return await this.websocketAdapterGames.setStatus(
+      eventData.gameInstanceId,
+      'playing',
+    );
   }
 }
