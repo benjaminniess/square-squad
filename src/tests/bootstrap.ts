@@ -17,6 +17,7 @@ import { WebsocketsStartGameService } from '../websockets/websockets-start-game.
 import { WebsocketsCountdownService } from '../websockets/websockets-countdown.service';
 import { WebsocketsRefreshLoopService } from '../websockets/websockets-refresh-loop.service';
 import { WebsocketsUpdatePlayerService } from '../websockets/websockets-update-player.service';
+import { WebsocketsRoomsRefreshService } from 'src/websockets/websockets-rooms-refresh.service';
 
 let roomsService: RoomsService;
 let playersService: PlayersService;
@@ -48,10 +49,6 @@ const bootstrapTests = async () => {
       WebsocketsAdapterGameService,
       WebsocketsAdapterRoomsService,
       WebsocketsAdapterPlayersService,
-      WebsocketsCountdownService,
-      WebsocketsRefreshLoopService,
-      WebsocketsStartGameService,
-      WebsocketsUpdatePlayerService,
     ],
   }).compile();
 

@@ -21,6 +21,7 @@ import { WebsocketsCountdownService } from './websockets/websockets-countdown.se
 import { WebsocketsStartGameService } from './websockets/websockets-start-game.service';
 import { WebsocketsRefreshLoopService } from './websockets/websockets-refresh-loop.service';
 import { WebsocketsUpdatePlayerService } from './websockets/websockets-update-player.service';
+import { WebsocketsRoomsRefreshService } from './websockets/websockets-rooms-refresh.service';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { WebsocketsUpdatePlayerService } from './websockets/websockets-update-pl
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
     WebsocketsRefreshLoopService,
+    WebsocketsRoomsRefreshService,
     WebsocketsUpdatePlayerService,
     RoomsLeadersService,
     EventEmitter2,

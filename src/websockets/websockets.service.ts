@@ -84,12 +84,4 @@ export class WebsocketsService implements OnGatewayDisconnect {
 
     await this.websocketsAdapterRooms.removeEmptyRooms();
   }
-
-  @SubscribeMessage('rooms-refresh')
-  async handleRoomsRefresh(@ConnectedSocket() client: any): Promise<void> {
-    client.emit(
-      'rooms-refresh-result',
-      await this.websocketsAdapterRooms.findAllRooms(),
-    );
-  }
 }
