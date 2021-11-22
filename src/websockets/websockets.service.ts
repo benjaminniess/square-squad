@@ -1,5 +1,5 @@
 import { Injectable, UsePipes } from '@nestjs/common';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   MessageBody,
   SubscribeMessage,
@@ -11,9 +11,9 @@ import {
 import { Server } from 'socket.io';
 import { GameInstance } from 'src/games/game-instance.entity';
 import { IsAdminPipe } from '../pipes/is-admin.pipe';
-import { WebsocketsAdapterGameService } from './websockets-adapter-games.service';
-import { WebsocketsAdapterPlayersService } from './websockets-adapter-players.service';
-import { WebsocketsAdapterRoomsService } from './websockets-adapter-rooms.service';
+import { WebsocketsAdapterGameService } from './adapters/websockets-adapter-games.service';
+import { WebsocketsAdapterPlayersService } from './adapters/websockets-adapter-players.service';
+import { WebsocketsAdapterRoomsService } from './adapters/websockets-adapter-rooms.service';
 
 @WebSocketGateway()
 @Injectable()

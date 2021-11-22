@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlayersService } from '../players/players.service';
+import { PlayersService } from '../../players/players.service';
 
 @Injectable()
 export class WebsocketsAdapterPlayersService {

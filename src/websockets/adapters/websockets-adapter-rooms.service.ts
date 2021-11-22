@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { RoomsLeadersService } from '../rooms/rooms-leaders.service';
-import { PlayersService } from '../players/players.service';
-import { RoomsService } from '../rooms/rooms.service';
+import { RoomsLeadersService } from '../../rooms/rooms-leaders.service';
+import { PlayersService } from '../../players/players.service';
+import { RoomsService } from '../../rooms/rooms.service';
 import { PlayerOutputDto } from 'src/players/player.output.dto.interface';
 import { Error } from 'src/contracts/error.interface';
 

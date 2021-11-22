@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { RoomsService } from '../rooms/rooms.service';
+import { RoomsService } from '../../rooms/rooms.service';
 import { Error } from 'src/contracts/error.interface';
 import { Success } from 'src/contracts/success.interface';
-import { GamesService } from '../games/games.service';
+import { GamesService } from '../../games/games.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class WebsocketsAdapterGameService {
   constructor(
     private gamesService: GamesService,
     private roomsService: RoomsService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async startGame(gameData: any): Promise<Success | Error> {

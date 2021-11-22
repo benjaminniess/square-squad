@@ -9,9 +9,9 @@ import { Player } from '../players/player.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GamesService } from '../games/games.service';
 import { GameInstance } from '../games/game-instance.entity';
-import { WebsocketsAdapterRoomsService } from '../websockets/websockets-adapter-rooms.service';
-import { WebsocketsAdapterPlayersService } from '../websockets/websockets-adapter-players.service';
-import { WebsocketsAdapterGameService } from '../websockets/websockets-adapter-games.service';
+import { WebsocketsAdapterRoomsService } from '../websockets/adapters/websockets-adapter-rooms.service';
+import { WebsocketsAdapterPlayersService } from '../websockets/adapters/websockets-adapter-players.service';
+import { WebsocketsAdapterGameService } from '../websockets/adapters/websockets-adapter-games.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 let roomsService: RoomsService;
