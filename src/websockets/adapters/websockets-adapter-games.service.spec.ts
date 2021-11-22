@@ -56,33 +56,6 @@ describe('Game creation', () => {
     expect(gameInstances[0].id).toBe(gameInstanceCreation.data.gameInstanceId);
   });
 
-  it('should retrieve the room from the game instance', async () => {
-    await boot.roomsService.create(testingSamples.validRoom.name);
-
-    const gameInstanceCreation = await boot.websocketAdapterGames.startGame(
-      testingSamples.validGameInstanceDto,
-    );
-
-    const gameInstance = await boot.gameService.findById(
-      gameInstanceCreation.data.gameInstanceId,
-    );
-
-    expect(gameInstance.room.slug).toBe(testingSamples.validRoom.slug);
-  });
-
-  it('should list active games instance', async () => {
-    await boot.roomsService.create(testingSamples.validRoom.name);
-    await boot.gameService.create({
-      game: testingSamples.validGameInstanceDto.gameType,
-      status: 'playing',
-      room: testingSamples.validRoom.slug,
-    });
-
-    const activeGames = await boot.websocketAdapterGames.getActiveGameInstances();
-
-    expect(activeGames).toHaveLength(1);
-  });
-
   it('should update a game instance status', async () => {
     await boot.roomsService.create(testingSamples.validRoom.name);
     const gameInstanceId = await boot.gameService.create({

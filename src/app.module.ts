@@ -17,6 +17,8 @@ import { Room } from './rooms/room.entity';
 import { GamesService } from './games/games.service';
 import { GameInstance } from './games/game-instance.entity';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
+import { WebsocketsCountdownService } from './websockets/websockets-countdown.service';
+import { WebsocketsStartGameService } from './websockets/websockets-start-game.service';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
     Helpers,
     AppService,
     WebsocketsService,
+    WebsocketsCountdownService,
+    WebsocketsStartGameService,
     PlayersService,
     RoomsService,
     GamesService,

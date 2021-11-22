@@ -1,5 +1,4 @@
-import { Injectable, UsePipes } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Injectable } from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
@@ -10,7 +9,6 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { GameInstance } from 'src/games/game-instance.entity';
-import { IsAdminPipe } from '../pipes/is-admin.pipe';
 import { WebsocketsAdapterGameService } from './adapters/websockets-adapter-games.service';
 import { WebsocketsAdapterPlayersService } from './adapters/websockets-adapter-players.service';
 import { WebsocketsAdapterRoomsService } from './adapters/websockets-adapter-rooms.service';
@@ -24,17 +22,8 @@ export class WebsocketsService implements OnGatewayDisconnect {
     private websocketsAdapterPlayers: WebsocketsAdapterPlayersService,
     private websocketsAdapterRooms: WebsocketsAdapterRoomsService,
     private websocketAdapterGames: WebsocketsAdapterGameService,
-    private eventEmitter: EventEmitter2,
   ) {
     setInterval(this.refreshData.bind(this), 10);
-
-    this.eventEmitter.on('countdown-update', (eventData) => {
-      this.handleCountdownUpdate(eventData);
-    });
-
-    this.eventEmitter.on('countdown-over', async (eventData) => {
-      await this.handleCountdownOver(eventData);
-    });
   }
 
   @WebSocketServer()
@@ -122,21 +111,6 @@ export class WebsocketsService implements OnGatewayDisconnect {
     );
   }
 
-  @UsePipes(IsAdminPipe)
-  @SubscribeMessage('start-game')
-  async handleStartGame(
-    @MessageBody() gameData: any,
-    @ConnectedSocket() client: any,
-  ): Promise<void> {
-    if (gameData.error) {
-      client.emit('start-game-result', gameData);
-      return;
-    }
-
-    const newGame = await this.websocketAdapterGames.startGame(gameData);
-    this.server.to(gameData.roomSlug).emit('start-game-result', newGame);
-  }
-
   refreshData() {
     if (this.lockedRefresh) {
       return;
@@ -150,18 +124,5 @@ export class WebsocketsService implements OnGatewayDisconnect {
     });
 
     this.lockedRefresh = false;
-  }
-
-  handleCountdownUpdate(eventData: any) {
-    this.server.to(eventData.roomSlug).emit('countdown-update', {
-      timeleft: eventData.timeleft,
-    });
-  }
-
-  async handleCountdownOver(eventData: any) {
-    return await this.websocketAdapterGames.setStatus(
-      eventData.gameInstanceId,
-      'playing',
-    );
   }
 }
