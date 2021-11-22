@@ -27,17 +27,6 @@ export class WebsocketsService implements OnGatewayDisconnect {
     await this.websocketsAdapterPlayers.deletePlayer(client.id);
   }
 
-  @SubscribeMessage('update-player-data')
-  async handleUpdatePlayerData(
-    @MessageBody() data: any,
-    @ConnectedSocket() client: any,
-  ) {
-    client.emit(
-      'update-player-data-result',
-      await this.websocketsAdapterPlayers.updatePlayer(client.id, data),
-    );
-  }
-
   @SubscribeMessage('create-room')
   async handleCreateRoom(
     @MessageBody() roomName: string,

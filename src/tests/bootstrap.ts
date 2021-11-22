@@ -16,6 +16,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WebsocketsStartGameService } from '../websockets/websockets-start-game.service';
 import { WebsocketsCountdownService } from '../websockets/websockets-countdown.service';
 import { WebsocketsRefreshLoopService } from '../websockets/websockets-refresh-loop.service';
+import { WebsocketsUpdatePlayerService } from '../websockets/websockets-update-player.service';
 
 let roomsService: RoomsService;
 let playersService: PlayersService;
@@ -38,18 +39,19 @@ const bootstrapTests = async () => {
       }),
     ],
     providers: [
-      RoomsService,
-      PlayersService,
-      WebsocketsAdapterRoomsService,
-      WebsocketsAdapterPlayersService,
-      WebsocketsStartGameService,
-      WebsocketsCountdownService,
-      WebsocketsAdapterGameService,
-      WebsocketsRefreshLoopService,
-      RoomsLeadersService,
+      EventEmitter2,
       GamesService,
       Helpers,
-      EventEmitter2,
+      PlayersService,
+      RoomsLeadersService,
+      RoomsService,
+      WebsocketsAdapterGameService,
+      WebsocketsAdapterRoomsService,
+      WebsocketsAdapterPlayersService,
+      WebsocketsCountdownService,
+      WebsocketsRefreshLoopService,
+      WebsocketsStartGameService,
+      WebsocketsUpdatePlayerService,
     ],
   }).compile();
 

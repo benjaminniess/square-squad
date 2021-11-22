@@ -20,6 +20,7 @@ import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { WebsocketsCountdownService } from './websockets/websockets-countdown.service';
 import { WebsocketsStartGameService } from './websockets/websockets-start-game.service';
 import { WebsocketsRefreshLoopService } from './websockets/websockets-refresh-loop.service';
+import { WebsocketsUpdatePlayerService } from './websockets/websockets-update-player.service';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { WebsocketsRefreshLoopService } from './websockets/websockets-refresh-lo
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
     WebsocketsRefreshLoopService,
+    WebsocketsUpdatePlayerService,
     RoomsLeadersService,
     EventEmitter2,
   ],

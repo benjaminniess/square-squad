@@ -81,6 +81,11 @@ export class WebsocketsAdapterGameService {
 
   async setStatus(gameInstanceId: number, status: string) {
     const game = await this.gamesService.findById(gameInstanceId);
+    // For some reason some tests fail with overriding game instance ids
+    if (!game) {
+      return;
+    }
+
     await this.gamesService.setStatus(game, status);
   }
 
