@@ -12,12 +12,11 @@ class SpaceInvaders extends Obstacle {
     params = {
       slug: '',
     },
-    helpers: Helpers,
   ) {
     params.slug = 'space-invader';
     super(params);
 
-    this.helpers = helpers;
+    this.helpers = new Helpers();
     this.init();
   }
 

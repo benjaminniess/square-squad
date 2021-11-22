@@ -105,62 +105,64 @@ class Room {
   }
 
   refreshPlayers(disconnectedPlayerSocketID = null) {
-    const players = new Players().getInstance();
-    const game = this.getGame();
+    return;
+    // TODO: adapt
+    // const players = new Players().getInstance();
+    // const game = this.getGame();
 
-    const globalRanking = game.getRanking();
-    const currentRoundRanking = game.getLastRoundRanking();
-    const socketClients = this.getPlayers();
-    let sessionsInRoom: any[] = [];
-    const playersData = game.getPlayersManager().getPlayersData();
+    // const globalRanking = game.getRanking();
+    // const currentRoundRanking = game.getLastRoundRanking();
+    // const socketClients = this.getPlayers();
+    // let sessionsInRoom: any[] = [];
+    // const playersData = game.getPlayersManager().getPlayersData();
 
-    _.forEach(socketClients, (socketID: string) => {
-      const playerObj = players.getPlayer(socketID);
-      const globalRankingIndex = _.findIndex(globalRanking, {
-        playerID: socketID,
-      });
-      const currentRoundRankingIndex = _.findIndex(currentRoundRanking, {
-        playerID: socketID,
-      });
+    // _.forEach(socketClients, (socketID: string) => {
+    //   const playerObj = players.getPlayer(socketID);
+    //   const globalRankingIndex = _.findIndex(globalRanking, {
+    //     playerID: socketID,
+    //   });
+    //   const currentRoundRankingIndex = _.findIndex(currentRoundRanking, {
+    //     playerID: socketID,
+    //   });
 
-      let totalScore =
-        globalRankingIndex === -1 ? 0 : globalRanking[globalRankingIndex].score;
+    //   let totalScore =
+    //     globalRankingIndex === -1 ? 0 : globalRanking[globalRankingIndex].score;
 
-      if (currentRoundRanking[currentRoundRankingIndex]) {
-        totalScore += currentRoundRanking[currentRoundRankingIndex].score;
-      }
+    //   if (currentRoundRanking[currentRoundRankingIndex]) {
+    //     totalScore += currentRoundRanking[currentRoundRankingIndex].score;
+    //   }
 
-      const sessionToAdd = {
-        id: socketID,
-        nickname: playerObj.getNickname(),
-        color: playerObj.getColor(),
-        score: totalScore,
-        alive: playersData[socketID] && playersData[socketID].alive,
-        isAdmin: false,
-      };
+    //   const sessionToAdd = {
+    //     id: socketID,
+    //     nickname: playerObj.getNickname(),
+    //     color: playerObj.getColor(),
+    //     score: totalScore,
+    //     alive: playersData[socketID] && playersData[socketID].alive,
+    //     isAdmin: false,
+    //   };
 
-      // If a player is about to disconnect, don't show it in the room
-      if (disconnectedPlayerSocketID !== socketID) {
-        if (this.getAdminPlayer() === socketID) {
-          sessionToAdd.isAdmin = true;
-        } else {
-          sessionToAdd.isAdmin = false;
-        }
+    //   // If a player is about to disconnect, don't show it in the room
+    //   if (disconnectedPlayerSocketID !== socketID) {
+    //     if (this.getAdminPlayer() === socketID) {
+    //       sessionToAdd.isAdmin = true;
+    //     } else {
+    //       sessionToAdd.isAdmin = false;
+    //     }
 
-        if (!playerObj.isSpectator()) {
-          sessionsInRoom.push(sessionToAdd);
-          if (game.getStatus() !== 'playing') {
-            game.getPlayersManager().initPlayer(sessionToAdd);
-          }
-        }
-      } else {
-        game.getPlayersManager().removePlayer(socketID);
-      }
-    });
+    //     if (!playerObj.isSpectator()) {
+    //       sessionsInRoom.push(sessionToAdd);
+    //       if (game.getStatus() !== 'playing') {
+    //         game.getPlayersManager().initPlayer(sessionToAdd);
+    //       }
+    //     }
+    //   } else {
+    //     game.getPlayersManager().removePlayer(socketID);
+    //   }
+    // });
 
-    sessionsInRoom = _.orderBy(sessionsInRoom, ['score'], ['desc']);
-    this.io.in(this.getSlug()).emit('refresh-players', sessionsInRoom);
+    // sessionsInRoom = _.orderBy(sessionsInRoom, ['score'], ['desc']);
+    // this.io.in(this.getSlug()).emit('refresh-players', sessionsInRoom);
 
-    return sessionsInRoom;
+    // return sessionsInRoom;
   }
 }

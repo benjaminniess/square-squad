@@ -12,12 +12,11 @@ class Press extends Obstacle {
     params = {
       slug: '',
     },
-    helpers: Helpers,
   ) {
     params.slug = 'press';
     super(params);
 
-    this.helpers = helpers;
+    this.helpers = new Helpers();
     this.init();
   }
   init() {
