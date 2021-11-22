@@ -1,35 +1,39 @@
-export {}
-const { canvasWidth, squareSize } = require('../../config/main')
-const Matter = require('matter-js')
-const Obstacle = require('../obstacle')
-const helpers = require('../../helpers/helpers')
-const _ = require('lodash')
+const canvasWidth = 700;
+const squareSize = 30;
+import { Matter } from 'matter-js';
+import { Helpers } from '../../../helpers/helpers';
+import { Obstacle } from '../obstacle';
+import { _ } from 'lodash';
 
 class SpaceInvaders extends Obstacle {
+  private helpers: Helpers;
+
   constructor(
     params = {
-      slug: ''
-    }
+      slug: '',
+    },
+    helpers: Helpers,
   ) {
-    params.slug = 'space-invader'
-    super(params)
+    params.slug = 'space-invader';
+    super(params);
 
-    this.init()
+    this.helpers = helpers;
+    this.init();
   }
 
   init() {
-    let obstacleWidth = squareSize * 2
-    let obstacleSpeed = this.getLevel() * this.getSpeedMultiplicator()
-    let obstacle = {}
-    let invaderRequiredWidth = obstacleWidth * 2.2
-    let obstacleParts = []
+    const obstacleWidth = squareSize * 2;
+    const obstacleSpeed = this.getLevel() * this.getSpeedMultiplicator();
+    let obstacle = {};
+    const invaderRequiredWidth = obstacleWidth * 2.2;
+    const obstacleParts = [];
 
-    let rowCount = helpers.getRandomInt(1, 4)
+    const rowCount = this.helpers.getRandomInt(1, 4);
     for (let o = 0; o < rowCount; o++) {
-      let countInvaders = helpers.getRandomInt(3, 6)
-      let spaceBetween =
+      const countInvaders = this.helpers.getRandomInt(3, 6);
+      const spaceBetween =
         obstacleWidth +
-        (canvasWidth - countInvaders * obstacleWidth) / (countInvaders - 1)
+        (canvasWidth - countInvaders * obstacleWidth) / (countInvaders - 1);
       for (let k = 0; k < countInvaders; k++) {
         obstacle = {
           x: k * spaceBetween + obstacleWidth / 2,
@@ -37,15 +41,15 @@ class SpaceInvaders extends Obstacle {
           width: obstacleWidth,
           height: obstacleWidth,
           speed: obstacleSpeed,
-          vector: { x: 0, y: obstacleSpeed / 4 }
-        }
+          vector: { x: 0, y: obstacleSpeed / 4 },
+        };
 
-        obstacleParts.push(obstacle)
+        obstacleParts.push(obstacle);
       }
     }
 
     _.forEach(obstacleParts, (obstaclePart: any) => {
-      let body = Matter.Bodies.rectangle(
+      const body = Matter.Bodies.rectangle(
         obstaclePart.x,
         obstaclePart.y,
         obstaclePart.width,
@@ -53,27 +57,27 @@ class SpaceInvaders extends Obstacle {
         {
           frictionAir: 0,
           collisionFilter: { group: 2 },
-          isSensor: true
-        }
-      )
+          isSensor: true,
+        },
+      );
 
-      Matter.Body.setVelocity(body, obstaclePart.vector)
+      Matter.Body.setVelocity(body, obstaclePart.vector);
       Matter.Body.set(body, {
         customType: 'obstacle',
-        customSubType: this.getSlug()
-      })
+        customSubType: this.getSlug(),
+      });
 
-      Matter.Composite.add(this.getComposite(), body)
-    })
+      Matter.Composite.add(this.getComposite(), body);
+    });
   }
 
   loop() {
     _.forEach(this.getBodies(), (obstacle: any) => {
       if (obstacle.position.y > canvasWidth) {
-        this.getEventEmmitter().emit('obstaclePartOver', obstacle)
+        this.getEventEmmitter().emit('obstaclePartOver', obstacle);
       }
-    })
+    });
   }
 }
 
-module.exports = SpaceInvaders
+export { SpaceInvaders };

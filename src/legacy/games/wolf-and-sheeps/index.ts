@@ -1,78 +1,79 @@
-export {}
-const { squareSize } = require('../../config/main')
-const Matter = require('matter-js')
-const MasterGame = require('../master-game')
-const _ = require('lodash')
+const squareSize = 30;
+import { Matter } from 'matter-js';
+import { MasterGame } from '../../games/master-game';
+import { _ } from 'lodash';
 
 class Wolf_And_Sheep extends MasterGame {
+  private wolf: string;
+
   constructor(room: any) {
-    super(room)
-    this.speed = 4
-    this.slug = 'wolf-and-sheeps'
-    this.type = 'timed'
-    this.wolf = null
-    this.eventSubscriptions()
+    super(room);
+    this.speed = 4;
+    this.slug = 'wolf-and-sheeps';
+    this.type = 'timed';
+    this.wolf = null;
+    this.eventSubscriptions();
   }
 
   eventSubscriptions() {
     this.getEventEmmitter().on('initRound', () => {
-      let playersData = this.getPlayersManager().getPlayersData()
-      _.shuffle(_.keys(playersData))
-      this.setWolf(Object.keys(playersData)[0])
-    })
+      const playersData = this.getPlayersManager().getPlayersData();
+      _.shuffle(_.keys(playersData));
+      this.setWolf(Object.keys(playersData)[0]);
+    });
 
     Matter.Events.on(this.getEngine(), 'collisionStart', (event: any) => {
       if (
         !event.pairs[0].bodyA.gamePlayerID ||
         !event.pairs[0].bodyB.gamePlayerID
       ) {
-        return
+        return;
       }
 
-      let currentWolf = this.getWolf()
+      const currentWolf = this.getWolf();
       if (
         event.pairs[0].bodyA.gamePlayerID === currentWolf &&
         this.isCatchable(event.pairs[0].bodyB.gamePlayerID)
       ) {
-        this.setCatchable(event.pairs[0].bodyA.gamePlayerID, false)
-        this.setWolf(event.pairs[0].bodyB.gamePlayerID)
+        this.setCatchable(event.pairs[0].bodyA.gamePlayerID, false);
+        this.setWolf(event.pairs[0].bodyB.gamePlayerID);
       } else if (
         event.pairs[0].bodyB.gamePlayerID === currentWolf &&
         this.isCatchable(event.pairs[0].bodyA.gamePlayerID)
       ) {
-        this.setCatchable(event.pairs[0].bodyB.gamePlayerID, false)
-        this.setWolf(event.pairs[0].bodyA.gamePlayerID)
+        this.setCatchable(event.pairs[0].bodyB.gamePlayerID, false);
+        this.setWolf(event.pairs[0].bodyA.gamePlayerID);
       }
 
       //this.getPlayersManager().killPlayer(player.gamePlayerID)
       //this.getRoom().refreshPlayers()
-    })
+    });
   }
 
   refreshData() {
     //console.log(this.getDebugMatterTree())
 
-    let bonusManager = this.getBonusManager()
-    let bonusList = bonusManager.getActiveBonus()
-    let playersManager = this.getPlayersManager()
-    let playersData = playersManager.getPlayersData()
+    const bonusManager = this.getBonusManager();
+    const bonusList = bonusManager.getActiveBonus();
+    const playersManager = this.getPlayersManager();
+    const playersData = playersManager.getPlayersData();
 
-    let updatedBonus: any[] = []
+    const updatedBonus: any[] = [];
 
     if (this.getStatus() === 'playing') {
       if (bonusList.length < bonusManager.getFrequency()) {
-        bonusManager.maybeInitBonus()
+        bonusManager.maybeInitBonus();
       }
 
       _.forEach(
         playersManager.getPlayersMoves(),
         (moves: any, playerID: string) => {
-          let playerData = playersData[playerID]
+          const playerData = playersData[playerID];
 
-          playersData[playerID].isWolf = playerID === this.getWolf()
+          playersData[playerID].isWolf = playerID === this.getWolf();
 
           bonusList.map((bonus: any) => {
-            let bonusData = bonus.getData()
+            const bonusData = bonus.getData();
             if (
               playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
               playerData.x - squareSize / 2 + squareSize > bonusData.x &&
@@ -82,51 +83,50 @@ class Wolf_And_Sheep extends MasterGame {
               playersManager.uptadePlayerSingleData(
                 playerID,
                 'bonus',
-                bonusData
-              )
+                bonusData,
+              );
               bonus.trigger(playerID).then(() => {
-                playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
-              })
+                playersManager.uptadePlayerSingleData(playerID, 'bonus', null);
+              });
             } else {
-              updatedBonus.push(bonusData)
+              updatedBonus.push(bonusData);
             }
-          })
-        }
-      )
+          });
+        },
+      );
 
-      playersManager.processPlayersRequests()
+      playersManager.processPlayersRequests();
     }
 
     return {
       players: playersData,
       debugBodies: this.getDebugBodies(),
-      bonusList: updatedBonus
-    }
+      bonusList: updatedBonus,
+    };
   }
 
   getWolf() {
-    return this.wolf
+    return this.wolf;
   }
 
   setWolf(playerID: string) {
-    this.wolf = playerID
+    this.wolf = playerID;
   }
 
   setCatchable(playerID: string, catchable = true) {
-    let playersManager = this.getPlayersManager()
-    playersManager.uptadePlayerSingleData(playerID, 'catchable', catchable)
+    const playersManager = this.getPlayersManager();
+    playersManager.uptadePlayerSingleData(playerID, 'catchable', catchable);
     if (!catchable) {
-      let currentClass = this
-      let notCatchableTimer = setInterval(function () {
-        clearInterval(notCatchableTimer)
-        playersManager.uptadePlayerSingleData(playerID, 'catchable', true)
-      }, 1000)
+      const notCatchableTimer = setInterval(function () {
+        clearInterval(notCatchableTimer);
+        playersManager.uptadePlayerSingleData(playerID, 'catchable', true);
+      }, 1000);
     }
   }
 
   isCatchable(playerID: string) {
-    return this.getPlayersManager().getPlayerData(playerID).catchable
+    return this.getPlayersManager().getPlayerData(playerID).catchable;
   }
 }
 
-module.exports = Wolf_And_Sheep
+module.exports = Wolf_And_Sheep;

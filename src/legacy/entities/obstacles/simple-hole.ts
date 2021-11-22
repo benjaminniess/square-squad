@@ -1,35 +1,39 @@
-export {}
-const { canvasWidth, squareSize } = require('../../config/main')
-const helpers = require('../../helpers/helpers')
-const Matter = require('matter-js')
-const Obstacle = require('../obstacle')
-const _ = require('lodash')
+const canvasWidth = 700;
+const squareSize = 30;
+import { Matter } from 'matter-js';
+import { Helpers } from '../../../helpers/helpers';
+import { Obstacle } from '../obstacle';
+import { _ } from 'lodash';
 
 class SimpleHole extends Obstacle {
+  private helpers: Helpers;
+
   constructor(
     params = {
-      slug: ''
-    }
+      slug: '',
+    },
+    helpers: Helpers,
   ) {
-    params.slug = 'simple-hole'
-    super(params)
+    params.slug = 'simple-hole';
+    super(params);
 
-    this.init()
+    this.helpers = helpers;
+    this.init();
   }
 
   init() {
-    let direction = helpers.getRandomInt(1, 5)
-    let holeSize = helpers.getRandomInt(squareSize * 3, squareSize * 8)
-    let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
-    let obstacleSpeed = (this.getLevel() * this.getSpeedMultiplicator()) / 3
+    const direction = this.helpers.getRandomInt(1, 5);
+    const holeSize = this.helpers.getRandomInt(squareSize * 3, squareSize * 8);
+    const obstacleWidth = this.helpers.getRandomInt(squareSize, squareSize * 4);
+    const obstacleSpeed = (this.getLevel() * this.getSpeedMultiplicator()) / 3;
 
-    let obstacleSpot = helpers.getRandomInt(
+    const obstacleSpot = this.helpers.getRandomInt(
       squareSize,
-      canvasWidth - squareSize
-    )
+      canvasWidth - squareSize,
+    );
 
-    let obstacle = {}
-    let obstacleParts = []
+    let obstacle = {};
+    const obstacleParts = [];
     switch (direction) {
       case 1:
         obstacle = {
@@ -39,10 +43,10 @@ class SimpleHole extends Obstacle {
           height: obstacleSpot,
           direction: 'left',
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed, y: 0 }
-        }
+          vector: { x: -obstacleSpeed, y: 0 },
+        };
 
-        obstacleParts.push(obstacle)
+        obstacleParts.push(obstacle);
 
         obstacle = {
           x: canvasWidth + obstacleWidth / 2,
@@ -51,11 +55,11 @@ class SimpleHole extends Obstacle {
           height: canvasWidth,
           direction: 'left',
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed, y: 0 }
-        }
+          vector: { x: -obstacleSpeed, y: 0 },
+        };
 
-        obstacleParts.push(obstacle)
-        break
+        obstacleParts.push(obstacle);
+        break;
       case 2:
         obstacle = {
           x: -obstacleWidth / 2,
@@ -64,10 +68,10 @@ class SimpleHole extends Obstacle {
           height: obstacleSpot,
           direction: 'right',
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed, y: 0 }
-        }
+          vector: { x: obstacleSpeed, y: 0 },
+        };
 
-        obstacleParts.push(obstacle)
+        obstacleParts.push(obstacle);
 
         obstacle = {
           x: -obstacleWidth / 2,
@@ -76,12 +80,12 @@ class SimpleHole extends Obstacle {
           height: canvasWidth,
           direction: 'right',
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed, y: 0 }
-        }
+          vector: { x: obstacleSpeed, y: 0 },
+        };
 
-        obstacleParts.push(obstacle)
+        obstacleParts.push(obstacle);
 
-        break
+        break;
       case 3:
         obstacle = {
           x: obstacleSpot / 2,
@@ -90,10 +94,10 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'bottom',
           speed: obstacleSpeed,
-          vector: { x: 0, y: obstacleSpeed }
-        }
+          vector: { x: 0, y: obstacleSpeed },
+        };
 
-        obstacleParts.push(obstacle)
+        obstacleParts.push(obstacle);
 
         obstacle = {
           x: obstacleSpot + holeSize + canvasWidth / 2,
@@ -102,11 +106,11 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'bottom',
           speed: obstacleSpeed,
-          vector: { x: 0, y: obstacleSpeed }
-        }
+          vector: { x: 0, y: obstacleSpeed },
+        };
 
-        obstacleParts.push(obstacle)
-        break
+        obstacleParts.push(obstacle);
+        break;
       case 4:
         obstacle = {
           x: obstacleSpot / 2,
@@ -115,10 +119,10 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'top',
           speed: obstacleSpeed,
-          vector: { x: 0, y: -obstacleSpeed }
-        }
+          vector: { x: 0, y: -obstacleSpeed },
+        };
 
-        obstacleParts.push(obstacle)
+        obstacleParts.push(obstacle);
 
         obstacle = {
           x: obstacleSpot + holeSize + canvasWidth / 2,
@@ -127,15 +131,15 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'top',
           speed: obstacleSpeed,
-          vector: { x: 0, y: -obstacleSpeed }
-        }
+          vector: { x: 0, y: -obstacleSpeed },
+        };
 
-        obstacleParts.push(obstacle)
-        break
+        obstacleParts.push(obstacle);
+        break;
     }
 
     _.forEach(obstacleParts, (obstaclePart: any) => {
-      let body = Matter.Bodies.rectangle(
+      const body = Matter.Bodies.rectangle(
         obstaclePart.x,
         obstaclePart.y,
         obstaclePart.width,
@@ -144,19 +148,19 @@ class SimpleHole extends Obstacle {
           frictionAir: 0,
           collisionFilter: { group: 2 },
           isSensor: true,
-          direction: obstaclePart.direction
-        }
-      )
+          direction: obstaclePart.direction,
+        },
+      );
 
-      Matter.Body.setVelocity(body, obstaclePart.vector)
+      Matter.Body.setVelocity(body, obstaclePart.vector);
       Matter.Body.set(body, {
         direction: obstaclePart.direction,
         customType: 'obstacle',
-        customSubType: this.getSlug()
-      })
+        customSubType: this.getSlug(),
+      });
 
-      Matter.Composite.add(this.getComposite(), body)
-    })
+      Matter.Composite.add(this.getComposite(), body);
+    });
   }
 
   loop() {
@@ -164,27 +168,27 @@ class SimpleHole extends Obstacle {
       switch (obstacle.direction) {
         case 'left':
           if (obstacle.position.x < 0) {
-            this.getEventEmmitter().emit('obstaclePartOver', obstacle)
+            this.getEventEmmitter().emit('obstaclePartOver', obstacle);
           }
-          break
+          break;
         case 'right':
           if (obstacle.position.x > canvasWidth) {
-            this.getEventEmmitter().emit('obstaclePartOver', obstacle)
+            this.getEventEmmitter().emit('obstaclePartOver', obstacle);
           }
-          break
+          break;
         case 'bottom':
           if (obstacle.position.y > canvasWidth) {
-            this.getEventEmmitter().emit('obstaclePartOver', obstacle)
+            this.getEventEmmitter().emit('obstaclePartOver', obstacle);
           }
-          break
+          break;
         case 'top':
           if (obstacle.position.y < 0) {
-            this.getEventEmmitter().emit('obstaclePartOver', obstacle)
+            this.getEventEmmitter().emit('obstaclePartOver', obstacle);
           }
-          break
+          break;
       }
-    })
+    });
   }
 }
 
-module.exports = SimpleHole
+export { SimpleHole };

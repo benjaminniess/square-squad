@@ -17,4 +17,15 @@ export class Helpers {
       .replace(/-+/g, '-'); // collapse dashes
     return str;
   }
+
+  /**
+   * Generates a random int between a given min and max int
+   *
+   * @returns {int} the random int
+   */
+  getRandomInt(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
 }

@@ -1,79 +1,80 @@
-export {}
-const Matter = require('matter-js')
-const Composite = Matter.Composite
-const _ = require('lodash')
-import EventEmitter from 'events'
+const Composite = Matter.Composite;
+import EventEmitter from 'events';
+import { Matter } from 'matter-js';
+import { _ } from 'lodash';
 
 class Obstacle {
-  private level: number = 1
-  private speedMultiplicator: number = 1
-  private bodies: any[] = []
-  private params: any
-  private eventEmitter: EventEmitter
-  private compositeObj: any
+  private level = 1;
+  private speedMultiplicator = 1;
+  private bodies: any[] = [];
+  private params: any;
+  private eventEmitter: EventEmitter;
+  private compositeObj: any;
 
   constructor(params: any) {
-    this.level = params.level ? params.level : 1
+    this.level = params.level ? params.level : 1;
     this.speedMultiplicator = params.speedMultiplicator
       ? params.speedMultiplicator
-      : 1
+      : 1;
 
-    this.params = params
-    this.eventEmitter = new EventEmitter()
-    this.compositeObj = Matter.Composite.create({ label: this.getSlug() })
+    this.params = params;
+    this.eventEmitter = new EventEmitter();
+    this.compositeObj = Matter.Composite.create({ label: this.getSlug() });
   }
 
   getParams() {
-    return this.params
+    return this.params;
   }
 
   getSlug() {
-    return this.getParams().slug
+    return this.getParams().slug;
   }
 
   getBodies() {
-    return Composite.allBodies(this.getComposite())
+    return Composite.allBodies(this.getComposite());
   }
 
   getVertices() {
-    let vertices: any[] = []
+    const vertices: any[] = [];
 
     _.forEach(this.getBodies(), (matterBody: any) => {
-      let bodyVertices: any[] = []
+      const bodyVertices: any[] = [];
       _.forEach(matterBody.vertices, (vertice: any) => {
-        bodyVertices.push({ x: vertice.x, y: vertice.y })
-      })
+        bodyVertices.push({ x: vertice.x, y: vertice.y });
+      });
 
-      vertices.push(bodyVertices)
-    })
+      vertices.push(bodyVertices);
+    });
 
-    return vertices
+    return vertices;
   }
 
   getEventEmmitter() {
-    return this.eventEmitter
+    return this.eventEmitter;
   }
 
   getComposite() {
-    return this.compositeObj
+    return this.compositeObj;
   }
 
   getLevel() {
-    return this.level
+    return this.level;
   }
 
   getSpeedMultiplicator() {
-    return this.speedMultiplicator
+    return this.speedMultiplicator;
   }
 
   isOver() {
-    return _.size(this.getBodies()) === 0
+    return _.size(this.getBodies()) === 0;
   }
 
-  loop() {}
+  loop() {
+    // to be overridden
+  }
 
   onCollisionStart(obstaclePart: any, bodyB: any) {}
   onCollisionEnd(obstaclePart: any, bodyB: any) {}
 }
 
-module.exports = Obstacle
+export { Obstacle };

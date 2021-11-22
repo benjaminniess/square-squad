@@ -1,81 +1,85 @@
-export {}
-const { canvasWidth } = require('../../config/main')
-const Matter = require('matter-js')
-const helpers = require('../../helpers/helpers')
-const Obstacle = require('../obstacle')
-const _ = require('lodash')
+const canvasWidth = 700;
+import { Matter } from 'matter-js';
+import { Helpers } from '../../../helpers/helpers';
+import { Obstacle } from '../obstacle';
+import { _ } from 'lodash';
 
 class Ball extends Obstacle {
+  private helpers: Helpers;
+
   constructor(
     params = {
-      slug: ''
-    }
+      slug: '',
+    },
+    helpers: Helpers,
   ) {
-    params.slug = 'ball'
-    super(params)
+    params.slug = 'ball';
+    super(params);
 
-    this.init()
+    this.helpers = helpers;
+    this.init();
   }
 
   init() {
-    let speedReducer = 0.4
-    let startPosition = this.getParams().count ? this.getParams().count : 1
-    let obstacleSpeed =
-      this.getLevel() * this.getSpeedMultiplicator() * speedReducer
-    let radius = 20
-    let angle = ((10 - helpers.getRandomInt(1, 21)) / 10) * obstacleSpeed
-    let obstacle: any = {}
+    const speedReducer = 0.4;
+    const startPosition = this.getParams().count ? this.getParams().count : 1;
+    const obstacleSpeed =
+      this.getLevel() * this.getSpeedMultiplicator() * speedReducer;
+    const radius = 20;
+    const angle =
+      ((10 - this.helpers.getRandomInt(1, 21)) / 10) * obstacleSpeed;
+    let obstacle: any = {};
 
     switch (startPosition) {
       // Bottom
       case 1:
         obstacle = {
           x: canvasWidth / 2 + radius / 2,
-          y: canvasWidth + radius + helpers.getRandomInt(15, 70),
+          y: canvasWidth + radius + this.helpers.getRandomInt(15, 70),
           vector: {
             x: angle,
-            y: -obstacleSpeed
-          }
-        }
-        break
+            y: -obstacleSpeed,
+          },
+        };
+        break;
       // Top
       case 2:
         obstacle = {
           x: canvasWidth / 2 + radius / 2,
-          y: -radius - helpers.getRandomInt(15, 70),
+          y: -radius - this.helpers.getRandomInt(15, 70),
           vector: {
             x: angle,
-            y: obstacleSpeed
-          }
-        }
-        break
+            y: obstacleSpeed,
+          },
+        };
+        break;
       // Right
       case 3:
         obstacle = {
-          x: canvasWidth + radius + helpers.getRandomInt(15, 35),
+          x: canvasWidth + radius + this.helpers.getRandomInt(15, 35),
           y: canvasWidth / 2 + radius / 2,
           vector: {
             x: -obstacleSpeed,
-            y: angle
-          }
-        }
-        break
+            y: angle,
+          },
+        };
+        break;
       case 4:
         obstacle = {
-          x: -radius - helpers.getRandomInt(15, 35),
+          x: -radius - this.helpers.getRandomInt(15, 35),
           y: canvasWidth / 2 + radius / 2,
           vector: {
             x: obstacleSpeed,
-            y: angle
-          }
-        }
-        break
+            y: angle,
+          },
+        };
+        break;
     }
 
-    obstacle.radius = radius
-    obstacle.speed = obstacleSpeed
+    obstacle.radius = radius;
+    obstacle.speed = obstacleSpeed;
 
-    let body = Matter.Bodies.circle(obstacle.x, obstacle.y, obstacle.radius, {
+    const body = Matter.Bodies.circle(obstacle.x, obstacle.y, obstacle.radius, {
       frictionAir: 0,
       frictionStatic: 0,
       friction: 0,
@@ -83,25 +87,25 @@ class Ball extends Obstacle {
       isSensor: 1,
       collisionFilter: {
         category: 0x0001,
-        mask: 0x1010
-      }
-    })
+        mask: 0x1010,
+      },
+    });
 
-    Matter.Body.setVelocity(body, obstacle.vector)
+    Matter.Body.setVelocity(body, obstacle.vector);
     Matter.Body.set(body, {
       enableCustomCollisionManagement: true,
       countCollisions: 0,
       customType: 'obstacle',
-      customSubType: this.getSlug()
-    })
+      customSubType: this.getSlug(),
+    });
 
-    Matter.Composite.add(this.getComposite(), body)
+    Matter.Composite.add(this.getComposite(), body);
   }
 
   onCollisionStart(obstaclePart: any, bodyB: any) {
     if (bodyB.customType && bodyB.customType === 'player') {
-      this.getEventEmmitter().emit('obstaclePartOver', obstaclePart)
-      return
+      this.getEventEmmitter().emit('obstaclePartOver', obstaclePart);
+      return;
     }
   }
 
@@ -113,9 +117,9 @@ class Ball extends Obstacle {
         obstacle.position.y < -100 ||
         obstacle.position.y > canvasWidth + 100
       ) {
-        this.getEventEmmitter().emit('obstaclePartOver', obstacle)
+        this.getEventEmmitter().emit('obstaclePartOver', obstacle);
       }
-    })
+    });
   }
 
   // If we want the ball to bounce
@@ -154,4 +158,4 @@ class Ball extends Obstacle {
   */
 }
 
-module.exports = Ball
+export { Ball };

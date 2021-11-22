@@ -1,28 +1,29 @@
-export {}
-const Bonus = require('../../entities/bonus')
-const helpers = require('../../helpers/helpers')
+import { Helpers } from '../../../helpers/helpers';
+import { Bonus } from '../bonus';
 
 /**
  * Affect the global score of the player from -10 to +10
  */
 class ScoreChanger extends Bonus {
+  private scoreChange: number;
+
   constructor(params: any) {
-    super(params)
-    this.initChangerType()
+    super(params);
+    this.initChangerType();
   }
 
   initChangerType() {
     const randomType = this.getTypes()[
       this.getTypeFromNumber(this.getRandomInt())
-    ]
+    ];
 
-    this.imgX = randomType.imgX
-    this.imgY = randomType.imgY
-    this.scoreChange = randomType.scoreChange
+    this.imgX = randomType.imgX;
+    this.imgY = randomType.imgY;
+    this.scoreChange = randomType.scoreChange;
   }
 
   getRandomInt() {
-    return helpers.getRandomInt(1, 50)
+    return this.helpers.getRandomInt(1, 50);
   }
 
   /**
@@ -35,34 +36,34 @@ class ScoreChanger extends Bonus {
       p3: {
         imgX: 300,
         imgY: 100,
-        scoreChange: 3
+        scoreChange: 3,
       },
       p5: {
         imgX: 100,
         imgY: 100,
-        scoreChange: 5
+        scoreChange: 5,
       },
       p10: {
         imgX: 200,
         imgY: 300,
-        scoreChange: 10
+        scoreChange: 10,
       },
       m3: {
         imgX: 200,
         imgY: 100,
-        scoreChange: -3
+        scoreChange: -3,
       },
       m5: {
         imgX: 0,
         imgY: 300,
-        scoreChange: -5
+        scoreChange: -5,
       },
       m10: {
         imgX: 0,
         imgY: 200,
-        scoreChange: -10
-      }
-    }
+        scoreChange: -10,
+      },
+    };
   }
 
   /**
@@ -73,47 +74,46 @@ class ScoreChanger extends Bonus {
    */
   getTypeFromNumber(result: number) {
     if (result <= 10) {
-      return 'p3'
+      return 'p3';
     }
 
     if (result <= 20) {
-      return 'm3'
+      return 'm3';
     }
 
     if (result <= 30) {
-      return 'p5'
+      return 'p5';
     }
 
     if (result <= 40) {
-      return 'm5'
+      return 'm5';
     }
 
     if (result <= 45) {
-      return 'p10'
+      return 'p10';
     }
 
-    return 'm10'
+    return 'm10';
   }
 
   getExtraData() {
     return {
-      scoreChange: this.scoreChange
-    }
+      scoreChange: this.scoreChange,
+    };
   }
 
   onTrigger() {
     return new Promise((resolve, reject) => {
-      let game = this.getGame()
-      let playerID = this.getPlayerID()
+      const game = this.getGame();
+      const playerID = this.getPlayerID();
       game
         .getPlayersManager()
-        .addPoints(playerID, this.getExtraData().scoreChange)
-      game.syncScores()
-      game.getRoom().refreshPlayers()
+        .addPoints(playerID, this.getExtraData().scoreChange);
+      game.syncScores();
+      game.getRoom().refreshPlayers();
 
-      resolve(true)
-    })
+      resolve(true);
+    });
   }
 }
-
-module.exports = ScoreChanger
+export { ScoreChanger };

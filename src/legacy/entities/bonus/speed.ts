@@ -1,28 +1,28 @@
-export {}
-const Bonus = require('../bonus')
+import { Helpers } from 'src/helpers/helpers';
+import { Bonus } from '../bonus';
 
 class Speed extends Bonus {
   constructor(params: any) {
-    super(params)
-    this.imgX = 0
-    this.imgY = 0
+    super(params);
+    this.imgX = 0;
+    this.imgY = 0;
   }
 
   onTrigger() {
     return new Promise((resolve, reject) => {
-      let game = this.getGame()
-      let playerID = this.getPlayerID()
-      let playerData = game.getPlayersManager().getPlayerData(playerID)
-      playerData.speedMultiplicator *= 1.5
-      game.getPlayersManager().setPlayerData(playerID, playerData)
+      const game = this.getGame();
+      const playerID = this.getPlayerID();
+      const playerData = game.getPlayersManager().getPlayerData(playerID);
+      playerData.speedMultiplicator *= 1.5;
+      game.getPlayersManager().setPlayerData(playerID, playerData);
       setTimeout(function () {
-        playerData.speedMultiplicator = 1
-        game.getPlayersManager().setPlayerData(playerID, playerData)
+        playerData.speedMultiplicator = 1;
+        game.getPlayersManager().setPlayerData(playerID, playerData);
 
-        resolve(true)
-      }, this.getDuration())
-    })
+        resolve(true);
+      }, this.getDuration());
+    });
   }
 }
 
-module.exports = Speed
+export { Speed };
