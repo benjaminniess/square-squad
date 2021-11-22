@@ -24,6 +24,7 @@ import { WebsocketsUpdatePlayerService } from './websockets/websockets-update-pl
 import { WebsocketsRoomsRefreshService } from './websockets/websockets-rooms-refresh.service';
 import { WebsocketsLeaveRoomService } from './websockets/websockets-leave-rooms.service';
 import { WebsocketsJoinRoomService } from './websockets/websockets-join-room.service';
+import { WebsocketsCreateRoomService } from './websockets/websockets-create-room.service';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { WebsocketsJoinRoomService } from './websockets/websockets-join-room.ser
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
+    WebsocketsCreateRoomService,
     WebsocketsJoinRoomService,
     WebsocketsLeaveRoomService,
     WebsocketsRefreshLoopService,
