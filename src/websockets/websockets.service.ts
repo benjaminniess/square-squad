@@ -8,23 +8,16 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { GameInstance } from 'src/games/game-instance.entity';
-import { WebsocketsAdapterGameService } from './adapters/websockets-adapter-games.service';
 import { WebsocketsAdapterPlayersService } from './adapters/websockets-adapter-players.service';
 import { WebsocketsAdapterRoomsService } from './adapters/websockets-adapter-rooms.service';
 
 @WebSocketGateway()
 @Injectable()
 export class WebsocketsService implements OnGatewayDisconnect {
-  private lockedRefresh = false;
-
   constructor(
     private websocketsAdapterPlayers: WebsocketsAdapterPlayersService,
     private websocketsAdapterRooms: WebsocketsAdapterRoomsService,
-    private websocketAdapterGames: WebsocketsAdapterGameService,
-  ) {
-    setInterval(this.refreshData.bind(this), 10);
-  }
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -109,20 +102,5 @@ export class WebsocketsService implements OnGatewayDisconnect {
       'rooms-refresh-result',
       await this.websocketsAdapterRooms.findAllRooms(),
     );
-  }
-
-  refreshData() {
-    if (this.lockedRefresh) {
-      return;
-    }
-
-    this.lockedRefresh = true;
-    this.websocketAdapterGames.getActiveGameInstances().then((instances) => {
-      instances.map((instance: GameInstance) => {
-        this.server.to(instance.room.slug).emit('refresh-canvas', {});
-      });
-    });
-
-    this.lockedRefresh = false;
   }
 }

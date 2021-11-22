@@ -15,6 +15,7 @@ import { WebsocketsAdapterGameService } from '../websockets/adapters/websockets-
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WebsocketsStartGameService } from '../websockets/websockets-start-game.service';
 import { WebsocketsCountdownService } from '../websockets/websockets-countdown.service';
+import { WebsocketsRefreshLoopService } from '../websockets/websockets-refresh-loop.service';
 
 let roomsService: RoomsService;
 let playersService: PlayersService;
@@ -44,6 +45,7 @@ const bootstrapTests = async () => {
       WebsocketsStartGameService,
       WebsocketsCountdownService,
       WebsocketsAdapterGameService,
+      WebsocketsRefreshLoopService,
       RoomsLeadersService,
       GamesService,
       Helpers,
