@@ -13,11 +13,6 @@ import { WebsocketsAdapterRoomsService } from '../websockets/adapters/websockets
 import { WebsocketsAdapterPlayersService } from '../websockets/adapters/websockets-adapter-players.service';
 import { WebsocketsAdapterGameService } from '../websockets/adapters/websockets-adapter-games.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { WebsocketsStartGameService } from '../websockets/websockets-start-game.service';
-import { WebsocketsCountdownService } from '../websockets/websockets-countdown.service';
-import { WebsocketsRefreshLoopService } from '../websockets/websockets-refresh-loop.service';
-import { WebsocketsUpdatePlayerService } from '../websockets/websockets-update-player.service';
-import { WebsocketsRoomsRefreshService } from 'src/websockets/websockets-rooms-refresh.service';
 
 let roomsService: RoomsService;
 let playersService: PlayersService;

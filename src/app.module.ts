@@ -23,11 +23,17 @@ import { WebsocketsRefreshLoopService } from './websockets/websockets-refresh-lo
 import { WebsocketsUpdatePlayerService } from './websockets/websockets-update-player.service';
 import { WebsocketsRoomsRefreshService } from './websockets/websockets-rooms-refresh.service';
 import { WebsocketsLeaveRoomService } from './websockets/websockets-leave-rooms.service';
+import { WebsocketsJoinRoomService } from './websockets/websockets-join-room.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Player, Room, GameInstance]),
-    EventEmitterModule.forRoot({ wildcard: true, maxListeners: 30 }),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      maxListeners: 300,
+      verboseMemoryLeak: false,
+      ignoreErrors: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: ':memory:',
@@ -52,6 +58,7 @@ import { WebsocketsLeaveRoomService } from './websockets/websockets-leave-rooms.
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
+    WebsocketsJoinRoomService,
     WebsocketsLeaveRoomService,
     WebsocketsRefreshLoopService,
     WebsocketsRoomsRefreshService,
