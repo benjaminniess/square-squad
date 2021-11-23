@@ -1,4 +1,4 @@
-import { Helpers } from 'src/helpers/helpers';
+import { Helpers } from '../../../helpers/helpers';
 import { Bonus } from '../bonus';
 
 class Speed extends Bonus {

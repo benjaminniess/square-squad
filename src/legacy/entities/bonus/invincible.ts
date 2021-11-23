@@ -1,4 +1,4 @@
-const Bonus = require('../bonus');
+import { Bonus } from '../bonus';
 
 class Invincible extends Bonus {
   constructor(params: any) {
@@ -9,10 +9,10 @@ class Invincible extends Bonus {
 
   onTrigger() {
     return new Promise((resolve, reject) => {
-      let game = this.getGame();
-      let playerID = this.getPlayerID();
-      let playersManager = game.getPlayersManager();
-      let prevCollisionFilter = playersManager.getDefaultPlayerCollisionFilter();
+      const game = this.getGame();
+      const playerID = this.getPlayerID();
+      const playersManager = game.getPlayersManager();
+      const prevCollisionFilter = playersManager.getDefaultPlayerCollisionFilter();
       playersManager.setPlayerBodyData(playerID, {
         collisionFilter: {
           category: 0x1000,

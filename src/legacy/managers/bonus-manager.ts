@@ -2,7 +2,7 @@ import { Speed } from '../entities/bonus/speed';
 import { ScoreChanger } from '../entities/bonus/score-changer';
 import { Invincible } from '../entities/bonus/invincible';
 import { _ } from 'lodash';
-import { Helpers } from 'src/helpers/helpers';
+import { Helpers } from '../../helpers/helpers';
 
 class BonusManager {
   private bonusList: any[];

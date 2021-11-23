@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 const canvasWidth = 700;
 import * as Matter from 'matter-js';
 const Composite = Matter.Composite;
