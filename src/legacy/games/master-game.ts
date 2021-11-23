@@ -2,7 +2,7 @@ export { MasterGame };
 import { BonusManager } from '../managers/bonus-manager';
 import { ObstaclesManager } from '../managers/obstacles-manager';
 import { PlayersManager } from '../managers/players-manager';
-import { Matter } from 'matter-js';
+import * as Matter from 'matter-js';
 import { EventEmitter } from 'events';
 import { _ } from 'lodash';
 

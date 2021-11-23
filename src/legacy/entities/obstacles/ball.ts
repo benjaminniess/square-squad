@@ -1,5 +1,5 @@
 const canvasWidth = 700;
-import { Matter } from 'matter-js';
+import * as Matter from 'matter-js';
 import { Helpers } from '../../../helpers/helpers';
 import { Obstacle } from '../obstacle';
 import { _ } from 'lodash';

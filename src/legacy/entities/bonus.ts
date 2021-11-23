@@ -1,7 +1,7 @@
 const canvasWidth = 700;
 const bonusSize = 30;
 import { Helpers } from '../../helpers/helpers';
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
 class Bonus {
   private game: any;

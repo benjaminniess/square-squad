@@ -1,6 +1,6 @@
+import * as Matter from 'matter-js';
 const Composite = Matter.Composite;
-import EventEmitter from 'events';
-import { Matter } from 'matter-js';
+import { EventEmitter } from 'events';
 import { _ } from 'lodash';
 
 class Obstacle {

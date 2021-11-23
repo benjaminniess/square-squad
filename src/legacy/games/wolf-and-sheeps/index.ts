@@ -1,5 +1,5 @@
 const squareSize = 30;
-import { Matter } from 'matter-js';
+import * as Matter from 'matter-js';
 import { MasterGame } from '../../games/master-game';
 import { _ } from 'lodash';
 

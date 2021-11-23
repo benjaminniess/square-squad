@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 const canvasWidth = 700;
-import { Matter } from 'matter-js';
+import * as Matter from 'matter-js';
 const Composite = Matter.Composite;
 
 import { Press } from '../entities/obstacles/press';

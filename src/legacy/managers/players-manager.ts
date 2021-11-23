@@ -1,5 +1,5 @@
 import { _ } from 'lodash';
-import { Matter } from 'matter-js';
+import * as Matter from 'matter-js';
 
 const squareSize = 30;
 const canvasWidth = 700;
