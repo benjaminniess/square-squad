@@ -22,10 +22,9 @@ class Room {
   private game: any;
   private players: Player[] = [];
 
-  constructor(slug: string, name: string, io: any) {
+  constructor(slug: string, name: string) {
     this.name = name;
     this.slug = slug;
-    this.io = io;
     this.setGame('panic-attack');
   }
 
@@ -75,8 +74,8 @@ class Room {
   }
 
   getPlayers() {
-    const players = this.io.sockets.adapter.rooms.get(this.getSlug());
-    return players ? _.toArray(players) : [];
+    // const players = this.io.sockets.adapter.rooms.get(this.getSlug());
+    // return players ? _.toArray(players) : [];
   }
 
   getAdminPlayer() {

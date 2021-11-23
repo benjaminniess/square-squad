@@ -1,4 +1,3 @@
-export { MasterGame };
 import { BonusManager } from '../managers/bonus-manager';
 import { ObstaclesManager } from '../managers/obstacles-manager';
 import { PlayersManager } from '../managers/players-manager';
@@ -18,7 +17,6 @@ class MasterGame {
   private score = 0;
   private duration = 30;
   private status = 'waiting';
-  private room: any;
   private ranking: any[] = [];
   private lastRoundRanking: any[] = [];
   private totalRounds = 3;
@@ -30,13 +28,7 @@ class MasterGame {
   private playersManager: any;
   private roundNumber = 3;
 
-  constructor(room: any) {
-    if (!room) {
-      throw new Error('Missing room');
-    }
-
-    this.room = room;
-
+  constructor() {
     this.bonusManager = new BonusManager(this);
     this.eventEmitter = new EventEmitter();
     this.initEngine();
@@ -96,10 +88,6 @@ class MasterGame {
 
   getEngine() {
     return this.engine;
-  }
-
-  getRoom() {
-    return this.room;
   }
 
   getSlug() {
@@ -275,4 +263,4 @@ class MasterGame {
   }
 }
 
-module.exports = MasterGame;
+export { MasterGame };

@@ -2,13 +2,13 @@ const squareSize = 30;
 import * as Matter from 'matter-js';
 import { MasterGame } from '../../games/master-game';
 import { _ } from 'lodash';
-import { Helpers } from 'src/helpers/helpers';
+import { Helpers } from '../../../helpers/helpers';
 
 class Panick_Attack extends MasterGame {
   private helpers: Helpers;
 
-  constructor(room: any) {
-    super(room);
+  constructor() {
+    super();
     this.speed = 2;
     this.slug = 'panic-attack';
     this.type = 'battle-royale';
@@ -22,7 +22,7 @@ class Panick_Attack extends MasterGame {
       .on('obstacleOver', (data: any) => {
         this.getPlayersManager().addPlayersPoints();
         this.syncScores();
-        this.getRoom().refreshPlayers();
+        // this.getRoom().refreshPlayers();
       });
 
     Matter.Events.on(this.getEngine(), 'collisionStart', (event: any) => {
@@ -76,7 +76,7 @@ class Panick_Attack extends MasterGame {
         );
 
         this.getPlayersManager().killPlayer(player.gamePlayerID);
-        this.getRoom().refreshPlayers();
+        // this.getRoom().refreshPlayers();
       });
 
       Matter.Events.on(this.getEngine(), 'collisionEnd', (event: any) => {
@@ -137,7 +137,7 @@ class Panick_Attack extends MasterGame {
           this.increaseScore();
           increasePoints = this.getScore();
           this.obstaclesManager.setLevel(increasePoints);
-          this.getRoom().refreshPlayers();
+          //this.getRoom().refreshPlayers();
         } else {
           obstacleManager.updateObstacles();
         }

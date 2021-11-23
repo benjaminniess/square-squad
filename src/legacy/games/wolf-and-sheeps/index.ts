@@ -6,8 +6,8 @@ import { _ } from 'lodash';
 class Wolf_And_Sheep extends MasterGame {
   private wolf: string;
 
-  constructor(room: any) {
-    super(room);
+  constructor() {
+    super();
     this.speed = 4;
     this.slug = 'wolf-and-sheeps';
     this.type = 'timed';
