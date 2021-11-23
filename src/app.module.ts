@@ -25,6 +25,7 @@ import { WebsocketsRoomsRefreshService } from './websockets/websockets-rooms-ref
 import { WebsocketsLeaveRoomService } from './websockets/websockets-leave-rooms.service';
 import { WebsocketsJoinRoomService } from './websockets/websockets-join-room.service';
 import { WebsocketsCreateRoomService } from './websockets/websockets-create-room.service';
+import { LegacyLoaderService } from './legacy/legacy-loader.service';
 
 @Module({
   imports: [
@@ -48,14 +49,17 @@ import { WebsocketsCreateRoomService } from './websockets/websockets-create-room
   ],
   controllers: [AppController],
   providers: [
-    Helpers,
     AppService,
+    EventEmitter2,
+    GamesService,
+    Helpers,
+    LegacyLoaderService,
+    PlayersService,
+    RoomsLeadersService,
+    RoomsService,
     WebsocketsService,
     WebsocketsCountdownService,
     WebsocketsStartGameService,
-    PlayersService,
-    RoomsService,
-    GamesService,
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
@@ -65,8 +69,6 @@ import { WebsocketsCreateRoomService } from './websockets/websockets-create-room
     WebsocketsRefreshLoopService,
     WebsocketsRoomsRefreshService,
     WebsocketsUpdatePlayerService,
-    RoomsLeadersService,
-    EventEmitter2,
   ],
 })
 export class AppModule {}

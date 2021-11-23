@@ -13,6 +13,7 @@ import { WebsocketsAdapterRoomsService } from '../websockets/adapters/websockets
 import { WebsocketsAdapterPlayersService } from '../websockets/adapters/websockets-adapter-players.service';
 import { WebsocketsAdapterGameService } from '../websockets/adapters/websockets-adapter-games.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { LegacyLoaderService } from '../legacy/legacy-loader.service';
 
 let roomsService: RoomsService;
 let playersService: PlayersService;
@@ -21,6 +22,7 @@ let websocketsAdapterPlayersService: WebsocketsAdapterPlayersService;
 let websocketAdapterRoomService: WebsocketsAdapterRoomsService;
 let roomsLeadersService: RoomsLeadersService;
 let websocketAdapterGames;
+let legacyLoaderService: LegacyLoaderService;
 
 const bootstrapTests = async () => {
   const module: TestingModule = await Test.createTestingModule({
@@ -38,6 +40,7 @@ const bootstrapTests = async () => {
       EventEmitter2,
       GamesService,
       Helpers,
+      LegacyLoaderService,
       PlayersService,
       RoomsLeadersService,
       RoomsService,
@@ -70,6 +73,7 @@ const bootstrapTests = async () => {
     WebsocketsAdapterGameService,
   );
   roomsLeadersService = module.get<RoomsLeadersService>(RoomsLeadersService);
+  legacyLoaderService = module.get<LegacyLoaderService>(LegacyLoaderService);
 
   return {
     connection,
@@ -80,6 +84,7 @@ const bootstrapTests = async () => {
     websocketAdapterGames,
     websocketsAdapterPlayersService,
     websocketAdapterRoomService,
+    legacyLoaderService,
     roomsLeadersService,
     clear: async () => {
       await connection.close();
