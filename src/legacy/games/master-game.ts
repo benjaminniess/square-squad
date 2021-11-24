@@ -25,10 +25,9 @@ class MasterGame {
   private eventEmitter;
   private engine: any;
   private runner: any;
-  private playersManager: any;
   private roundNumber = 3;
 
-  constructor() {
+  constructor(private playersManager: PlayersManager) {
     this.bonusManager = new BonusManager(this);
     this.eventEmitter = new EventEmitter();
     this.initEngine();
@@ -40,7 +39,6 @@ class MasterGame {
     this.runner = Runner.create();
     Runner.run(this.runner, this.engine);
     this.obstaclesManager = new ObstaclesManager(this);
-    this.playersManager = new PlayersManager(this);
 
     Composite.add(this.engine.world, [
       this.getPlayersManager().getComposite(),

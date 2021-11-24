@@ -4,6 +4,8 @@ import { Error } from 'src/contracts/error.interface';
 import { Success } from 'src/contracts/success.interface';
 import { GamesService } from '../../games/games.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { GameInstance } from '../../games/game-instance.entity';
+import { LegacyLoaderService } from '../../legacy/legacy-loader.service';
 
 @Injectable()
 export class WebsocketsAdapterGameService {
@@ -11,6 +13,7 @@ export class WebsocketsAdapterGameService {
     private gamesService: GamesService,
     private roomsService: RoomsService,
     private eventEmitter: EventEmitter2,
+    private legacyLoader: LegacyLoaderService,
   ) {}
 
   async startGame(gameData: any): Promise<Success | Error> {
@@ -46,6 +49,15 @@ export class WebsocketsAdapterGameService {
     } catch (error) {
       return { success: false, error: error };
     }
+
+    const legacyData = this.legacyLoader.create(gameInstanceId, room);
+    room.players.map((player) => {
+      legacyData.playersManager.initPlayer({
+        id: player.socketId,
+        color: player.color,
+        nickName: player.nickName,
+      });
+    });
 
     this.startCountdown({ roomSlug: gameData.roomSlug, gameInstanceId });
 
@@ -91,5 +103,9 @@ export class WebsocketsAdapterGameService {
 
   getActiveGameInstances() {
     return this.gamesService.findActives();
+  }
+
+  refreshGameData(instance: GameInstance) {
+    return this.legacyLoader.getDataForInstance(instance.id).game.refreshData();
   }
 }

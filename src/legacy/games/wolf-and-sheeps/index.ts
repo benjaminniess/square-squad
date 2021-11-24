@@ -2,12 +2,13 @@ const squareSize = 30;
 import * as Matter from 'matter-js';
 import { MasterGame } from '../../games/master-game';
 import { _ } from 'lodash';
+import { PlayersManager } from 'src/legacy/managers/players-manager';
 
 class Wolf_And_Sheep extends MasterGame {
   private wolf: string;
 
-  constructor() {
-    super();
+  constructor(playersManager: PlayersManager) {
+    super(playersManager);
     this.speed = 4;
     this.slug = 'wolf-and-sheeps';
     this.type = 'timed';

@@ -3,12 +3,13 @@ import * as Matter from 'matter-js';
 import { MasterGame } from '../../games/master-game';
 import { _ } from 'lodash';
 import { Helpers } from '../../../helpers/helpers';
+import { PlayersManager } from 'src/legacy/managers/players-manager';
 
 class Panick_Attack extends MasterGame {
   private helpers: Helpers;
 
-  constructor() {
-    super();
+  constructor(playersManager: PlayersManager) {
+    super(playersManager);
     this.speed = 2;
     this.slug = 'panic-attack';
     this.type = 'battle-royale';

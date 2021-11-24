@@ -100,23 +100,25 @@ export default {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      data.bonusList.map((bonus) => {
-        ctx.beginPath()
-        ctx.drawImage(
-          bonusImage,
-          bonus.imgX,
-          bonus.imgY,
-          100,
-          100,
-          rationalize(bonus.x),
-          rationalize(bonus.y),
-          rationalize(bonus.width),
-          rationalize(bonus.height)
-        )
-        ctx.fillStyle = '#00DD00'
-        ctx.fill()
-        ctx.closePath()
-      })
+      if (data.bonusList) {
+        data.bonusList.map((bonus) => {
+          ctx.beginPath()
+          ctx.drawImage(
+            bonusImage,
+            bonus.imgX,
+            bonus.imgY,
+            100,
+            100,
+            rationalize(bonus.x),
+            rationalize(bonus.y),
+            rationalize(bonus.width),
+            rationalize(bonus.height)
+          )
+          ctx.fillStyle = '#00DD00'
+          ctx.fill()
+          ctx.closePath()
+        })
+      }
 
       if (data.debugBodies.length > 0) {
         data.debugBodies.map((vertice, i) => {

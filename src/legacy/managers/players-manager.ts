@@ -8,19 +8,13 @@ class PlayersManager {
   private compositeObj: any;
   private playersData: any;
   private playersMoves: any;
-  private game: any;
   private speed: number;
 
-  constructor(game: any) {
+  constructor() {
     this.compositeObj = Matter.Composite.create({ label: 'players' });
     this.playersData = {};
     this.playersMoves = {};
-    this.game = game;
-    this.speed = game.getSpeed();
-  }
-
-  getGame() {
-    return this.game;
+    this.speed = 2; // TODO: make it dynamic
   }
 
   getComposite() {
@@ -107,7 +101,7 @@ class PlayersManager {
     this.playersData[playerSession.id] = {
       x: -100,
       y: canvasWidth / 2,
-      nickname: playerSession.nickname,
+      nickname: playerSession.nickName,
       alive: true,
       speedMultiplicator: 1,
       score: 0,
