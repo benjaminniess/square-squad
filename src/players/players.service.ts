@@ -23,6 +23,7 @@ export class PlayersService {
   findBySocketId(socketId: string) {
     return this.findOne({
       where: { socketId: socketId },
+      relations: ['room'],
     });
   }
 
