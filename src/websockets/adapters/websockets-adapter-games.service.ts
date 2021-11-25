@@ -6,12 +6,14 @@ import { GamesService } from '../../games/games.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GameInstance } from '../../games/game-instance.entity';
 import { LegacyLoaderService } from '../../legacy/legacy-loader.service';
+import { PlayersService } from '../../players/players.service';
 
 @Injectable()
 export class WebsocketsAdapterGameService {
   constructor(
     private gamesService: GamesService,
     private roomsService: RoomsService,
+    private playersService: PlayersService,
     private eventEmitter: EventEmitter2,
     private legacyLoader: LegacyLoaderService,
   ) {}
@@ -50,7 +52,7 @@ export class WebsocketsAdapterGameService {
       return { success: false, error: error };
     }
 
-    const legacyData = this.legacyLoader.create(gameInstanceId, room);
+    const legacyData = await this.legacyLoader.create(gameInstanceId, room);
     room.players.map((player) => {
       legacyData.playersManager.initPlayer({
         id: player.socketId,
@@ -107,5 +109,46 @@ export class WebsocketsAdapterGameService {
 
   refreshGameData(instance: GameInstance) {
     return this.legacyLoader.getDataForInstance(instance.id).game.refreshData();
+  }
+
+  async handlePlayerAction(pressed = true, key: number, socketId) {
+    const player = await this.playersService.findBySocketId(socketId);
+    if (!player || !player.room) {
+      return;
+    }
+
+    let keyValue = null;
+    switch (key) {
+      case 37:
+        keyValue = 'left';
+        break;
+      case 38:
+        keyValue = 'down';
+        break;
+      case 39:
+        keyValue = 'right';
+        break;
+      case 40:
+        keyValue = 'top';
+        break;
+      default:
+        break;
+    }
+
+    const gameInstance = await this.gamesService.findById(player.room.game.id);
+    if (!gameInstance) {
+      return;
+    }
+
+    if (gameInstance.status !== 'playing') {
+      return;
+    }
+
+    const gameData = this.legacyLoader.getDataForInstance(player.room.game.id);
+    gameData.playersManager.updatePlayerButtonState(
+      socketId,
+      keyValue,
+      pressed,
+    );
   }
 }

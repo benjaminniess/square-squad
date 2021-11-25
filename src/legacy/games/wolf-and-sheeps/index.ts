@@ -61,43 +61,37 @@ class Wolf_And_Sheep extends MasterGame {
 
     const updatedBonus: any[] = [];
 
-    if (this.getStatus() === 'playing') {
-      if (bonusList.length < bonusManager.getFrequency()) {
-        bonusManager.maybeInitBonus();
-      }
-
-      _.forEach(
-        playersManager.getPlayersMoves(),
-        (moves: any, playerID: string) => {
-          const playerData = playersData[playerID];
-
-          playersData[playerID].isWolf = playerID === this.getWolf();
-
-          bonusList.map((bonus: any) => {
-            const bonusData = bonus.getData();
-            if (
-              playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
-              playerData.x - squareSize / 2 + squareSize > bonusData.x &&
-              playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
-              squareSize + playerData.y - squareSize / 2 > bonusData.y
-            ) {
-              playersManager.uptadePlayerSingleData(
-                playerID,
-                'bonus',
-                bonusData,
-              );
-              bonus.trigger(playerID).then(() => {
-                playersManager.uptadePlayerSingleData(playerID, 'bonus', null);
-              });
-            } else {
-              updatedBonus.push(bonusData);
-            }
-          });
-        },
-      );
-
-      playersManager.processPlayersRequests();
+    if (bonusList.length < bonusManager.getFrequency()) {
+      bonusManager.maybeInitBonus();
     }
+
+    _.forEach(
+      playersManager.getPlayersMoves(),
+      (moves: any, playerID: string) => {
+        const playerData = playersData[playerID];
+
+        playersData[playerID].isWolf = playerID === this.getWolf();
+
+        bonusList.map((bonus: any) => {
+          const bonusData = bonus.getData();
+          if (
+            playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
+            playerData.x - squareSize / 2 + squareSize > bonusData.x &&
+            playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
+            squareSize + playerData.y - squareSize / 2 > bonusData.y
+          ) {
+            playersManager.uptadePlayerSingleData(playerID, 'bonus', bonusData);
+            bonus.trigger(playerID).then(() => {
+              playersManager.uptadePlayerSingleData(playerID, 'bonus', null);
+            });
+          } else {
+            updatedBonus.push(bonusData);
+          }
+        });
+      },
+    );
+
+    playersManager.processPlayersRequests();
 
     return {
       players: playersData,

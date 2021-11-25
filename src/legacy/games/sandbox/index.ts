@@ -13,9 +13,8 @@ class Sandbox extends MasterGame {
     // console.log(this.getDebugMatterTree());
     const playersManager = this.getPlayersManager();
     const playersData = playersManager.getPlayersData();
-    if (this.getStatus() === 'playing') {
-      playersManager.processPlayersRequests();
-    }
+
+    playersManager.processPlayersRequests();
 
     return {
       players: playersData,

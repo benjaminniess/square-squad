@@ -26,6 +26,7 @@ import { WebsocketsLeaveRoomService } from './websockets/websockets-leave-rooms.
 import { WebsocketsJoinRoomService } from './websockets/websockets-join-room.service';
 import { WebsocketsCreateRoomService } from './websockets/websockets-create-room.service';
 import { LegacyLoaderService } from './legacy/legacy-loader.service';
+import { WebsocketsPlayersMovesService } from './websockets/websockets-players-moves.service';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { LegacyLoaderService } from './legacy/legacy-loader.service';
     WebsocketsCreateRoomService,
     WebsocketsJoinRoomService,
     WebsocketsLeaveRoomService,
+    WebsocketsPlayersMovesService,
     WebsocketsRefreshLoopService,
     WebsocketsRoomsRefreshService,
     WebsocketsUpdatePlayerService,

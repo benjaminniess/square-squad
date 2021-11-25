@@ -125,59 +125,53 @@ class Panick_Attack extends MasterGame {
 
     const updatedBonus: any[] = [];
 
-    if (this.getStatus() === 'playing') {
-      if (
-        !process.env.DISABLE_OBSTACLES ||
-        process.env.DISABLE_OBSTACLES !== 'true'
-      ) {
-        if (obstacles.length === 0) {
-          obstacleManager.initObstacle();
-          if (this.getScore() > 2 && this.helpers.getRandomInt(1, 3) === 2) {
-            obstacleManager.initObstacle({ speedMultiplicator: 0.5 });
-          }
-          this.increaseScore();
-          increasePoints = this.getScore();
-          this.obstaclesManager.setLevel(increasePoints);
-          //this.getRoom().refreshPlayers();
-        } else {
-          obstacleManager.updateObstacles();
+    if (
+      !process.env.DISABLE_OBSTACLES ||
+      process.env.DISABLE_OBSTACLES !== 'true'
+    ) {
+      if (obstacles.length === 0) {
+        obstacleManager.initObstacle();
+        if (this.getScore() > 2 && this.helpers.getRandomInt(1, 3) === 2) {
+          obstacleManager.initObstacle({ speedMultiplicator: 0.5 });
         }
-
-        if (bonusList.length < bonusManager.getFrequency()) {
-          bonusManager.maybeInitBonus();
-        }
+        this.increaseScore();
+        increasePoints = this.getScore();
+        this.obstaclesManager.setLevel(increasePoints);
+        //this.getRoom().refreshPlayers();
+      } else {
+        obstacleManager.updateObstacles();
       }
 
-      _.forEach(
-        playersManager.getPlayersMoves(),
-        (moves: any, playerID: string) => {
-          const playerData = playersData[playerID];
-
-          bonusList.map((bonus: any) => {
-            const bonusData = bonus.getData();
-            if (
-              playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
-              playerData.x - squareSize / 2 + squareSize > bonusData.x &&
-              playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
-              squareSize + playerData.y - squareSize / 2 > bonusData.y
-            ) {
-              playersManager.uptadePlayerSingleData(
-                playerID,
-                'bonus',
-                bonusData,
-              );
-              bonus.trigger(playerID).then(() => {
-                playersManager.uptadePlayerSingleData(playerID, 'bonus', null);
-              });
-            } else {
-              updatedBonus.push(bonusData);
-            }
-          });
-        },
-      );
-
-      playersManager.processPlayersRequests();
+      if (bonusList.length < bonusManager.getFrequency()) {
+        bonusManager.maybeInitBonus();
+      }
     }
+
+    _.forEach(
+      playersManager.getPlayersMoves(),
+      (moves: any, playerID: string) => {
+        const playerData = playersData[playerID];
+
+        bonusList.map((bonus: any) => {
+          const bonusData = bonus.getData();
+          if (
+            playerData.x - squareSize / 2 < bonusData.x + bonusData.width &&
+            playerData.x - squareSize / 2 + squareSize > bonusData.x &&
+            playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
+            squareSize + playerData.y - squareSize / 2 > bonusData.y
+          ) {
+            playersManager.uptadePlayerSingleData(playerID, 'bonus', bonusData);
+            bonus.trigger(playerID).then(() => {
+              playersManager.uptadePlayerSingleData(playerID, 'bonus', null);
+            });
+          } else {
+            updatedBonus.push(bonusData);
+          }
+        });
+      },
+    );
+
+    playersManager.processPlayersRequests();
 
     return {
       players: playersData,
