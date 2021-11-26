@@ -77,6 +77,7 @@ class Panick_Attack extends MasterGame {
         );
 
         this.getPlayersManager().killPlayer(player.gamePlayerID);
+        this.getEventEmmitter().emit('kill-player', player.gamePlayerID);
         // this.getRoom().refreshPlayers();
       });
 

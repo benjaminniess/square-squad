@@ -52,7 +52,7 @@ export class WebsocketsAdapterGameService {
       return { success: false, error: error };
     }
 
-    const legacyData = await this.legacyLoader.create(gameInstanceId, room);
+    const legacyData = this.legacyLoader.create(gameInstanceId, room);
     room.players.map((player) => {
       legacyData.playersManager.initPlayer({
         id: player.socketId,
@@ -61,36 +61,12 @@ export class WebsocketsAdapterGameService {
       });
     });
 
-    this.startCountdown({ roomSlug: gameData.roomSlug, gameInstanceId });
+    this.eventEmitter.emit('start-game', legacyData);
 
     return {
       success: true,
       data: { gameInstanceId: gameInstanceId },
     };
-  }
-
-  startCountdown(eventData: any) {
-    let timeleft = 3;
-    const countdownTimer = setInterval(
-      async function (eventData) {
-        if (timeleft <= 0) {
-          clearInterval(countdownTimer);
-
-          this.eventEmitter.emit('countdown-over', {
-            gameInstanceId: eventData.gameInstanceId,
-          });
-        }
-
-        this.eventEmitter.emit('countdown-update', {
-          roomSlug: eventData.roomSlug,
-          timeleft,
-        });
-
-        timeleft -= 1;
-      }.bind(this),
-      1000,
-      eventData,
-    );
   }
 
   async setStatus(gameInstanceId: number, status: string) {

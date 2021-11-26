@@ -26,6 +26,10 @@ class Room {
     return this.game;
   }
 
+  getSlug() {
+    return this.slug;
+  }
+
   addPlayer(player: Player) {
     this.players.push(player);
   }

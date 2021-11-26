@@ -27,6 +27,9 @@ import { WebsocketsJoinRoomService } from './websockets/websockets-join-room.ser
 import { WebsocketsCreateRoomService } from './websockets/websockets-create-room.service';
 import { LegacyLoaderService } from './legacy/legacy-loader.service';
 import { WebsocketsPlayersMovesService } from './websockets/websockets-players-moves.service';
+import { StartGameStartCountdown } from './event-actions/start-game-start-countdown';
+import { KillPlayerRefreshPlayers } from './event-actions/kill-player-refresh-players';
+import { RefreshPlayers } from './event-actions/refresh-players';
 
 @Module({
   imports: [
@@ -56,6 +59,9 @@ import { WebsocketsPlayersMovesService } from './websockets/websockets-players-m
     Helpers,
     LegacyLoaderService,
     PlayersService,
+    StartGameStartCountdown,
+    KillPlayerRefreshPlayers,
+    RefreshPlayers,
     RoomsLeadersService,
     RoomsService,
     WebsocketsService,

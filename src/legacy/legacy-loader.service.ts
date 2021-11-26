@@ -1,4 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import { LegacyData } from 'src/contracts/legacyData.interface';
 import { Room } from 'src/rooms/room.entity';
 import { Room as RoomEntity } from './entities/room';
 import { Panick_Attack } from './games/panic-attack';
@@ -13,10 +14,9 @@ export class LegacyLoaderService {
 
   constructor() {}
 
-  create(instanceId: number, room: Room) {
+  create(instanceId: number, room: Room): LegacyData {
     const playersManager = new PlayersManager();
-    const legacyGame = new Sandbox(playersManager);
-    //const legacyGame = new Panick_Attack();
+    const legacyGame = new Panick_Attack(playersManager);
 
     const gameData = {
       instanceId: instanceId,
