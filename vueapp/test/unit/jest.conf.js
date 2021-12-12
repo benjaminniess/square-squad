@@ -4,6 +4,7 @@ module.exports = {
   rootDir: path.resolve(__dirname, '../../'),
   testURL: 'http://localhost:1080',
   moduleFileExtensions: ['js', 'json', 'vue'],
+  modulePathIgnorePatterns: ['dist', 'node_modules'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
