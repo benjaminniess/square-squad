@@ -18,15 +18,8 @@ import { GamesService } from './games/games.service';
 import { GameInstance } from './games/game-instance.entity';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { WebsocketsCountdownService } from './websockets/websockets-countdown.service';
-import { WebsocketsStartGameService } from './websockets/websockets-start-game.service';
 import { WebsocketsRefreshLoopService } from './websockets/websockets-refresh-loop.service';
-import { WebsocketsUpdatePlayerService } from './websockets/websockets-update-player.service';
-import { WebsocketsRoomsRefreshService } from './websockets/websockets-rooms-refresh.service';
-import { WebsocketsLeaveRoomService } from './websockets/websockets-leave-rooms.service';
-import { WebsocketsJoinRoomService } from './websockets/websockets-join-room.service';
-import { WebsocketsCreateRoomService } from './websockets/websockets-create-room.service';
 import { LegacyLoaderService } from './legacy/legacy-loader.service';
-import { WebsocketsPlayersMovesService } from './websockets/websockets-players-moves.service';
 import { StartGameStartCountdown } from './event-actions/start-game-start-countdown';
 import { KillPlayerRefreshPlayers } from './event-actions/kill-player-refresh-players';
 import { RefreshPlayers } from './event-actions/refresh-players';
@@ -66,17 +59,10 @@ import { RefreshPlayers } from './event-actions/refresh-players';
     RoomsService,
     WebsocketsService,
     WebsocketsCountdownService,
-    WebsocketsStartGameService,
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
-    WebsocketsCreateRoomService,
-    WebsocketsJoinRoomService,
-    WebsocketsLeaveRoomService,
-    WebsocketsPlayersMovesService,
     WebsocketsRefreshLoopService,
-    WebsocketsRoomsRefreshService,
-    WebsocketsUpdatePlayerService,
   ],
 })
 export class AppModule {}
