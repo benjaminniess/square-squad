@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Player } from '../players/player.entity';
 import { PlayersService } from '../players/players.service';
+import { GamesService } from '../games/games.service';
 
 @Injectable()
 export class RoomsService {
@@ -13,6 +14,7 @@ export class RoomsService {
     @InjectRepository(Room)
     private roomsRepository: Repository<Room>,
     private playersService: PlayersService,
+    private gamesService: GamesService,
     private helpers: Helpers,
   ) {}
 
@@ -63,6 +65,10 @@ export class RoomsService {
     const room = await this.findBySlug(slug);
     if (!room) {
       throw new ConflictException('room-does-not-exist');
+    }
+
+    if (room.game) {
+      await this.gamesService.deleteFromId(room.game.id);
     }
 
     await this.roomsRepository.delete({
