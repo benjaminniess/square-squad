@@ -89,7 +89,7 @@ export class WebsocketsAdapterGameService {
 
   async handlePlayerAction(pressed = true, key: number, socketId) {
     const player = await this.playersService.findBySocketId(socketId);
-    if (!player || !player.room) {
+    if (!player || !player.room || !player.room.game) {
       return;
     }
 
