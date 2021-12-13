@@ -8,7 +8,9 @@ import { WebsocketsAdapterGameService } from './adapters/websockets-adapter-game
 export class WebsocketsRefreshLoopService {
   private lockedRefresh = false;
 
-  constructor(private websocketAdapterGames: WebsocketsAdapterGameService) {}
+  constructor(private websocketAdapterGames: WebsocketsAdapterGameService) {
+    setInterval(this.refreshData.bind(this), 10);
+  }
 
   @WebSocketServer()
   server: Server;
