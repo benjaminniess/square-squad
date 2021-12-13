@@ -46,7 +46,28 @@ DISABLE_OBSTACLES: (bool) Your can disable all obstacles for test purpose
 ADMIN_PASSWORD: The password to access the /admin view
 ```
 
-## Changelog
+## :rocket: Socket.io messages
+
+| :arrow_up:           | :arrow_down:                |
+| :------------------- | --------------------------- |
+| `update-player-data` | `update-player-data-result` |
+| `rooms-refresh`      | `rooms-refresh-result`      |
+| `create-room`        | `create-room-result`        |
+| `join-room`          | `join-room-result`          |
+| X                    | `refresh-game-status`       |
+| X                    | `refresh-players`           |
+| `start-game`         | `start-game-result`         |
+| X                    | `countdown-update`          |
+| X                    | `refresh-canvas`            |
+| X                    | `in-game-countdown-update`  |
+| `keyPressed`         | X                           |
+| `keyUp`              | X                           |
+
+## :package: Changelog
+
+### :package: 2.0.0 - 2022?
+
+- :tada: Full refacto using Nest JS framework and TDD
 
 ### :package: 1.2.9 - 2021-08-16
 
