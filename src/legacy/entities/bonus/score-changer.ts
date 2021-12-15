@@ -104,13 +104,13 @@ class ScoreChanger extends Bonus {
 
   onTrigger() {
     return new Promise((resolve, reject) => {
-      const game = this.getGame();
-      const playerID = this.getPlayerID();
-      game
-        .getPlayersManager()
-        .addPoints(playerID, this.getExtraData().scoreChange);
-      game.syncScores();
-      game.getRoom().refreshPlayers();
+      // const game = this.getGame();
+      // const playerID = this.getPlayerID();
+      // game
+      //   .getPlayersManager()
+      //   .addPoints(playerID, this.getExtraData().scoreChange);
+      // game.syncScores();
+      // game.getRoom().refreshPlayers();
 
       resolve(true);
     });
