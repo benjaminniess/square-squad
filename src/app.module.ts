@@ -17,12 +17,13 @@ import { Room } from './rooms/room.entity';
 import { GamesService } from './games/games.service';
 import { GameInstance } from './games/game-instance.entity';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
-import { WebsocketsCountdownService } from './websockets/websockets-countdown.service';
+import { WebsocketsEventsService } from './websockets/websockets-events.service';
 import { WebsocketsRefreshLoopService } from './websockets/websockets-refresh-loop.service';
 import { LegacyLoaderService } from './legacy/legacy-loader.service';
 import { StartGameStartCountdown } from './event-actions/start-game-start-countdown';
 import { KillPlayerRefreshPlayers } from './event-actions/kill-player-refresh-players';
 import { RefreshPlayers } from './event-actions/refresh-players';
+import { KillPlayerGameOver } from './event-actions/kill-player-game-over';
 
 @Module({
   imports: [
@@ -54,11 +55,12 @@ import { RefreshPlayers } from './event-actions/refresh-players';
     PlayersService,
     StartGameStartCountdown,
     KillPlayerRefreshPlayers,
+    KillPlayerGameOver,
     RefreshPlayers,
     RoomsLeadersService,
     RoomsService,
     WebsocketsService,
-    WebsocketsCountdownService,
+    WebsocketsEventsService,
     WebsocketsAdapterRoomsService,
     WebsocketsAdapterPlayersService,
     WebsocketsAdapterGameService,
