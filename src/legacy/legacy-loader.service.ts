@@ -1,9 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LegacyData } from 'src/contracts/legacyData.interface';
-import { Room } from 'src/rooms/room.entity';
+import { Room } from '../entities/room.entity';
 import { Room as RoomEntity } from './entities/room';
 import { Panick_Attack } from './games/panic-attack';
-import { Sandbox } from './games/sandbox';
 import { BonusManager } from './managers/bonus-manager';
 import { ObstaclesManager } from './managers/obstacles-manager';
 import { PlayersManager } from './managers/players-manager';
@@ -31,7 +30,7 @@ export class LegacyLoaderService {
     return gameData;
   }
 
-  getDataForInstance(instanceId: number) {
-    return this.instancesData.find((game) => (game.instanceID = instanceId));
+  getDataForInstance(instanceId: number): LegacyData {
+    return this.instancesData.find((game) => (game.instanceId = instanceId));
   }
 }

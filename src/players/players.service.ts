@@ -1,9 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Player } from './player.entity';
+import { Player} from "../entities/player.entity";
 
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PlayerDto } from './player.dto.interface';
+import { PlayerDto} from "../dto/player.dto.interface";
 
 @Injectable()
 export class PlayersService {

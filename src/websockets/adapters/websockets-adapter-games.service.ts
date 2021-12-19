@@ -4,7 +4,7 @@ import { Error } from 'src/contracts/error.interface';
 import { Success } from 'src/contracts/success.interface';
 import { GamesService } from '../../games/games.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { GameInstance } from '../../games/game-instance.entity';
+import { GameInstance} from "../../entities/game-instance.entity";
 import { LegacyLoaderService } from '../../legacy/legacy-loader.service';
 import { PlayersService } from '../../players/players.service';
 
@@ -53,6 +53,7 @@ export class WebsocketsAdapterGameService {
     }
 
     const legacyData = this.legacyLoader.create(gameInstanceId, room);
+
     room.players.map((player) => {
       legacyData.playersManager.initPlayer({
         id: player.socketId,
@@ -61,11 +62,72 @@ export class WebsocketsAdapterGameService {
       });
     });
 
+    const data = {
+      roundsNumber: 3,
+      obstaclesSpeed: 10,
+      bonusFrequency: 10,
+    };
+
+    const roundsNumber =
+      data.roundsNumber && data.roundsNumber > 0 && data.roundsNumber <= 100
+        ? data.roundsNumber
+        : 3;
+
+    const obstaclesStartSpeed =
+      data.obstaclesSpeed &&
+      data.obstaclesSpeed > 0 &&
+      data.obstaclesSpeed <= 30
+        ? data.obstaclesSpeed
+        : 5;
+
+    const bonusFrequency =
+      data.bonusFrequency &&
+      data.bonusFrequency >= 0 &&
+      data.bonusFrequency <= 10
+        ? data.bonusFrequency
+        : 5;
+    legacyData.game.setTotalRounds(roundsNumber);
+    legacyData.game.getObstaclesManager().setStartLevel(obstaclesStartSpeed);
+    legacyData.game.setBonusFrequency(bonusFrequency);
+    legacyData.game.initGame();
+
     this.eventEmitter.emit('start-game', legacyData);
 
     return {
       success: true,
       data: { gameInstanceId: gameInstanceId },
+    };
+  }
+
+  async restartGame(gameData: any): Promise<Success | Error> {
+    if (!gameData || !gameData.instanceId) {
+      return {
+        success: false,
+        error: 'missing-instance-id',
+      };
+    }
+
+    const legacyData = this.legacyLoader.getDataForInstance(
+      gameData.instanceId,
+    );
+    if (!legacyData) {
+      return {
+        success: false,
+        error: 'invalid-instance-id',
+      };
+    }
+
+    legacyData.game.initRound();
+    legacyData.game.setStatus('starting');
+
+    this.eventEmitter.emit('start-game', legacyData);
+
+    return {
+      success: true,
+      data: {
+        gameInstanceId: legacyData.instanceId,
+        roomSlug: legacyData.room.getSlug(),
+      },
     };
   }
 
@@ -84,6 +146,7 @@ export class WebsocketsAdapterGameService {
   }
 
   refreshGameData(instance: GameInstance) {
+    console.log(instance.id);
     return this.legacyLoader.getDataForInstance(instance.id).game.refreshData();
   }
 

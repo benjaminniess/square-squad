@@ -1,11 +1,10 @@
-import { Room } from '../rooms/room.entity';
+import { Room } from './room.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   Unique,
   ManyToOne,
-  OneToOne,
   OneToMany,
 } from 'typeorm';
 

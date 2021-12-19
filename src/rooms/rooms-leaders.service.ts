@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PlayersService } from '../players/players.service';
-import { PlayerDto } from '../players/player.dto.interface';
+import { PlayerDto} from "../dto/player.dto.interface";
 import { RoomsService } from './rooms.service';
 import { Repository } from 'typeorm';
-import { Room } from './room.entity';
+import { Room} from "../entities/room.entity";
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()

@@ -123,6 +123,23 @@ export class WebsocketsService implements OnGatewayDisconnect {
     this.server.to(gameData.roomSlug).emit('start-game-result', newGame);
   }
 
+  @UsePipes(IsAdminPipe)
+  @SubscribeMessage('restart-game')
+  async handleReStartGame(
+    @MessageBody() gameData: any,
+    @ConnectedSocket() client: any,
+  ): Promise<void> {
+    if (gameData.error) {
+      client.emit('start-game-result', gameData);
+      return;
+    }
+
+    const newGame = await this.websocketAdapterGames.restartGame(gameData);
+    if (newGame.success) {
+      this.server.to(newGame.data.roomSlug).emit('start-game-result', newGame);
+    }
+  }
+
   @SubscribeMessage('keyUp')
   async handleKeyUp(
     @MessageBody() keyData: any,

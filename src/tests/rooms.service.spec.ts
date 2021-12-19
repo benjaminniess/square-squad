@@ -1,4 +1,4 @@
-import { bootstrapTests, testingSamples } from '../tests/bootstrap';
+import { bootstrapTests, testingSamples } from './bootstrap';
 
 let boot;
 

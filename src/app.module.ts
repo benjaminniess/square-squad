@@ -12,10 +12,10 @@ import { WebsocketsAdapterGameService } from './websockets/adapters/websockets-a
 import { RoomsLeadersService } from './rooms/rooms-leaders.service';
 import { Helpers } from './helpers/helpers';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Player } from './players/player.entity';
-import { Room } from './rooms/room.entity';
+import { Player } from './entities/player.entity';
+import { Room } from './entities/room.entity';
 import { GamesService } from './games/games.service';
-import { GameInstance } from './games/game-instance.entity';
+import { GameInstance } from './entities/game-instance.entity';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { WebsocketsEventsService } from './websockets/websockets-events.service';
 import { WebsocketsRefreshLoopService } from './websockets/websockets-refresh-loop.service';

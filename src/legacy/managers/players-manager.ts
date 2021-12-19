@@ -194,7 +194,7 @@ class PlayersManager {
     delete this.playersMoves[playerID];
   }
 
-  updatePlayerButtonState(playerID: string, button: any, state: string) {
+  updatePlayerButtonState(playerID: string, button: any, state: boolean) {
     if (this.playersMoves[playerID]) {
       this.playersMoves[playerID][button] = state;
     }

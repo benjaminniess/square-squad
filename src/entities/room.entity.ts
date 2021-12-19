@@ -1,4 +1,5 @@
-import { Player } from '../players/player.entity';
+import { Player } from './player.entity';
+import { GameInstance } from './game-instance.entity';
 import {
   Entity,
   Column,
@@ -6,11 +7,8 @@ import {
   Unique,
   OneToMany,
   OneToOne,
-  JoinColumn,
   ManyToOne,
-  JoinTable,
 } from 'typeorm';
-import { GameInstance } from '../games/game-instance.entity';
 
 @Entity()
 @Unique(['slug'])

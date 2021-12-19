@@ -1,10 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import validator from 'validator';
 import { Helpers } from '../helpers/helpers';
-import { Room } from './room.entity';
+import { Room} from "../entities/room.entity";
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Player } from '../players/player.entity';
+import { Player} from "../entities/player.entity";
 import { PlayersService } from '../players/players.service';
 import { GamesService } from '../games/games.service';
 

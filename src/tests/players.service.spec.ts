@@ -1,5 +1,5 @@
-import { bootstrapTests, testingSamples } from '../tests/bootstrap';
-import { Player } from './player.entity';
+import { bootstrapTests, testingSamples } from './bootstrap';
+import { Player} from "../entities/player.entity";
 
 let boot;
 

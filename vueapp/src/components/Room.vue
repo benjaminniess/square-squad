@@ -118,6 +118,7 @@ export default {
     this.$store.state.socket.on('start-game-result', (result) => {
       if (result.success) {
         this.gameData.currentRound = result.data.currentRound
+        this.gameData.instanceId = result.data.gameInstanceId
         this.gameData.totalRounds = result.data.totalRounds
         this.$store.commit('updateGameStatus', 'playing')
         this.gameIsOver = false
@@ -148,8 +149,8 @@ export default {
             if (timeleft <= 0) {
               clearInterval(countdownTimer)
 
-              socket.emit('start-game', {
-                roomSlug: room.roomSlug
+              socket.emit('restart-game', {
+                instanceId: this.gameData.instanceId
               })
               gameData.timeLeft = 'Starting...'
             }

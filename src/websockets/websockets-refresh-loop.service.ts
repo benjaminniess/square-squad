@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { GameInstance } from '../games/game-instance.entity';
+import { GameInstance} from "../entities/game-instance.entity";
 import { WebsocketsAdapterGameService } from './adapters/websockets-adapter-games.service';
 @WebSocketGateway()
 @Injectable()

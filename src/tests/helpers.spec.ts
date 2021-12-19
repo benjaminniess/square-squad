@@ -1,4 +1,4 @@
-import { Helpers } from './helpers';
+import { Helpers} from "../helpers/helpers";
 
 describe('Helpers - stringToSlug', () => {
   it('should low case strings', () => {

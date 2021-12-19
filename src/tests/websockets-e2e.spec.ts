@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AppModule } from '../../src/app.module';
+import { AppModule} from "../app.module";
 import { getConnection } from 'typeorm';
 
 let socket1, socket2;
@@ -269,7 +269,7 @@ describe('SOCKET - Start game', () => {
     const result = await startGame({}, socket1);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe('missing-room-slug');
+    expect(result.error).toBe('missing-room-slug-or-id');
   });
 
   it('Creates a game', async () => {

@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GameInstanceDto } from './game-instance.dto.interface';
-import { GameInstance } from './game-instance.entity';
+import { GameInstance} from "../entities/game-instance.entity";
 
 @Injectable()
 export class GamesService {
