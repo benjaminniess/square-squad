@@ -1,0 +1,14 @@
+.players-list {
+  display: block;
+  margin: 20px 0;
+  padding: 0;
+  list-style-type: none;
+
+  li {
+    position: relative;
+    padding: 5px 0 5px 15px;
+    border-left: 4px solid currentColor;
+    font-weight: 700;
+    text-align: left;
+  }
+}
