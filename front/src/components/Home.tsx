@@ -46,7 +46,7 @@ class Home extends React.Component {
                       onChange={this.handleChange}/>
             </div>
             <div className="input-field input-submit text-center">
-              <button className="btn" type="submit">Let's play!</button>
+              <button className="btn" id="startButton" type="submit">Let's play!</button>
             </div>
           </form>
         </section>
