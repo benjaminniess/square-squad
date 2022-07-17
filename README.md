@@ -1,6 +1,8 @@
 # Square Squad
 
-> Square Squad is a multiplayer in browser game based on socket.io communication between Vue.js and Node.js. You can play it on [square-squad.com](https://square-squad.com) and tell us about your experience here on in our [Discord channel](https://discord.com/invite/zGZ2TVw6e4)
+> Square Squad is a multiplayer in browser game based on socket.io communication between Vue.js and Node.js. You can
+> play it on [square-squad.com](https://square-squad.com) and tell us about your experience here on in
+> our [Discord channel](https://discord.com/invite/zGZ2TVw6e4)
 
 ## :building_construction: Local Setup
 
@@ -32,16 +34,15 @@ To test the front-end
 
 ## :gear: .env file
 
-You can copy the `.env_example` file at the root directory and name it `.env`. Then, you can adapt configuration as follow:
+You can copy the `.env_example` file at the root directory and name it `.env`. Then, you can adapt configuration as
+follow:
 
 ```
-MATTER_DEBUG=true=false
+MATTER_DEBUG: (bool) Draw matter js elements
 ENABLE_NEW_RELIC_AGENT: (bool) Set to true if you need some New Relic performances feedbacks
 NEW_RELIC_LICENSE_KEY: (string) A new relic licence key
 NEW_RELIC_APP_NAME: (string) The New Relic app name
 COUNTDOWN: (Int) A number of seconds for the game countdown. Set to 1 for a 1 second countdown
-FORCE_HTTPS: (bool) Use SSL?
-FORCE_DOMAIN: (String) If multiple domains linked to the app, you can define the main one (eg. my-env.com)
 DISABLE_OBSTACLES: (bool) Your can disable all obstacles for test purpose
 ADMIN_PASSWORD: The password to access the /admin view
 ```

@@ -4,6 +4,7 @@ import Footer from "./Footer";
 
 class Home extends React.Component {
   state = {
+    formSubmitted: false,
     playerName: '',
     playerColor: '',
   }
@@ -12,6 +13,12 @@ class Home extends React.Component {
     const newState: any = {}
     newState[event.target.name] = event.target.value
     this.setState(newState)
+  }
+
+  handleSubmit = (event: { stopPropagation: () => void; preventDefault: () => void; }) => {
+    event.stopPropagation()
+    event.preventDefault()
+    this.setState({'formSubmitted': true})
   }
 
   componentDidMount() {
@@ -29,26 +36,36 @@ class Home extends React.Component {
   }
 
   render() {
+    const {playerName, playerColor, formSubmitted} = this.state
+
     return (
       <div className="super-wrapper">
         <section className="wrapper">
           <Logo/>
 
-          <form className="sq-form" id="pre-home-form" method="post" action="/">
-            <div className="input-field">
-              <label htmlFor="playerName">What's your name?</label>
-              <input id="playerName" type="text" name="playerName" value={this.state.playerName} required
-                     onChange={this.handleChange}/>
-            </div>
-            <div className="input-field">
-              <label htmlFor="playerColor">What's your favourite color?</label
-              ><input id="playerColor" type="color" name="playerColor" required value={this.state.playerColor}
-                      onChange={this.handleChange}/>
-            </div>
-            <div className="input-field input-submit text-center">
-              <button className="btn" id="startButton" type="submit">Let's play!</button>
-            </div>
-          </form>
+          {formSubmitted &&
+            <p>
+              Connecting to server...
+            </p>
+          }
+
+          {!formSubmitted &&
+            <form className="sq-form" id="pre-home-form" method="post" action="/">
+              <div className="input-field">
+                <label htmlFor="playerName">What's your name?</label>
+                <input id="playerName" type="text" name="playerName" value={playerName} required
+                       onChange={this.handleChange}/>
+              </div>
+              <div className="input-field">
+                <label htmlFor="playerColor">What's your favourite color?</label
+                ><input id="playerColor" type="color" name="playerColor" required value={playerColor}
+                        onChange={this.handleChange}/>
+              </div>
+              <div className="input-field input-submit text-center">
+                <button className="btn" id="startButton" type="submit" onClick={this.handleSubmit}>Let's play!</button>
+              </div>
+            </form>
+          }
         </section>
         <Footer/>
       </div>

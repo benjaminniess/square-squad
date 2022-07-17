@@ -1,29 +1,30 @@
-import { Injectable, UsePipes } from '@nestjs/common';
+import {Injectable, UsePipes} from '@nestjs/common';
 import {
-  WebSocketGateway,
   ConnectedSocket,
+  MessageBody,
   OnGatewayDisconnect,
   SubscribeMessage,
-  MessageBody,
+  WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
-import { IsAdminPipe } from '../pipes/is-admin.pipe';
-import { WebsocketsAdapterGameService } from './adapters/websockets-adapter-games.service';
-import { WebsocketsAdapterPlayersService } from './adapters/websockets-adapter-players.service';
-import { WebsocketsAdapterRoomsService } from './adapters/websockets-adapter-rooms.service';
+import {Server} from 'socket.io';
+import {IsAdminPipe} from '../pipes/is-admin.pipe';
+import {WebsocketsAdapterGameService} from './adapters/websockets-adapter-games.service';
+import {WebsocketsAdapterPlayersService} from './adapters/websockets-adapter-players.service';
+import {WebsocketsAdapterRoomsService} from './adapters/websockets-adapter-rooms.service';
 
-@WebSocketGateway()
+@WebSocketGateway({cors: true})
 @Injectable()
 export class WebsocketsService implements OnGatewayDisconnect {
+  @WebSocketServer()
+  server: Server;
+
   constructor(
     private websocketsAdapterPlayers: WebsocketsAdapterPlayersService,
     private websocketsAdapterRooms: WebsocketsAdapterRoomsService,
     private websocketAdapterGames: WebsocketsAdapterGameService,
-  ) {}
-
-  @WebSocketServer()
-  server: Server;
+  ) {
+  }
 
   async handleDisconnect(@ConnectedSocket() client: any) {
     await this.websocketsAdapterRooms.removePlayerFromRooms(client.id);
@@ -77,7 +78,7 @@ export class WebsocketsService implements OnGatewayDisconnect {
     }
 
     await this.websocketsAdapterRooms.maybeResetLeader(roomSlug);
-    client.emit('refresh-game-status', { gameStatus: 'waiting' });
+    client.emit('refresh-game-status', {gameStatus: 'waiting'});
     client.join(roomSlug);
     this.server
       .to(roomSlug)

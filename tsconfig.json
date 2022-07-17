@@ -18,5 +18,11 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "allowJs": true
-  }
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "front"
+  ]
 }
