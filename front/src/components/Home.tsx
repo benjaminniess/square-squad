@@ -1,13 +1,19 @@
 import React from 'react';
 import Logo from "./Logo";
 import Footer from "./Footer";
+import {SocketContext} from "../socket/SocketProvider";
+import {Navigate} from 'react-router-dom';
+
 
 class Home extends React.Component {
+  static contextType = SocketContext
   state = {
     formSubmitted: false,
+    formValidated: false,
     playerName: '',
     playerColor: '',
   }
+
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newState: any = {}
@@ -18,14 +24,23 @@ class Home extends React.Component {
   handleSubmit = (event: { stopPropagation: () => void; preventDefault: () => void; }) => {
     event.stopPropagation()
     event.preventDefault()
+
+    // @ts-ignore
+    this.context.emit("update-player-data", {name: this.state.playerName, color: this.state.playerColor})
     this.setState({'formSubmitted': true})
   }
 
   componentDidMount() {
+
     const existingPlayerName = localStorage.getItem('playerName')
     const existingPlayerColor = localStorage.getItem('playerColor')
     this.setState({'playerName': existingPlayerName ? existingPlayerName : ''})
     this.setState({'playerColor': existingPlayerColor ? existingPlayerColor : '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6)})
+
+    // @ts-ignore
+    this.context.on('update-player-data-result', () => {
+      this.setState({'formValidated': true})
+    })
   }
 
   componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any) {
@@ -36,18 +51,12 @@ class Home extends React.Component {
   }
 
   render() {
-    const {playerName, playerColor, formSubmitted} = this.state
+    const {playerName, playerColor, formSubmitted, formValidated} = this.state
 
     return (
       <div className="super-wrapper">
         <section className="wrapper">
           <Logo/>
-
-          {formSubmitted &&
-            <p>
-              Connecting to server...
-            </p>
-          }
 
           {!formSubmitted &&
             <form className="sq-form" id="pre-home-form" method="post" action="/">
@@ -65,6 +74,16 @@ class Home extends React.Component {
                 <button className="btn" id="startButton" type="submit" onClick={this.handleSubmit}>Let's play!</button>
               </div>
             </form>
+          }
+
+          {formSubmitted &&
+            <p>
+              Connecting to server...
+            </p>
+          }
+
+          {formValidated &&
+            <Navigate to="/rooms"/>
           }
         </section>
         <Footer/>
