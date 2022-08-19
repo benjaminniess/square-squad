@@ -1,0 +1,24 @@
+name: Cypress tests
+on: [ push ]
+jobs:
+  cypress-run:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install nest
+        run: npm ci
+      - name: Build nest
+        run: npm run build
+      - name: Build react
+        run: npm ci
+        working-directory: front
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          install: true
+          start: |
+            npm run start:prod
+            npm --prefix ./front run dev
+          wait-on: http://127.0.0.1:5173
