@@ -1,0 +1,25 @@
+name: Cypress tests
+on: [ push ]
+jobs:
+  cypress-run:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install server dependencies
+        run: npm ci
+      - name: Build server
+        run: npm run build
+      - name: Build vue
+        run: npm ci
+        working-directory: vueapp
+      - name: Config cypress env file
+        run: cp cypress.env.sample.json cypress.env.json
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          install: true
+          start: |
+            npm start
+          wait-on: http://localhost:8080/#/
