@@ -1,30 +1,30 @@
 <template>
-  <section class="room-section ranking-section" id="section-ranking">
+  <section id="section-ranking" class="room-section ranking-section">
     <div class="wrapper">
-      <Logo />
+      <Logo/>
       <div class="text-center">
         <h3 class="rooms-list__title">Room: {{ room.roomName }}</h3>
       </div>
-      <table class="winner-annoucement" id="winner-announcement">
+      <table id="winner-announcement" class="winner-annoucement">
         <tbody>
-          <tr v-if="winner">
-            <td>Winner</td>
-            <td>
+        <tr v-if="winner">
+          <td>Winner</td>
+          <td>
               <span class="user-name" v-bind:style="{ color: winner.color }"
-                ><span>{{ winner.nickName }}</span></span
+              ><span>{{ winner.nickName }}</span></span
               >
-            </td>
-          </tr>
-          <tr v-if="winner">
-            <td>Point(s)</td>
-            <td>
-              <p class="user-score">{{ winner.score }} pts</p>
-            </td>
-          </tr>
+          </td>
+        </tr>
+        <tr v-if="winner">
+          <td>Point(s)</td>
+          <td>
+            <p class="user-score">{{ winner.score }} pts</p>
+          </td>
+        </tr>
         </tbody>
       </table>
       <h3>Round results</h3>
-      <ul class="players-list" id="round-rank-list">
+      <ul id="round-rank-list" class="players-list">
         <li
           v-for="rank in formatedRanking()"
           :key="rank.id"
@@ -34,7 +34,7 @@
         </li>
       </ul>
       <h3>Global ranking</h3>
-      <ul class="players-list" id="rank-list">
+      <ul id="rank-list" class="players-list">
         <li
           v-for="rank in formatedRanking('ranking')"
           :key="rank.id"
@@ -43,7 +43,7 @@
           {{ rank.nickName }} ({{ rank.score }} points)
         </li>
       </ul>
-      <button v-if="gameIsOver" class="btn" id="back-button" @click="back">
+      <button v-if="gameIsOver" id="back-button" class="btn" @click="back">
         Back
       </button>
     </div>
@@ -51,8 +51,9 @@
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Footer from './common/Footer'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
+
 export default {
   name: 'RankSection',
   computed: {

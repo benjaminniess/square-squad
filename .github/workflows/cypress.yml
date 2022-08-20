@@ -11,14 +11,14 @@ jobs:
         run: npm ci
       - name: Build nest
         run: npm run build
-      - name: Build react
+      - name: Build vue
         run: npm ci
-        working-directory: front
+        working-directory: vueapp
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
           install: true
           start: |
             npm run start:prod
-            npm --prefix ./front run dev
+            npm --prefix ./vueapp run dev
           wait-on: http://127.0.0.1:5173

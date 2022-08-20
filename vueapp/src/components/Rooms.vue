@@ -1,32 +1,32 @@
 <template>
   <div class="super-wrapper">
-    <div class="particles-js" id="particles-js">
+    <div id="particles-js" class="particles-js">
       <canvas
         class="particles-js-canvas-el"
-        width="1905"
         height="525"
         style="width: 100%; height: 100%;"
+        width="1905"
       ></canvas>
     </div>
     <section class="wrapper">
-      <Logo />
+      <Logo/>
 
       <h3>Rooms list</h3>
       <div class="page-rooms__intro">
         <p class="text-center">
           <a
+            id="playerNameLabel"
+            :style="{ color: playerData ? playerData.color : null }"
             class="user-name"
             href="#"
             @click="goToHome"
-            id="playerNameLabel"
-            :style="{ color: playerData ? playerData.color : null }"
-            ><span>{{ playerData ? playerData.name : null }}</span></a
+          ><span>{{ playerData ? playerData.name : null }}</span></a
           >
         </p>
         <p>You first need to select a room or create a new one</p>
       </div>
       <a id="rooms-refresh" href="#" @click.prevent="refreshRoomsEventHandler"
-        >[Refresh]</a
+      >[Refresh]</a
       >
       <div class="rooms-list">
         <h3 class="rooms-list__title">Join a room…</h3>
@@ -37,7 +37,7 @@
                 class="rooms-list__link"
                 href="#"
                 @click="goToRoom(room.slug)"
-                >{{ room.name }}</a
+              >{{ room.name }}</a
               >
             </li>
           </ul>
@@ -45,33 +45,34 @@
         </div>
       </div>
       <form
+        action="#"
         class="sq-form"
         method="post"
-        action="#"
         @submit.prevent="checkForm"
       >
         <div class="input-field">
           <label for="newRoom">Or create a new one?</label
           ><input
-            id="newRoom"
-            placeholder="Give it a name"
-            required
-            type="text"
-            v-model="newRoomName"
-          />
+          id="newRoom"
+          v-model="newRoomName"
+          placeholder="Give it a name"
+          required
+          type="text"
+        />
         </div>
         <div class="input-field input-submit text-center">
           <button class="btn" type="submit">Create room</button>
         </div>
       </form>
     </section>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Footer from './common/Footer'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
+
 export default {
   name: 'Rooms',
   data() {

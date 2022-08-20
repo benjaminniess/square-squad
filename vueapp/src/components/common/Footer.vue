@@ -3,12 +3,12 @@
     <p class="text-center">
       <span>
         <a href="https://github.com/benjaminniess/square-squad" target="_blank"
-          >Version {{ version }}</a
+        >Version {{ version }}</a
         >
         | <a href="#" @click="goToAbout">About us</a>
       </span>
       <a href="https://discord.gg/zGZ2TVw6e4" target="_blank">
-        <img :src="'/static/assets/images/discord.png'" width="32px" />
+        <img :src="'/assets/images/discord.png'" width="32"/>
       </a>
     </p>
   </footer>

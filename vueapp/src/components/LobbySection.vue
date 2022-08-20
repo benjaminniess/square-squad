@@ -1,7 +1,7 @@
 <template>
-  <section class="room-section lobby-section" id="section-lobby">
+  <section id="section-lobby" class="room-section lobby-section">
     <div class="wrapper">
-      <Logo />
+      <Logo/>
       <h3 class="rooms-list__title">Room: {{ room.roomName }}</h3>
 
       <ul v-if="players" class="players-list players no-score">
@@ -21,7 +21,7 @@
         id="admin-section"
         style="visibility: visible;"
       >
-        <AdminForm />
+        <AdminForm/>
         <a class="btn" @click="startGame">play</a>
       </div>
       <a class="btn" @click="back">back</a>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import Logo from './common/Logo'
+import Logo from './common/Logo.vue'
 import AdminForm from './games/panic-attack/AdminForm.vue'
 
 export default {

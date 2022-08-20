@@ -1,7 +1,7 @@
 <template>
   <div class="super-wrapper">
     <section class="wrapper">
-      <Logo />
+      <Logo/>
 
       <h1>{{ messageContent }}</h1>
     </section>
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Logo from './common/Logo'
+import Logo from './common/Logo.vue'
 
 export default {
   name: 'SimpleMessage',

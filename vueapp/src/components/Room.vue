@@ -1,11 +1,11 @@
 <template>
   <div class="super-wrapper">
-    <div class="particles-js" id="particles-js">
+    <div id="particles-js" class="particles-js">
       <canvas
         class="particles-js-canvas-el"
-        width="1905"
         height="525"
         style="width: 100%; height: 100%;"
+        width="1905"
       ></canvas>
     </div>
     <SimpleMessage
@@ -13,36 +13,36 @@
       :messageContent="'Joining room ' + room.roomName + '...'"
     ></SimpleMessage>
     <LobbySection
+      v-show="status == 'waiting'"
+      v-bind:isAdmin="isAdmin"
       v-bind:players="players"
       v-bind:room="room"
-      v-bind:isAdmin="isAdmin"
-      v-show="status == 'waiting'"
     ></LobbySection>
     <GameSection
+      v-show="status == 'playing'"
+      v-bind:gameData="gameData"
+      v-bind:isAdmin="isAdmin"
       v-bind:players="players"
       v-bind:room="room"
-      v-bind:isAdmin="isAdmin"
-      v-bind:gameData="gameData"
-      v-show="status == 'playing'"
     ></GameSection>
     <RankSection
-      v-bind:room="room"
+      v-show="status == 'end-round'"
       v-bind:gameIsOver="gameIsOver"
       v-bind:players="players"
-      v-show="status == 'end-round'"
       v-bind:ranking="ranking"
+      v-bind:room="room"
     ></RankSection>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
 <script>
-import LobbySection from './LobbySection'
-import GameSection from './GameSection'
-import RankSection from './RankSection'
-import Logo from './common/Logo'
-import Footer from './common/Footer'
-import SimpleMessage from './SimpleMessage'
+import LobbySection from './LobbySection.vue'
+import GameSection from './GameSection.vue'
+import RankSection from './RankSection.vue'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
+import SimpleMessage from './SimpleMessage.vue'
 
 export default {
   name: 'App',

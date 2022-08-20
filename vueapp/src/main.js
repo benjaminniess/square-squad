@@ -1,20 +1,22 @@
-import Vue from 'vue'
-import App from './App'
-import Vuex from 'vuex'
+import {createStore} from 'vuex'
 import VueGtag from 'vue-gtag'
-import VueRouter from 'vue-router'
 import Home from './components/Home.vue'
 import AboutUs from './components/AboutUs.vue'
 import Room from './components/Room.vue'
 import Rooms from './components/Rooms.vue'
+import {createRouter, createWebHistory} from 'vue-router'
 import Page404 from './components/Page404.vue'
-import { io } from 'socket.io-client'
+import {io} from 'socket.io-client'
+import '../assets/sass/main.scss'
+import {createApp} from 'vue'
+import App from "./App.vue";
+import packageJson from "../../package.json";
 
-const homeUrl =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : ''
+const homeUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8080' : ''
+
 
 /**
- * Async call to the /env url in order to get dynammic vars
+ * Async call to the /env url in order to get dynamic vars
  */
 function loadEnvData() {
   return new Promise((resolve, reject) => {
@@ -30,6 +32,7 @@ function loadEnvData() {
     xmlhttp.send(null)
   })
 }
+
 loadEnvData()
   .then((result) => {
     bootVueApp(result)
@@ -39,36 +42,17 @@ loadEnvData()
   })
 
 /**
- * Run the Vue app once everyting is loaded
+ * Run the Vue app once everything is loaded
  *
  * @param object envData
  */
 function bootVueApp(envData) {
-  const socket = io(homeUrl, { transports: ['websocket'] })
-  const packageJson = require('../../package.json')
-  Vue.config.productionTip = false
+  const socket = io(homeUrl, {transports: ['websocket']})
 
-  // Enable analytics if set
-  if (envData.ga_id) {
-    Vue.use(VueGtag, {
-      config: {
-        id: envData.ga_id,
-        params: {
-          send_page_view: false
-        }
-      }
-    })
-  }
+  //Vue.config.productionTip = false
 
-  Vue.use(Vuex)
-  Vue.use(VueRouter)
 
-  Vue.prototype.$globalEnv = {
-    version: packageJson.version,
-    homeUrl
-  }
-
-  const store = new Vuex.Store({
+  const store = createStore({
     state: {
       socket,
       playerData: null,
@@ -93,8 +77,9 @@ function bootVueApp(envData) {
     }
   })
 
-  const router = new VueRouter({
-    mode: 'history',
+  const history = createWebHistory();
+  const router = createRouter({
+    history,
     routes: [
       {
         path: '/',
@@ -113,15 +98,32 @@ function bootVueApp(envData) {
         component: AboutUs
       },
       {
-        path: '*',
+        path: '/:pathMatch(.*)*',
         component: Page404
       }
     ]
   })
 
-  new Vue({
-    router,
-    store,
-    render: (h) => h(App)
-  }).$mount('#app')
+  const appInstance = createApp(App)
+    .use(store)
+    .use(router)
+
+  // Enable analytics if set
+  if (envData.ga_id) {
+    appInstance.use(VueGtag, {
+      config: {
+        id: envData.ga_id,
+        params: {
+          send_page_view: false
+        }
+      }
+    })
+  }
+
+  appInstance.config.globalProperties.$globalEnv = {
+    version: packageJson.version,
+    homeUrl
+  }
+  
+  appInstance.mount('#app')
 }

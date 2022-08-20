@@ -1,8 +1,8 @@
 <template>
-  <section class="room-section play-section" id="section-play">
+  <section id="section-play" class="room-section play-section">
     <div class="play-section__wrapper">
       <aside class="play-section__aside">
-        <Logo />
+        <Logo/>
         <div class="play-section__infos">
           <h3 class="rooms-list__title">Room: {{ room.roomName }}</h3>
           <h4 id="round-number">
@@ -29,20 +29,20 @@
       <div class="play-section__canvas">
         <h1
           v-if="gameData.timeLeft > 0"
+          id="countdown-text"
           class="play-section__countdown"
           style="opacity: 1;"
-          id="countdown-text"
         >
           {{ gameData.timeLeft }}
         </h1>
         <canvas
           id="gameCanvas"
-          :width="canvasWidth"
           :height="canvasWidth"
+          :width="canvasWidth"
         ></canvas>
 
         <div class="play-section__joystick">
-          <Joystick @change="handleChange($event)" />
+          <Joystick @change="handleChange($event)"/>
         </div>
       </div>
     </div>
@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Joystick from './common/Joystick'
+import Logo from './common/Logo.vue'
+import Joystick from './common/Joystick.vue'
 
 export default {
   name: 'GameSection',
@@ -75,7 +75,7 @@ export default {
     let ctx = canvas ? canvas.getContext('2d') : null
 
     let bonusImage = new Image()
-    bonusImage.src = '/static/assets/images/bonus.png'
+    bonusImage.src = '/assets/images/bonus.png'
 
     let currentTime = Date.now()
     let blinkOn = true
@@ -87,6 +87,7 @@ export default {
       function rationalize(num) {
         return (num * canvasWidth) / 700
       }
+
       // Blink ON/OFF system for bonus about to end
       var loopTime = Date.now()
       if (loopTime - currentTime > 200) {
@@ -256,10 +257,10 @@ export default {
       }
     },
     pressKey(keyNumber) {
-      this.$store.state.socket.emit('keyPressed', { key: keyNumber })
+      this.$store.state.socket.emit('keyPressed', {key: keyNumber})
     },
     releaseKey(keyNumber) {
-      this.$store.state.socket.emit('keyUp', { key: keyNumber })
+      this.$store.state.socket.emit('keyUp', {key: keyNumber})
     }
   }
 }
