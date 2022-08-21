@@ -41,3 +41,4 @@ lerna-debug.log*
 /vueapp/dist/
 
 cypress/videos
+cypress/screenshots

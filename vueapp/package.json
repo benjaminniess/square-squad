@@ -5,7 +5,7 @@
   "author": "Benjamin <benjamin.niess@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "start": "npm run dev",

@@ -1,6 +1,6 @@
 describe('homepage form', () => {
   beforeEach(() => {
-    cy.visit('http://192.168.1.21:5173')
+    cy.visit('http://127.0.0.1:5173')
   })
 
   it('displays homepage form', () => {
