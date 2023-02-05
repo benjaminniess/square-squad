@@ -1,43 +1,46 @@
 <template>
   <div class="super-wrapper">
-    <div class="particles-js" id="particles-js">
+    <div id="particles-js" class="particles-js">
       <canvas
         class="particles-js-canvas-el"
-        width="1905"
         height="525"
         style="width: 100%; height: 100%;"
+        width="1905"
       ></canvas>
     </div>
     <LobbySection
+      v-show="status == 'waiting'"
+      v-bind:isAdmin="isAdmin"
       v-bind:players="players"
       v-bind:room="room"
-      v-bind:isAdmin="isAdmin"
-      v-show="status == 'waiting'"
     ></LobbySection>
     <GameSection
+      v-show="status == 'playing'"
+      v-bind:gameData="gameData"
+      v-bind:isAdmin="isAdmin"
       v-bind:players="players"
       v-bind:room="room"
-      v-bind:isAdmin="isAdmin"
-      v-bind:gameData="gameData"
-      v-show="status == 'playing'"
     ></GameSection>
     <RankSection
-      v-bind:room="room"
+      v-show="status == 'end-round'"
       v-bind:gameIsOver="gameIsOver"
       v-bind:players="players"
-      v-show="status == 'end-round'"
       v-bind:ranking="ranking"
+      v-bind:room="room"
     ></RankSection>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
 <script>
-import LobbySection from './LobbySection'
-import GameSection from './GameSection'
-import RankSection from './RankSection'
-import Logo from './common/Logo'
-import Footer from './common/Footer'
+import LobbySection from './LobbySection.vue'
+import GameSection from './GameSection.vue'
+import RankSection from './RankSection.vue'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
+import {useGameStore} from "../stores/GamesStore.js";
+import {useSocketStore} from "../stores/SocketStore.js";
+import {usePlayerStore} from "../stores/PlayerStore.js";
 
 export default {
   name: 'App',
@@ -61,8 +64,11 @@ export default {
     }
   },
   computed: {
+
     status() {
-      return this.$store.state.gameStatus
+      const gameStore = useGameStore()
+
+      return gameStore.gameStatus
     }
   },
   watch: {
@@ -82,56 +88,60 @@ export default {
     }
   },
   mounted() {
+    const socketStore = useSocketStore()
+    const playerStore = usePlayerStore()
+    const gameStore = useGameStore()
+
     if (this.$gtag) {
       this.$gtag.pageview('/lobby')
     }
 
     // Not "logged"? Go back to home
-    if (this.$store.state.playerData === null) {
+    if (playerStore.isEmpty()) {
       this.$router.push('/?redirect_to=' + this.$route.params.id)
     }
 
-    this.$store.state.socket.emit('room-join', {
+    socketStore.socket.emit('room-join', {
       roomSlug: this.$route.params.id
     })
 
-    this.$store.state.socket.on('room-join-result', (result) => {
+    socketStore.socket.on('room-join-result', (result) => {
       if (result.success) {
         this.room = result.data
       }
     })
 
-    this.$store.state.socket.on('refresh-players', (data) => {
+    socketStore.socket.on('refresh-players', (data) => {
       this.players = data
     })
 
-    this.$store.state.socket.on('start-game-result', (result) => {
+    socketStore.socket.on('start-game-result', (result) => {
       if (result.success) {
         this.gameData.currentRound = result.data.currentRound
         this.gameData.totalRounds = result.data.totalRounds
-        this.$store.commit('updateGameStatus', 'playing')
+        gameStore.updateGameStatus('playing')
         this.gameIsOver = false
       }
     })
 
-    this.$store.state.socket.on('countdown-update', (data) => {
+    socketStore.socket.on('countdown-update', (data) => {
       this.gameData.timeLeft = parseInt(data.timeleft)
     })
 
-    this.$store.state.socket.on('in-game-countdown-update', (data) => {
+    socketStore.socket.on('in-game-countdown-update', (data) => {
       this.gameData.timeLeft = parseInt(data.timeleft)
 
       if (data.timeleft == 0) {
         this.gameData.timeLeft = 'Game over'
 
         this.ranking = data
-        this.$store.commit('updateGameStatus', 'end-round')
+        gameStore.updateGameStatus('end-round')
 
         if (data.gameStatus === 'waiting') {
           this.gameIsOver = true
         } else {
           let timeleft = 3
-          let socket = this.$store.state.socket
+          let socket = socketStore.socket
           let gameData = this.gameData
           let room = this.room
           let countdownTimer = setInterval(() => {
@@ -151,14 +161,16 @@ export default {
     })
   },
   destroyed() {
-    // Not to have double listener next time the component is mounted
-    this.$store.state.socket.off('refresh-players')
-    this.$store.state.socket.off('room-joined')
-    this.$store.state.socket.off('start-game-result')
-    this.$store.state.socket.off('countdown-update')
-    this.$store.state.socket.off('in-game-countdown-update')
+    const socketStore = useSocketStore();
 
-    this.$store.state.socket.emit('room-leave')
+    // Not to have double listener next time the component is mounted
+    socketStore.socket.off('refresh-players')
+    socketStore.socket.off('room-joined')
+    socketStore.socket.off('start-game-result')
+    socketStore.socket.off('countdown-update')
+    socketStore.socket.off('in-game-countdown-update')
+
+    socketStore.socket.emit('room-leave')
   }
 }
 </script>

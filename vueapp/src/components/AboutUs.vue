@@ -1,13 +1,13 @@
 <template>
   <div class="super-wrapper">
     <section class="wrapper">
-      <Logo />
+      <Logo/>
 
       <h3>About us</h3>
       <h4>Benjamin Niess</h4>
       <p>Backend developer</p>
       <a href="https://twitter.com/benjaminniess" target="_blank"
-        >@benjaminniess</a
+      >@benjaminniess</a
       >
       <h4>Axel Roche</h4>
       <p>Front end developer</p>
@@ -28,13 +28,13 @@
         <a class="btn" @click="back">back</a>
       </div>
     </section>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Footer from './common/Footer'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
 
 export default {
   name: 'AboutUs',

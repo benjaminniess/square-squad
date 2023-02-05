@@ -1,24 +1,24 @@
 <template>
   <div class="super-wrapper">
     <section class="wrapper">
-      <Logo />
+      <Logo/>
 
       <h1>There's nothing here</h1>
 
       <img
+        height="360"
         src="https://media.giphy.com/media/3o7aCTPPm4OHfRLSH6/giphy.gif"
         width="480"
-        height="360"
       />
       <a class="btn" @click="back">back</a>
     </section>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Footer from './common/Footer'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
 
 export default {
   name: 'Page404',

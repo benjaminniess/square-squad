@@ -1,43 +1,43 @@
 <template>
   <div class="super-wrapper">
-    <div class="particles-js" id="particles-js">
+    <div id="particles-js" class="particles-js">
       <canvas
         class="particles-js-canvas-el"
-        width="1905"
         height="525"
         style="width: 100%; height: 100%;"
+        width="1905"
       ></canvas>
     </div>
     <section class="wrapper">
-      <Logo />
+      <Logo/>
 
       <h3>Rooms list</h3>
       <div class="page-rooms__intro">
         <p class="text-center">
           <a
+            id="playerNameLabel"
+            :style="{ color: playerData ? playerData.color : null }"
             class="user-name"
             href="#"
             @click="goToHome"
-            id="playerNameLabel"
-            :style="{ color: playerData ? playerData.color : null }"
-            ><span>{{ playerData ? playerData.name : null }}</span></a
+          ><span>{{ playerData ? playerData.name : null }}</span></a
           >
         </p>
         <p>You first need to select a room or create a new one</p>
       </div>
       <a id="rooms-refresh" href="#" @click.prevent="refreshRoomsEventHandler"
-        >[Refresh]</a
+      >[Refresh]</a
       >
       <div class="rooms-list">
         <h3 class="rooms-list__title">Join a room…</h3>
         <div id="rooms-holder">
           <ul v-if="rooms.length > 0" class="rooms-list__list">
             <li v-for="room in rooms" :key="room.id" class="rooms-list__item">
-              <a
+              <button
                 class="rooms-list__link"
-                href="#"
                 @click="goToRoom(room.slug)"
-                >{{ room.name }}</a
+              >{{ room.name }}
+              </button
               >
             </li>
           </ul>
@@ -45,33 +45,36 @@
         </div>
       </div>
       <form
+        action="#"
         class="sq-form"
         method="post"
-        action="#"
         @submit.prevent="checkForm"
       >
         <div class="input-field">
           <label for="newRoom">Or create a new one?</label
           ><input
-            id="newRoom"
-            placeholder="Give it a name"
-            required
-            type="text"
-            v-model="newRoomName"
-          />
+          id="newRoom"
+          v-model="newRoomName"
+          placeholder="Give it a name"
+          required
+          type="text"
+        />
         </div>
         <div class="input-field input-submit text-center">
           <button class="btn" type="submit">Create room</button>
         </div>
       </form>
     </section>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Footer from './common/Footer'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
+import {usePlayerStore} from "../stores/PlayerStore.js";
+import {useSocketStore} from "../stores/SocketStore.js";
+
 export default {
   name: 'Rooms',
   data() {
@@ -81,17 +84,22 @@ export default {
     }
   },
   mounted() {
+    const playerStore = usePlayerStore();
+    const socketStore = useSocketStore();
+
+
     if (this.$gtag) {
       this.$gtag.pageview('/rooms')
     }
 
     // Not "logged"? Go back to home
-    if (this.$store.state.playerData === null) {
+    if (playerStore.isEmpty()) {
+
       this.$router.push('/')
     }
 
     // SOCKET CALLBACK: Update the rooms var after socket result
-    this.$store.state.socket.on('rooms-refresh-result', (result) => {
+    socketStore.socket.on('rooms-refresh-result', (result) => {
       if (!result.success) {
         this.goToHome()
         return
@@ -105,7 +113,7 @@ export default {
     })
 
     // SOCKET CALLBACK: The room creation result
-    this.$store.state.socket.on('rooms-create-result', (result) => {
+    socketStore.socket.on('rooms-create-result', (result) => {
       if (!result.success) {
         this.goToHome()
         return
@@ -123,8 +131,10 @@ export default {
     this.refreshRooms()
   },
   destroyed() {
-    this.$store.state.socket.off('rooms-refresh-result')
-    this.$store.state.socket.off('rooms-create-result')
+    const socketStore = useSocketStore();
+
+    socketStore.socket.off('rooms-refresh-result')
+    socketStore.socket.off('rooms-create-result')
   },
   components: {
     Logo,
@@ -140,10 +150,14 @@ export default {
       this.refreshRooms()
     },
     refreshRooms() {
-      this.$store.state.socket.emit('rooms-refresh')
+      const socketStore = useSocketStore();
+
+      socketStore.socket.emit('rooms-refresh')
     },
     checkForm() {
-      this.$store.state.socket.emit('rooms-create', this.newRoomName)
+      const socketStore = useSocketStore();
+
+      socketStore.socket.emit('rooms-create', this.newRoomName)
     },
     goToRoom(slug) {
       this.$router.push('/rooms/' + slug)
@@ -154,7 +168,9 @@ export default {
   },
   computed: {
     playerData() {
-      return this.$store.state.playerData
+      const playerStore = usePlayerStore();
+
+      return playerStore.playerData
     }
   }
 }

@@ -1,36 +1,35 @@
 <template>
   <div class="super-wrapper">
     <section class="wrapper">
-      <Logo />
+      <Logo/>
 
       <form
         v-if="!submitted"
-        class="sq-form"
         id="pre-home-form"
-        method="post"
         action="/"
+        class="sq-form"
+        method="post"
         @submit.prevent="checkForm"
       >
         <div class="input-field">
           <label for="playerName">What's your name?</label
           ><input
-            id="playerName"
-            type="text"
-            name="playerName"
-            required
-            v-model="playerName"
-          />
+          id="playerName"
+          v-model="playerName"
+          name="playerName"
+          required
+          type="text"
+        />
         </div>
         <div class="input-field">
           <label for="playerColor">What's your favourite color?</label
           ><input
-            id="playerColor"
-            type="color"
-            name="playerColor"
-            required
-            value="#742a55"
-            v-model="playerColor"
-          />
+          id="playerColor"
+          v-model="playerColor"
+          name="playerColor"
+          required
+          type="color"
+        />
         </div>
         <div class="input-field input-submit text-center">
           <button class="btn" type="submit">Let's play!</button>
@@ -41,21 +40,24 @@
         Connecting to server...
       </p>
     </section>
-    <Footer />
+    <Footer/>
   </div>
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Footer from './common/Footer'
+import Logo from './common/Logo.vue'
+import Footer from './common/Footer.vue'
+import {useSocketStore} from "../stores/SocketStore.js";
+import {usePlayerStore} from "../stores/PlayerStore.js";
 
 export default {
   mounted() {
+    const socketStore = useSocketStore();
     if (this.$gtag) {
       this.$gtag.pageview('/')
     }
 
-    this.$store.state.socket.on('update-player-data-result', () => {
+    socketStore.socket.on('update-player-data-result', () => {
       // Check if user comes from the room link
       if (this.$route.query.redirect_to) {
         this.$router.push('/rooms/' + this.$route.query.redirect_to)
@@ -65,8 +67,10 @@ export default {
     })
   },
   destroyed() {
+    const socketStore = useSocketStore();
+
     // Not to have double listener next time the component is mounted
-    this.$store.state.socket.off('update-player-data-result')
+    socketStore.socket.off('update-player-data-result')
   },
   data() {
     return {
@@ -74,7 +78,7 @@ export default {
       playerColor: localStorage.playerColor
         ? localStorage.playerColor
         : '#' +
-          (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+        (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
       submitted: false
     }
   },
@@ -85,6 +89,9 @@ export default {
   },
   methods: {
     checkForm(e) {
+      const socketStore = useSocketStore()
+      const playerStore = usePlayerStore()
+
       localStorage.playerName = this.playerName
       localStorage.playerColor = this.playerColor
 
@@ -93,8 +100,8 @@ export default {
         color: this.playerColor
       }
 
-      this.$store.state.socket.emit('update-player-data', playerData)
-      this.$store.commit('updatePlayerData', playerData)
+      socketStore.socket.emit('update-player-data', playerData)
+      playerStore.updatePlayerData(playerData)
 
       if (this.$gtag) {
         this.$gtag.event('loginUpdate')

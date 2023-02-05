@@ -1,8 +1,8 @@
 <template>
-  <section class="room-section play-section" id="section-play">
+  <section id="section-play" class="room-section play-section">
     <div class="play-section__wrapper">
       <aside class="play-section__aside">
-        <Logo />
+        <Logo/>
         <div class="play-section__infos">
           <h3 class="rooms-list__title">Room: {{ room.roomName }}</h3>
           <h4 id="round-number">
@@ -29,20 +29,20 @@
       <div class="play-section__canvas">
         <h1
           v-if="gameData.timeLeft > 0"
+          id="countdown-text"
           class="play-section__countdown"
           style="opacity: 1;"
-          id="countdown-text"
         >
           {{ gameData.timeLeft }}
         </h1>
         <canvas
           id="gameCanvas"
-          :width="canvasWidth"
           :height="canvasWidth"
+          :width="canvasWidth"
         ></canvas>
 
         <div class="play-section__joystick">
-          <Joystick @change="handleChange($event)" />
+          <Joystick @change="handleChange($event)"/>
         </div>
       </div>
     </div>
@@ -50,13 +50,15 @@
 </template>
 
 <script>
-import Logo from './common/Logo'
-import Joystick from './common/Joystick'
+import Logo from './common/Logo.vue'
+import Joystick from './common/Joystick.vue'
+import {useSocketStore} from "../stores/SocketStore.js";
 
 export default {
   name: 'GameSection',
   mounted() {
-    let socket = this.$store.state.socket
+    const socketStore = useSocketStore();
+
     window.addEventListener('keydown', this.keyDownHandler)
     window.addEventListener('keyup', this.keyUpHandler)
 
@@ -65,7 +67,7 @@ export default {
       particlesElement.style.opacity = 0
     }
 
-    this.$store.state.socket.on('start-game-result', (data) => {
+    socketStore.socket.on('start-game-result', (data) => {
       if (data.success) {
         this.pointsText = null
       }
@@ -75,18 +77,19 @@ export default {
     let ctx = canvas ? canvas.getContext('2d') : null
 
     let bonusImage = new Image()
-    bonusImage.src = this.$globalEnv.homeUrl + '/assets/images/bonus.png'
+    bonusImage.src = this.homeUrl + '/assets/images/bonus.png'
 
     let currentTime = Date.now()
     let blinkOn = true
     let squareSize = 30
-    this.$store.state.socket.on('refresh-canvas', (data) => {
+    socketStore.socket.on('refresh-canvas', (data) => {
       let canvasWidth = window.innerWidth > 700 ? 700 : window.innerWidth
       this.canvasWidth = canvasWidth
 
       function rationalize(num) {
         return (num * canvasWidth) / 700
       }
+
       // Blink ON/OFF system for bonus about to end
       var loopTime = Date.now()
       if (loopTime - currentTime > 200) {
@@ -196,19 +199,23 @@ export default {
     })
   },
   destroyed() {
+    const socketStore = useSocketStore()
+
     // Not to have double listener next time the component is mounted
-    this.$store.state.socket.off('refresh-canvas')
+    socketStore.socket.off('refresh-canvas')
 
     window.removeEventListener('keyup', this.keyUpHandler)
     window.removeEventListener('keydown', this.keyDownHandler)
 
     document.getElementById('particles-js').style.opacity = 1
 
-    this.$store.state.socket.off('start-game-result')
+    socketStore.socket.off('start-game-result')
   },
   computed: {
     currentPlayer() {
-      return this.$store.state.socket.id
+      const socketStore = useSocketStore()
+
+      return socketStore.socket.id
     }
   },
   data() {
@@ -218,7 +225,7 @@ export default {
     }
   },
   props: {
-    players: [],
+    players: Array,
     room: {},
     gameData: {}
   },
@@ -254,10 +261,14 @@ export default {
       }
     },
     pressKey(keyNumber) {
-      this.$store.state.socket.emit('keyPressed', { key: keyNumber })
+      const socketStore = useSocketStore();
+
+      socketStore.socket.emit('keyPressed', {key: keyNumber})
     },
     releaseKey(keyNumber) {
-      this.$store.state.socket.emit('keyUp', { key: keyNumber })
+      const socketStore = useSocketStore();
+
+      socketStore.socket.emit('keyUp', {key: keyNumber})
     }
   }
 }

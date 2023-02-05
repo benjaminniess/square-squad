@@ -1,19 +1,26 @@
 <template>
   <div id="app">
-    <div class="particles-js" id="particles-js"></div>
+    <div id="particles-js" class="particles-js"></div>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+
 /**
 
-*/
+ */
 export default {
+  data() {
+    return {
+      version: this.version,
+      homeUrl: this.homeUrl
+    }
+  },
   created() {
     particlesJS.load(
       'particles-js',
-      this.$globalEnv.homeUrl + '/assets/js/particles.json'
+      this.$data.homeUrl + '/assets/js/particles.json'
     )
   },
   name: 'App'

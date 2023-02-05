@@ -3,24 +3,24 @@
     <h4>Rounds number</h4>
     <p>
       <input
-        :value="roundsNumber"
-        @input="updateGameOptions"
         id="roundsNumber"
-        type="number"
-        min="1"
+        :value="roundsNumber"
         max="100"
+        min="1"
+        type="number"
+        @input="updateGameOptions"
       />
     </p>
     <h4>Obstacles speed</h4>
     <p>
       Slow
       <input
-        @input="updateGameOptions"
-        :value="obstaclesSpeed"
         id="obstaclesSpeed"
-        type="range"
-        min="1"
+        :value="obstaclesSpeed"
         max="30"
+        min="1"
+        type="range"
+        @input="updateGameOptions"
       />
       fast
     </p>
@@ -29,11 +29,11 @@
       No bonus
       <input
         id="bonusFrequency"
-        @input="updateGameOptions"
         :value="bonusFrequency"
-        type="range"
-        min="1"
         max="10"
+        min="1"
+        type="range"
+        @input="updateGameOptions"
       />
       Too many bonus
     </p>
@@ -41,18 +41,22 @@
 </template>
 
 <script>
+import {useGameStore} from "../../../stores/GamesStore.js";
+
 export default {
   name: 'AdminForm',
   data() {
+    const gameStore = useGameStore()
     return {
-      roundsNumber: this.$store.state.gameOptions.roundsNumber,
-      obstaclesSpeed: this.$store.state.gameOptions.obstaclesSpeed,
-      bonusFrequency: this.$store.state.gameOptions.bonusFrequency
+      roundsNumber: gameStore.gameOptions.roundsNumber,
+      obstaclesSpeed: gameStore.gameOptions.obstaclesSpeed,
+      bonusFrequency: gameStore.gameOptions.bonusFrequency
     }
   },
   methods: {
     updateGameOptions(e) {
-      this.$store.commit('updateGameOption', {
+      const gameStore = useGameStore()
+      gameStore.updateGameOption({
         key: e.target.id,
         value: e.target.value
       })

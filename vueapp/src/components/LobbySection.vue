@@ -1,7 +1,7 @@
 <template>
-  <section class="room-section lobby-section" id="section-lobby">
+  <section id="section-lobby" class="room-section lobby-section">
     <div class="wrapper">
-      <Logo />
+      <Logo/>
       <h3 class="rooms-list__title">Room: {{ room.roomName }}</h3>
 
       <ul v-if="players" class="players-list players no-score">
@@ -21,7 +21,7 @@
         id="admin-section"
         style="visibility: visible;"
       >
-        <AdminForm />
+        <AdminForm/>
         <a class="btn" @click="startGame">play</a>
       </div>
       <a class="btn" @click="back">back</a>
@@ -30,8 +30,10 @@
 </template>
 
 <script>
-import Logo from './common/Logo'
+import Logo from './common/Logo.vue'
 import AdminForm from './games/panic-attack/AdminForm.vue'
+import {useSocketStore} from "../stores/SocketStore.js";
+import {useGameStore} from "../stores/GamesStore.js";
 
 export default {
   name: 'LobbySection',
@@ -47,7 +49,7 @@ export default {
     }
   },
   props: {
-    players: [],
+    players: Array,
     room: {}
   },
   computed: {
@@ -62,7 +64,9 @@ export default {
       return isAdmin
     },
     currentPlayer() {
-      return this.$store.state.socket.id
+      const socketStore = useSocketStore()
+
+      return socketStore.socket.id
     }
   },
   methods: {
@@ -70,15 +74,18 @@ export default {
       this.$router.push('/rooms')
     },
     startGame() {
-      this.$store.state.socket.emit('start-game', {
+      const socketStore = useSocketStore()
+      const gameStore = useGameStore()
+
+      socketStore.socket.emit('start-game', {
         roomSlug: this.room.roomSlug,
-        ...this.$store.state.gameOptions
+        ...gameStore.gameOptions
       })
 
       if (this.$gtag) {
         this.$gtag.event('startGame', {
           playersCount: this.players.length,
-          ...this.$store.state.gameOptions
+          ...gameStore.gameOptions
         })
       }
     }
