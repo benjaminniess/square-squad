@@ -1,6 +1,6 @@
 {
   "name": "square-squad-reloaded",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,33 +9,33 @@
     "startvue": "cd vueapp && npm start",
     "build": "npm i && tsc && cd vueapp && npm i && npm run build",
     "inspect": "nodemon build/index.js --inspect",
-    "watch": "npx gulpfile.js",
     "test": "jest --watch --NODE_ENV=test"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "app-root-path": "^3.0.0",
+    "app-root-path": "^3.1.0",
     "cors": "^2.8.5",
-    "dotenv": "^8.6.0",
-    "express": "^4.17.1",
-    "glob": "^7.1.7",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "glob": "^8.1.0",
     "lodash": "^4.17.21",
-    "matter-js": "^0.17.1",
-    "newrelic": "^7.5.2",
-    "socket.io": "^3.1.2",
-    "validator": "^13.6.0"
+    "matter-js": "^0.18.0",
+    "newrelic": "^9.8.1",
+    "socket.io": "^4.5.4",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.13",
-    "@types/jest": "^27.0.1",
-    "@types/node": "^16.6.1",
-    "jest": "^27.0.6",
-    "mock-socket": "^9.0.3",
-    "socket.io-client": "^4.1.3",
-    "supertest": "^6.1.4",
-    "ts-jest": "^27.0.4",
-    "ts-node": "^10.2.0",
-    "typescript": "^4.3.5"
+    "@types/express": "^4.17.16",
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.11.18",
+    "jest": "^29.4.1",
+    "mock-socket": "^9.1.5",
+    "socket.io-client": "^4.5.4",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4",
+    "vite": "^4.0.4"
   }
 }

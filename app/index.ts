@@ -1,5 +1,10 @@
 import path from 'path'
-import express, { Application, Request, Response, NextFunction } from 'express'
+import express, {Application, NextFunction, Request, Response} from 'express'
+import {createServer} from "http";
+import {Server} from "socket.io";
+import {MainController} from "./src/controllers/main";
+import {SocketController} from "./src/controllers/sockets";
+import {AdminController} from "./src/controllers/admin";
 
 // Load dynamic .env file so we can have a static conf for tests
 require('dotenv').config({
@@ -20,10 +25,11 @@ const cors = require('cors')
 
 // Allow vue app to access node from localhost:1080
 let corsOption = {}
+
 if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
   corsOption = {
     cors: {
-      origin: 'http://localhost:1080',
+      origin: 'http://localhost:5173',
       methods: ['GET', 'POST']
     }
   }
@@ -31,9 +37,9 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
   app.use(cors(corsOption))
 }
 
-const server = require('http').Server(app)
+const server = createServer(app)
 
-const io = require('socket.io')(server, corsOption)
+const io = new Server(server, corsOption)
 
 // Force HTTPS + redirect multiple domains/subdomains
 const useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
@@ -70,6 +76,9 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {
 }
 
 // Dynamically loads all controllers in lib/controller dir
-require('./src/controller')(app, io)
+new SocketController(app, io);
+new MainController(app, io);
+new AdminController(app, io);
+
 
 module.exports = server
