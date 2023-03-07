@@ -1,7 +1,8 @@
 /**
  * A generic tests group for all games (extending from MasterGame)
  */
-import { Room } from '../../src/entities/room'
+import {Room} from '../../src/entities/room'
+
 const PanicAttack = require('../../src/games/panic-attack')
 const WolfAndSheeps = require('../../src/games/wolf-and-sheeps')
 
@@ -30,7 +31,7 @@ const mockedSocket = {
     }
   }
 }
-const room: Room = new Room('room-name', 'Room name', mockedSocket)
+const room: Room = new Room({socketSlug: 'room-name', name: 'Room name', adminSocketId: null})
 
 gameTypes.forEach((gameType) => {
   describe(gameType.name + ' game tests', () => {

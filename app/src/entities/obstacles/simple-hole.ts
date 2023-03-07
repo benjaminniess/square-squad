@@ -1,11 +1,15 @@
+import {Container} from "typedi";
+import {RandomContentGenerator} from "../../services/RandomContentGenerator";
+
 export {}
-const { canvasWidth, squareSize } = require('../../config/main')
-const helpers = require('../../helpers/helpers')
+const {canvasWidth, squareSize} = require('../../config/main')
 const Matter = require('matter-js')
 const Obstacle = require('../obstacle')
 const _ = require('lodash')
 
 class SimpleHole extends Obstacle {
+  private readonly randomContentGenerator: RandomContentGenerator
+
   constructor(
     params = {
       slug: ''
@@ -13,17 +17,18 @@ class SimpleHole extends Obstacle {
   ) {
     params.slug = 'simple-hole'
     super(params)
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
 
     this.init()
   }
 
   init() {
-    let direction = helpers.getRandomInt(1, 5)
-    let holeSize = helpers.getRandomInt(squareSize * 3, squareSize * 8)
-    let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
+    let direction = this.randomContentGenerator.getRandomInt(1, 5)
+    let holeSize = this.randomContentGenerator.getRandomInt(squareSize * 3, squareSize * 8)
+    let obstacleWidth = this.randomContentGenerator.getRandomInt(squareSize, squareSize * 4)
     let obstacleSpeed = (this.getLevel() * this.getSpeedMultiplicator()) / 3
 
-    let obstacleSpot = helpers.getRandomInt(
+    let obstacleSpot = this.randomContentGenerator.getRandomInt(
       squareSize,
       canvasWidth - squareSize
     )
@@ -39,7 +44,7 @@ class SimpleHole extends Obstacle {
           height: obstacleSpot,
           direction: 'left',
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed, y: 0 }
+          vector: {x: -obstacleSpeed, y: 0}
         }
 
         obstacleParts.push(obstacle)
@@ -51,7 +56,7 @@ class SimpleHole extends Obstacle {
           height: canvasWidth,
           direction: 'left',
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed, y: 0 }
+          vector: {x: -obstacleSpeed, y: 0}
         }
 
         obstacleParts.push(obstacle)
@@ -64,7 +69,7 @@ class SimpleHole extends Obstacle {
           height: obstacleSpot,
           direction: 'right',
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed, y: 0 }
+          vector: {x: obstacleSpeed, y: 0}
         }
 
         obstacleParts.push(obstacle)
@@ -76,7 +81,7 @@ class SimpleHole extends Obstacle {
           height: canvasWidth,
           direction: 'right',
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed, y: 0 }
+          vector: {x: obstacleSpeed, y: 0}
         }
 
         obstacleParts.push(obstacle)
@@ -90,7 +95,7 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'bottom',
           speed: obstacleSpeed,
-          vector: { x: 0, y: obstacleSpeed }
+          vector: {x: 0, y: obstacleSpeed}
         }
 
         obstacleParts.push(obstacle)
@@ -102,7 +107,7 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'bottom',
           speed: obstacleSpeed,
-          vector: { x: 0, y: obstacleSpeed }
+          vector: {x: 0, y: obstacleSpeed}
         }
 
         obstacleParts.push(obstacle)
@@ -115,7 +120,7 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'top',
           speed: obstacleSpeed,
-          vector: { x: 0, y: -obstacleSpeed }
+          vector: {x: 0, y: -obstacleSpeed}
         }
 
         obstacleParts.push(obstacle)
@@ -127,7 +132,7 @@ class SimpleHole extends Obstacle {
           height: obstacleWidth,
           direction: 'top',
           speed: obstacleSpeed,
-          vector: { x: 0, y: -obstacleSpeed }
+          vector: {x: 0, y: -obstacleSpeed}
         }
 
         obstacleParts.push(obstacle)
@@ -142,7 +147,7 @@ class SimpleHole extends Obstacle {
         obstaclePart.height,
         {
           frictionAir: 0,
-          collisionFilter: { group: 2 },
+          collisionFilter: {group: 2},
           isSensor: true,
           direction: obstaclePart.direction
         }

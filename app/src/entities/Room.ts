@@ -1,7 +1,11 @@
-export { RoomBasicData, Room }
-import { Player } from './player'
-import { MasterGame } from '../games/master-game'
-import { Players } from '../helpers/players'
+import {Container} from "typedi";
+import {Player} from './player'
+import {MasterGame} from '../games/master-game'
+import {PlayersRepository} from "../repositories/PlayersRepository";
+import {Server} from "socket.io";
+
+export {Room}
+
 const _ = require('lodash')
 
 const games = {
@@ -9,25 +13,21 @@ const games = {
   wolfAndSheeps: require('../games/wolf-and-sheeps')
 }
 
-type RoomBasicData = {
-  slug: string
-  name: string
-  url: string
-}
-
 class Room {
   private name: string
   private slug: string
-  private io: any
+  private io: Server
   private adminPlayer?: string
   private game: any
   private players: Player[] = []
+  private playersRepository: PlayersRepository
 
-  constructor(slug: string, name: string, io: any) {
-    this.name = name
-    this.slug = slug
-    this.io = io
+  constructor(roomData: RoomDto) {
+    this.name = roomData.name
+    this.slug = roomData.socketSlug
+    this.io = Container.get('io')
     this.setGame('panic-attack')
+    this.playersRepository = Container.get(PlayersRepository)
   }
 
   getName(): string {
@@ -42,7 +42,7 @@ class Room {
     return this.game
   }
 
-  getBasicData(): RoomBasicData {
+  getBasicData(): LightRoomDto {
     return {
       slug: this.getSlug(),
       name: this.getName(),
@@ -95,7 +95,7 @@ class Room {
   /**
    * Auto elect a new admin when the previous one is leaving
    */
-  resetAdminPlayer() {
+  resetLeader() {
     let socketClients = this.getPlayers()
 
     socketClients.map((socketID: string) => {
@@ -105,8 +105,7 @@ class Room {
     })
   }
 
-  refreshPlayers(disconnectedPlayerSocketID = null) {
-    const players = new Players().getInstance()
+  refreshPlayers(disconnectedPlayerSocketID: string | null = null) {
     let game = this.getGame()
 
     let globalRanking = game.getRanking()
@@ -116,7 +115,13 @@ class Room {
     let playersData = game.getPlayersManager().getPlayersData()
 
     _.forEach(socketClients, (socketID: string) => {
-      let playerObj = players.getPlayer(socketID)
+      let playerObj
+      try {
+        playerObj = this.playersRepository.findOrFailBySocketID(socketID)
+      } catch (exception) {
+        return
+      }
+
       let globalRankingIndex = _.findIndex(globalRanking, {
         playerID: socketID
       })

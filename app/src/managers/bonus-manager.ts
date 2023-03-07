@@ -1,11 +1,15 @@
+import {Container} from "typedi";
+import {RandomContentGenerator} from "../services/RandomContentGenerator";
+
 export {}
-const helpers = require('../helpers/helpers')
 const Speed = require('../entities/bonus/speed')
 const ScoreChanger = require('../entities/bonus/score-changer')
 const Invincible = require('../entities/bonus/invincible')
 const _ = require('lodash')
 
 class BonusManager {
+  private readonly randomContentGenerator: RandomContentGenerator
+
   private bonusList: any[]
   private game: any
   private frequency: number
@@ -16,6 +20,8 @@ class BonusManager {
     this.game = game
     this.frequency = 5
     this.lastBonusTime = null
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
+
   }
 
   getBonus() {
@@ -48,14 +54,14 @@ class BonusManager {
       return
     }
 
-    if (helpers.getRandomInt(1, 2500 / this.getFrequency()) === 1) {
+    if (this.randomContentGenerator.getRandomInt(1, 2500 / this.getFrequency()) === 1) {
       this.initBonus()
       this.lastBonusTime = process.hrtime()[0]
     }
   }
 
   initBonus(params: any = {}) {
-    let bonusID = helpers.getRandomInt(1, 4)
+    let bonusID = this.randomContentGenerator.getRandomInt(1, 4)
 
     params.game = this.getGame()
 

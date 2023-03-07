@@ -1,20 +1,25 @@
+import {Container} from "typedi";
+import {RandomContentGenerator} from "../../services/RandomContentGenerator";
+
 export {}
 const Bonus = require('../../entities/bonus')
-const helpers = require('../../helpers/helpers')
 
 /**
  * Affect the global score of the player from -10 to +10
  */
 class ScoreChanger extends Bonus {
+  private readonly randomContentGenerator: RandomContentGenerator
+
   constructor(params: any) {
     super(params)
     this.initChangerType()
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
   }
 
   initChangerType() {
     const randomType = this.getTypes()[
       this.getTypeFromNumber(this.getRandomInt())
-    ]
+      ]
 
     this.imgX = randomType.imgX
     this.imgY = randomType.imgY
@@ -22,7 +27,7 @@ class ScoreChanger extends Bonus {
   }
 
   getRandomInt() {
-    return helpers.getRandomInt(1, 50)
+    return this.randomContentGenerator.getRandomInt(1, 50)
   }
 
   /**

@@ -1,16 +1,21 @@
+import {RandomContentGenerator} from "../../services/RandomContentGenerator";
+import {Container} from "typedi";
+
 export {}
-const helpers = require('../../helpers/helpers')
-const { squareSize } = require('../../config/main')
+const {squareSize} = require('../../config/main')
 const Matter = require('matter-js')
 const MasterGame = require('../master-game')
 const _ = require('lodash')
 
 class Panick_Attack extends MasterGame {
+  private readonly randomContentGenerator: RandomContentGenerator
+
   constructor(room: any) {
     super(room)
     this.speed = 2
     this.slug = 'panic-attack'
     this.type = 'battle-royale'
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
     this.eventSubscriptions()
   }
 
@@ -25,7 +30,7 @@ class Panick_Attack extends MasterGame {
 
     Matter.Events.on(this.getEngine(), 'collisionStart', (event: any) => {
       _.forEach(event.pairs, (collisionPair: any) => {
-        if (collisionPair.bodyA.enableCustomCollisionManagement === true) {
+        if (collisionPair.bodyA.enableCustomCollisionManagement) {
           let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
             collisionPair.bodyA.id
           )
@@ -38,7 +43,7 @@ class Panick_Attack extends MasterGame {
           }
         }
 
-        if (collisionPair.bodyB.enableCustomCollisionManagement === true) {
+        if (collisionPair.bodyB.enableCustomCollisionManagement) {
           let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
             collisionPair.bodyB.id
           )
@@ -79,7 +84,7 @@ class Panick_Attack extends MasterGame {
 
       Matter.Events.on(this.getEngine(), 'collisionEnd', (event: any) => {
         _.forEach(event.pairs, (collisionPair: any) => {
-          if (collisionPair.bodyA.enableCustomCollisionManagement === true) {
+          if (collisionPair.bodyA.enableCustomCollisionManagement) {
             let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
               collisionPair.bodyA.id
             )
@@ -92,7 +97,7 @@ class Panick_Attack extends MasterGame {
             }
           }
 
-          if (collisionPair.bodyB.enableCustomCollisionManagement === true) {
+          if (collisionPair.bodyB.enableCustomCollisionManagement) {
             let targetObstacle = this.getObstaclesManager().getObstacleFromBodyID(
               collisionPair.bodyB.id
             )
@@ -129,8 +134,8 @@ class Panick_Attack extends MasterGame {
       ) {
         if (obstacles.length === 0) {
           obstacleManager.initObstacle()
-          if (this.getScore() > 2 && helpers.getRandomInt(1, 3) === 2) {
-            obstacleManager.initObstacle({ speedMultiplicator: 0.5 })
+          if (this.getScore() > 2 && this.randomContentGenerator.getRandomInt(1, 3) === 2) {
+            obstacleManager.initObstacle({speedMultiplicator: 0.5})
           }
           this.increaseScore()
           increasePoints = this.getScore()

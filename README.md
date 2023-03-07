@@ -1,6 +1,8 @@
 # Square Squad
 
-> Square Squad is a multiplayer in browser game based on socket.io communication between Vue.js and Node.js. You can play it on [square-squad.com](https://square-squad.com) and tell us about your experience here on in our [Discord channel](https://discord.com/invite/zGZ2TVw6e4)
+> Square Squad is a multiplayer in browser game based on socket.io communication between Vue.js and Node.js. You can
+> play it on [square-squad.com](https://square-squad.com) and tell us about your experience here on in
+> our [Discord channel](https://discord.com/invite/zGZ2TVw6e4)
 
 ## :building_construction: Local Setup
 
@@ -34,9 +36,16 @@ To test the front-end
 
 `cd vueapp && npm test`
 
+## Cypress tests
+
+`cp cypress.env.sample.json cypress.env.json`
+
+`cypress open`
+
 ## :gear: .env file
 
-You can copy the `.env_example` file at the root directory and name it `.env`. Then, you can adapt configuration as follow:
+You can copy the `.env_example` file at the root directory and name it `.env`. Then, you can adapt configuration as
+follow:
 
 ```
 MATTER_DEBUG=true=false

@@ -1,4 +1,4 @@
-import { Room } from '../src/entities/room'
+import {Room} from '../src/entities/room'
 
 // Quick mock of socket io object
 const mockedSocket = {
@@ -14,7 +14,7 @@ const mockedSocket = {
 }
 
 describe('Room entity management', () => {
-  const room: Room = new Room('room-name', 'Room name', mockedSocket)
+  const room: Room = new Room({socketSlug: 'room-name', name: 'Room name', adminSocketId: null})
 
   it('returns the room name', () => {
     expect(room.getName()).toBe('Room name')

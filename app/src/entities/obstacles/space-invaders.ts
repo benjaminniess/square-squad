@@ -1,11 +1,15 @@
+import {RandomContentGenerator} from "../../services/RandomContentGenerator";
+import {Container} from "typedi";
+
 export {}
-const { canvasWidth, squareSize } = require('../../config/main')
+const {canvasWidth, squareSize} = require('../../config/main')
 const Matter = require('matter-js')
 const Obstacle = require('../obstacle')
-const helpers = require('../../helpers/helpers')
 const _ = require('lodash')
 
 class SpaceInvaders extends Obstacle {
+  private readonly randomContentGenerator: RandomContentGenerator
+
   constructor(
     params = {
       slug: ''
@@ -13,6 +17,7 @@ class SpaceInvaders extends Obstacle {
   ) {
     params.slug = 'space-invader'
     super(params)
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
 
     this.init()
   }
@@ -24,9 +29,9 @@ class SpaceInvaders extends Obstacle {
     let invaderRequiredWidth = obstacleWidth * 2.2
     let obstacleParts = []
 
-    let rowCount = helpers.getRandomInt(1, 4)
+    let rowCount = this.randomContentGenerator.getRandomInt(1, 4)
     for (let o = 0; o < rowCount; o++) {
-      let countInvaders = helpers.getRandomInt(3, 6)
+      let countInvaders = this.randomContentGenerator.getRandomInt(3, 6)
       let spaceBetween =
         obstacleWidth +
         (canvasWidth - countInvaders * obstacleWidth) / (countInvaders - 1)
@@ -37,7 +42,7 @@ class SpaceInvaders extends Obstacle {
           width: obstacleWidth,
           height: obstacleWidth,
           speed: obstacleSpeed,
-          vector: { x: 0, y: obstacleSpeed / 4 }
+          vector: {x: 0, y: obstacleSpeed / 4}
         }
 
         obstacleParts.push(obstacle)
@@ -52,7 +57,7 @@ class SpaceInvaders extends Obstacle {
         obstaclePart.height,
         {
           frictionAir: 0,
-          collisionFilter: { group: 2 },
+          collisionFilter: {group: 2},
           isSensor: true
         }
       )

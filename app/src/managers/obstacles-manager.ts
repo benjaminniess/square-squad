@@ -1,7 +1,10 @@
-export {}
+import {RandomContentGenerator} from "../services/RandomContentGenerator";
 import EventEmitter from 'events'
-const { canvasWidth } = require('../config/main')
-const helpers = require('../helpers/helpers')
+import {Container} from "typedi";
+
+export {}
+
+const {canvasWidth} = require('../config/main')
 const Matter = require('matter-js')
 const Composite = Matter.Composite
 
@@ -19,15 +22,17 @@ class ObstaclesManager {
   private eventEmitter: EventEmitter
   private walls: any
   private startLevel: number = 1
+  private readonly randomContentGenerator: RandomContentGenerator
 
   constructor(game: any) {
     this.obstacles = []
     this.level = 0
     this.game = game
-    this.compositeObj = Matter.Composite.create({ label: 'obstacles' })
+    this.compositeObj = Matter.Composite.create({label: 'obstacles'})
     this.eventEmitter = new EventEmitter()
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
 
-    this.walls = Composite.create({ label: 'walls' })
+    this.walls = Composite.create({label: 'walls'})
     this.initWalls()
   }
 
@@ -147,12 +152,13 @@ class ObstaclesManager {
   setStartLevel(level: number) {
     this.startLevel = level
   }
+
   setLevel(level: number) {
     this.level = level
   }
 
   initObstacle(params: any = {}) {
-    let obstacleID = helpers.getRandomInt(1, 5)
+    let obstacleID = this.randomContentGenerator.getRandomInt(1, 5)
     if (params.obstacleID) {
       obstacleID = params.obstacleID
     }

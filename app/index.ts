@@ -1,31 +1,34 @@
-import path from 'path'
-import express, {Application, NextFunction, Request, Response} from 'express'
+import * as express from 'express'
+import {Application, NextFunction, Request, Response} from 'express'
 import {createServer} from "http";
 import {Server} from "socket.io";
-import {MainController} from "./src/controllers/main";
-import {SocketController} from "./src/controllers/sockets";
-import {AdminController} from "./src/controllers/admin";
+import {MainController} from "./src/controllers/MainController";
+import {SocketController} from "./src/controllers/SocketsController";
+import {AdminController} from "./src/controllers/AdminController";
+import "reflect-metadata";
+import {Container} from "typedi";
+import {EnvironmentFileController} from "./src/controllers/EnvironmentFileController";
+import {CanevasRefresher} from "./src/services/CanevasRefresher";
+import {AppDataSource} from "./src/data-source";
+import * as path from "path";
+import {Player} from "./src/entity/Player";
+import {Room} from "./src/entity/Room";
 
-// Load dynamic .env file so we can have a static conf for tests
-require('dotenv').config({
-  path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'
-})
+require('source-map-support').install()
+
+// Load dynamic .env file, so we can have a static conf for tests
+require('dotenv').config({path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env'})
 
 // Load new relic agent if env vars are set
-if (
-  process.env.ENABLE_NEW_RELIC_AGENT &&
-  process.env.ENABLE_NEW_RELIC_AGENT === 'true'
-) {
+if (process.env.ENABLE_NEW_RELIC_AGENT && process.env.ENABLE_NEW_RELIC_AGENT === 'true') {
   require('newrelic')
 }
 
 const app: Application = express()
-
 const cors = require('cors')
 
 // Allow vue app to access node from localhost:1080
 let corsOption = {}
-
 if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
   corsOption = {
     cors: {
@@ -33,13 +36,11 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'development') {
       methods: ['GET', 'POST']
     }
   }
-
   app.use(cors(corsOption))
 }
 
 const server = createServer(app)
-
-const io = new Server(server, corsOption)
+const io = new Server(server, corsOption);
 
 // Force HTTPS + redirect multiple domains/subdomains
 const useSSL = process.env.FORCE_HTTPS && process.env.FORCE_HTTPS === 'true'
@@ -75,10 +76,17 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {
   server.listen(PORT)
 }
 
-// Dynamically loads all controllers in lib/controller dir
-new SocketController(app, io);
-new MainController(app, io);
-new AdminController(app, io);
+AppDataSource.initialize().then(async () => {
+  Container.set('playersRepository', AppDataSource.getRepository(Player))
+  Container.set('roomsRepository', AppDataSource.getRepository(Room))
+  Container.set("io", io)
+  Container.set("app", app)
+  Container.get(AdminController);
+  Container.get(EnvironmentFileController);
+  Container.get(MainController);
+  Container.get(SocketController);
+  Container.get(CanevasRefresher);
+}).catch(error => console.log(error))
 
 
 module.exports = server

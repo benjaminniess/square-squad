@@ -1,11 +1,15 @@
+import {RandomContentGenerator} from "../../services/RandomContentGenerator";
+import {Container} from "typedi";
+
 export {}
-const { canvasWidth } = require('../../config/main')
+const {canvasWidth} = require('../../config/main')
 const Matter = require('matter-js')
-const helpers = require('../../helpers/helpers')
 const Obstacle = require('../obstacle')
 const _ = require('lodash')
 
 class Ball extends Obstacle {
+  private readonly randomContentGenerator: RandomContentGenerator
+
   constructor(
     params = {
       slug: ''
@@ -13,6 +17,7 @@ class Ball extends Obstacle {
   ) {
     params.slug = 'ball'
     super(params)
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
 
     this.init()
   }
@@ -23,7 +28,7 @@ class Ball extends Obstacle {
     let obstacleSpeed =
       this.getLevel() * this.getSpeedMultiplicator() * speedReducer
     let radius = 20
-    let angle = ((10 - helpers.getRandomInt(1, 21)) / 10) * obstacleSpeed
+    let angle = ((10 - this.randomContentGenerator.getRandomInt(1, 21)) / 10) * obstacleSpeed
     let obstacle: any = {}
 
     switch (startPosition) {
@@ -31,7 +36,7 @@ class Ball extends Obstacle {
       case 1:
         obstacle = {
           x: canvasWidth / 2 + radius / 2,
-          y: canvasWidth + radius + helpers.getRandomInt(15, 70),
+          y: canvasWidth + radius + this.randomContentGenerator.getRandomInt(15, 70),
           vector: {
             x: angle,
             y: -obstacleSpeed
@@ -42,7 +47,7 @@ class Ball extends Obstacle {
       case 2:
         obstacle = {
           x: canvasWidth / 2 + radius / 2,
-          y: -radius - helpers.getRandomInt(15, 70),
+          y: -radius - this.randomContentGenerator.getRandomInt(15, 70),
           vector: {
             x: angle,
             y: obstacleSpeed
@@ -52,7 +57,7 @@ class Ball extends Obstacle {
       // Right
       case 3:
         obstacle = {
-          x: canvasWidth + radius + helpers.getRandomInt(15, 35),
+          x: canvasWidth + radius + this.randomContentGenerator.getRandomInt(15, 35),
           y: canvasWidth / 2 + radius / 2,
           vector: {
             x: -obstacleSpeed,
@@ -62,7 +67,7 @@ class Ball extends Obstacle {
         break
       case 4:
         obstacle = {
-          x: -radius - helpers.getRandomInt(15, 35),
+          x: -radius - this.randomContentGenerator.getRandomInt(15, 35),
           y: canvasWidth / 2 + radius / 2,
           vector: {
             x: obstacleSpeed,
@@ -123,7 +128,7 @@ class Ball extends Obstacle {
   /*
   onCollisionEnd(obstaclePart, bodyB) {
     if (bodyB.customType && bodyB.customType === 'wall') {
-      
+
       Matter.Body.set(obstaclePart, {
         isSensor: 0,
         collisionFilter: {
@@ -131,11 +136,11 @@ class Ball extends Obstacle {
           mask: 0x0011,
         },
       })
-    
+
       obstaclePart.countCollisions++
 
-      
-      
+
+
       if (obstaclePart.countCollisions === 2) {
         Matter.Body.set(obstaclePart, {
           isSensor: 1,

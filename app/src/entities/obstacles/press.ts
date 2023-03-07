@@ -1,11 +1,15 @@
+import {RandomContentGenerator} from "../../services/RandomContentGenerator";
+import {Container} from "typedi";
+
 export {}
-const { canvasWidth, squareSize } = require('../../config/main')
-const helpers = require('../../helpers/helpers')
+const {canvasWidth, squareSize} = require('../../config/main')
 const Matter = require('matter-js')
 const Obstacle = require('../obstacle')
 const _ = require('lodash')
 
 class Press extends Obstacle {
+  private readonly randomContentGenerator: RandomContentGenerator
+
   constructor(
     params = {
       slug: ''
@@ -13,12 +17,14 @@ class Press extends Obstacle {
   ) {
     params.slug = 'press'
     super(params)
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
 
     this.init()
   }
+
   init() {
-    let direction = helpers.getRandomInt(1, 5)
-    let obstacleWidth = helpers.getRandomInt(squareSize, squareSize * 4)
+    let direction = this.randomContentGenerator.getRandomInt(1, 5)
+    let obstacleWidth = this.randomContentGenerator.getRandomInt(squareSize, squareSize * 4)
     let obstacleSpeed = this.getLevel() * this.getSpeedMultiplicator()
     let obstacleParts = []
 
@@ -34,7 +40,7 @@ class Press extends Obstacle {
           currentPosition: 'top',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed / 5, y: obstacleSpeed / 2 }
+          vector: {x: -obstacleSpeed / 5, y: obstacleSpeed / 2}
         }
 
         obstacleParts.push(obstacle)
@@ -48,7 +54,7 @@ class Press extends Obstacle {
           currentPosition: 'bottom',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed / 5, y: -obstacleSpeed / 2 }
+          vector: {x: -obstacleSpeed / 5, y: -obstacleSpeed / 2}
         }
 
         obstacleParts.push(obstacle)
@@ -63,7 +69,7 @@ class Press extends Obstacle {
           currentPosition: 'top',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed / 5, y: obstacleSpeed / 2 }
+          vector: {x: obstacleSpeed / 5, y: obstacleSpeed / 2}
         }
 
         obstacleParts.push(obstacle)
@@ -77,7 +83,7 @@ class Press extends Obstacle {
           currentPosition: 'bottom',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed / 5, y: -obstacleSpeed / 2 }
+          vector: {x: obstacleSpeed / 5, y: -obstacleSpeed / 2}
         }
 
         obstacleParts.push(obstacle)
@@ -92,7 +98,7 @@ class Press extends Obstacle {
           currentPosition: 'left',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed / 2, y: obstacleSpeed / 5 }
+          vector: {x: obstacleSpeed / 2, y: obstacleSpeed / 5}
         }
 
         obstacleParts.push(obstacle)
@@ -106,7 +112,7 @@ class Press extends Obstacle {
           currentPosition: 'right',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed / 2, y: obstacleSpeed / 5 }
+          vector: {x: -obstacleSpeed / 2, y: obstacleSpeed / 5}
         }
 
         obstacleParts.push(obstacle)
@@ -121,7 +127,7 @@ class Press extends Obstacle {
           currentPosition: 'left',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: obstacleSpeed / 2, y: -obstacleSpeed / 5 }
+          vector: {x: obstacleSpeed / 2, y: -obstacleSpeed / 5}
         }
 
         obstacleParts.push(obstacle)
@@ -135,7 +141,7 @@ class Press extends Obstacle {
           currentPosition: 'right',
           ahead: true,
           speed: obstacleSpeed,
-          vector: { x: -obstacleSpeed / 2, y: -obstacleSpeed / 5 }
+          vector: {x: -obstacleSpeed / 2, y: -obstacleSpeed / 5}
         }
 
         obstacleParts.push(obstacle)
@@ -150,7 +156,7 @@ class Press extends Obstacle {
         obstaclePart.height,
         {
           frictionAir: 0,
-          collisionFilter: { group: 2 },
+          collisionFilter: {group: 2},
           isSensor: true
         }
       )

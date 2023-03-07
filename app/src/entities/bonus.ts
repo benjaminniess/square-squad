@@ -1,7 +1,9 @@
-export {}
-const helpers = require('../helpers/helpers')
-const { canvasWidth, bonusSize } = require('../config/main')
+import {Container} from "typedi";
 import EventEmitter from 'events'
+import {RandomContentGenerator} from "../services/RandomContentGenerator";
+
+export {}
+const {canvasWidth, bonusSize} = require('../config/main')
 
 class Bonus {
   private game: any
@@ -14,6 +16,7 @@ class Bonus {
   private playerID: string = ''
   private imgX: number = 0
   private imgY: number = 0
+  private readonly randomContentGenerator: RandomContentGenerator
 
   constructor(params: any) {
     if (!params) {
@@ -21,13 +24,14 @@ class Bonus {
     }
 
     this.game = params.game
+    this.randomContentGenerator = Container.get(RandomContentGenerator)
     this.init()
     this.isTriggeredState = false
   }
 
   init() {
-    this.x = helpers.getRandomInt(1, canvasWidth - bonusSize)
-    this.y = helpers.getRandomInt(1, canvasWidth - bonusSize)
+    this.x = this.randomContentGenerator.getRandomInt(1, canvasWidth - bonusSize)
+    this.y = this.randomContentGenerator.getRandomInt(1, canvasWidth - bonusSize)
     this.width = bonusSize
     this.height = bonusSize
   }
@@ -77,7 +81,9 @@ class Bonus {
     }
   }
 
-  onTrigger() {}
+  onTrigger() {
+  }
+
   getExtraData() {
     return {}
   }
