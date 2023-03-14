@@ -1,8 +1,8 @@
 import Room from '@/components/Room'
-import { mount, config, createLocalVue } from '@vue/test-utils'
+import {config, createLocalVue, mount} from '@vue/test-utils'
 
 let stepsToCall = {
-  'room-join-socket': false
+  'join-room-socket': false
 }
 
 let mockRoomSlug = 'the-room-slug'
@@ -23,7 +23,7 @@ config.mocks = {
       socket: {
         id: 'n7BGXs8MCOWDd3hvAAAR',
         on: (action) => {
-          if (action === 'room-join-result') {
+          if (action === 'join-room-result') {
             return {
               data: {
                 roomSlug: mockRoomSlug
@@ -32,8 +32,8 @@ config.mocks = {
           }
         },
         emit: (event, data = {}) => {
-          if (event === 'room-join' && data.roomSlug === mockRoomSlug) {
-            stepsToCall['room-join-socket'] = true
+          if (event === 'join-room' && data.roomSlug === mockRoomSlug) {
+            stepsToCall['join-room-socket'] = true
           }
         }
       },
@@ -43,26 +43,26 @@ config.mocks = {
 }
 
 describe('Room.vue', () => {
-  const wrapper = mount(Room, { localVue })
+  const wrapper = mount(Room, {localVue})
 
   it('should emit a socket when mounted', () => {
-    expect(stepsToCall['room-join-socket']).toBe(true)
+    expect(stepsToCall['join-room-socket']).toBe(true)
   })
 
   it('should show the LobbySection component', () => {
-    expect(wrapper.findComponent({ name: 'LobbySection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'LobbySection'}).isVisible()).toBe(
       true
     )
   })
 
   it('should hide the GameSection component', () => {
-    expect(wrapper.findComponent({ name: 'GameSection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'GameSection'}).isVisible()).toBe(
       false
     )
   })
 
   it('should hide the RankSection component', () => {
-    expect(wrapper.findComponent({ name: 'RankSection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'RankSection'}).isVisible()).toBe(
       false
     )
   })
@@ -71,19 +71,19 @@ describe('Room.vue', () => {
     config.mocks.$store.state.gameStatus = 'playing'
 
     await localVue.nextTick()
-    expect(wrapper.findComponent({ name: 'LobbySection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'LobbySection'}).isVisible()).toBe(
       false
     )
   })
 
   it('should show the GameSection component', () => {
-    expect(wrapper.findComponent({ name: 'GameSection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'GameSection'}).isVisible()).toBe(
       true
     )
   })
 
   it('should hide the RankSection component', () => {
-    expect(wrapper.findComponent({ name: 'RankSection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'RankSection'}).isVisible()).toBe(
       false
     )
   })
@@ -92,19 +92,19 @@ describe('Room.vue', () => {
     config.mocks.$store.state.gameStatus = 'end-round'
 
     await localVue.nextTick()
-    expect(wrapper.findComponent({ name: 'GameSection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'GameSection'}).isVisible()).toBe(
       false
     )
   })
 
   it('should hide the LobbySection component', () => {
-    expect(wrapper.findComponent({ name: 'LobbySection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'LobbySection'}).isVisible()).toBe(
       false
     )
   })
 
   it('should show the RankSection component', () => {
-    expect(wrapper.findComponent({ name: 'RankSection' }).isVisible()).toBe(
+    expect(wrapper.findComponent({name: 'RankSection'}).isVisible()).toBe(
       true
     )
   })

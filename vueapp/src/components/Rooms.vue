@@ -25,7 +25,7 @@
         </p>
         <p>You first need to select a room or create a new one</p>
       </div>
-      <a id="rooms-refresh" href="#" @click.prevent="refreshRoomsEventHandler"
+      <a id="refresh-rooms" href="#" @click.prevent="refreshRoomsEventHandler"
       >[Refresh]</a
       >
       <div class="rooms-list">
@@ -99,7 +99,7 @@ export default {
     }
 
     // SOCKET CALLBACK: Update the rooms var after socket result
-    socketStore.socket.on('rooms-refresh-result', (result) => {
+    socketStore.socket.on('refresh-rooms-result', (result) => {
       if (!result.success) {
         this.goToHome()
         return
@@ -113,10 +113,9 @@ export default {
     })
 
     // SOCKET CALLBACK: The room creation result
-    socketStore.socket.on('rooms-create-result', (result) => {
+    socketStore.socket.on('create-room-result', (result) => {
       if (!result.success) {
-        this.goToHome()
-        return
+        this.$router.push('/404?code=' + result.error)
       }
 
       if (this.$gtag) {
@@ -133,8 +132,8 @@ export default {
   destroyed() {
     const socketStore = useSocketStore();
 
-    socketStore.socket.off('rooms-refresh-result')
-    socketStore.socket.off('rooms-create-result')
+    socketStore.socket.off('refresh-rooms-result')
+    socketStore.socket.off('create-room-result')
   },
   components: {
     Logo,
@@ -152,12 +151,12 @@ export default {
     refreshRooms() {
       const socketStore = useSocketStore();
 
-      socketStore.socket.emit('rooms-refresh')
+      socketStore.socket.emit('refresh-rooms')
     },
     checkForm() {
       const socketStore = useSocketStore();
 
-      socketStore.socket.emit('rooms-create', this.newRoomName)
+      socketStore.socket.emit('create-room', this.newRoomName)
     },
     goToRoom(slug) {
       this.$router.push('/rooms/' + slug)

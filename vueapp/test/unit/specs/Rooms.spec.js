@@ -1,5 +1,5 @@
 import Rooms from '@/components/Rooms'
-import { shallowMount, config } from '@vue/test-utils'
+import {config, shallowMount} from '@vue/test-utils'
 
 let refreshEventHasBeenCalled = false
 let roomCreateHasBeenCalled = false
@@ -9,11 +9,12 @@ config.mocks['$store'] = {
   state: {
     socket: {
       id: 'n7BGXs8MCOWDd3hvAAAR',
-      on: () => {},
+      on: () => {
+      },
       emit: (event, data = {}) => {
-        if (event === 'rooms-refresh') {
+        if (event === 'refresh-rooms') {
           refreshEventHasBeenCalled = true
-        } else if (event === 'rooms-create') {
+        } else if (event === 'create-room') {
           roomCreateHasBeenCalled = true
           newRoomName = data
         }
@@ -53,7 +54,7 @@ describe('Rooms.vue', () => {
   })
 
   it('should render empty rooms list', async () => {
-    await wrapper.setData({ rooms: [] })
+    await wrapper.setData({rooms: []})
     expect(wrapper.find('.rooms-list__list li').exists()).toBe(false)
   })
 
@@ -62,7 +63,7 @@ describe('Rooms.vue', () => {
   })
 
   it('should refresh rooms list on click', async () => {
-    await wrapper.find('#rooms-refresh').trigger('click')
+    await wrapper.find('#refresh-rooms').trigger('click')
 
     expect(refreshEventHasBeenCalled).toBe(true)
   })

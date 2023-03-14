@@ -263,12 +263,12 @@ export default {
     pressKey(keyNumber) {
       const socketStore = useSocketStore();
 
-      socketStore.socket.emit('keyPressed', {key: keyNumber})
+      socketStore.socket.emit('key-pressed', {key: keyNumber})
     },
     releaseKey(keyNumber) {
       const socketStore = useSocketStore();
 
-      socketStore.socket.emit('keyUp', {key: keyNumber})
+      socketStore.socket.emit('key-up', {key: keyNumber})
     }
   }
 }

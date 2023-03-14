@@ -101,13 +101,15 @@ export default {
       this.$router.push('/?redirect_to=' + this.$route.params.id)
     }
 
-    socketStore.socket.emit('room-join', {
+    socketStore.socket.emit('join-room', {
       roomSlug: this.$route.params.id
     })
 
-    socketStore.socket.on('room-join-result', (result) => {
+    socketStore.socket.on('join-room-result', (result) => {
       if (result.success) {
         this.room = result.data
+      } else {
+        this.$router.push('/404?code=' + result.error)
       }
     })
 
@@ -165,12 +167,12 @@ export default {
 
     // Not to have double listener next time the component is mounted
     socketStore.socket.off('refresh-players')
-    socketStore.socket.off('room-joined')
+    socketStore.socket.off('join-roomed')
     socketStore.socket.off('start-game-result')
     socketStore.socket.off('countdown-update')
     socketStore.socket.off('in-game-countdown-update')
 
-    socketStore.socket.emit('room-leave')
+    socketStore.socket.emit('leave-room')
   }
 }
 </script>
