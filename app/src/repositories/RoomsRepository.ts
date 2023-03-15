@@ -5,6 +5,7 @@ import {Player} from "../entity/Player";
 import {Room} from "../entity/Room";
 import validator from 'validator';
 import {PlayersRepository} from "./PlayersRepository";
+import {SocketsRepository} from "./SocketsRepository";
 
 
 export {RoomsRepository}
@@ -15,18 +16,38 @@ const _ = require('lodash')
 class RoomsRepository {
   private repository: Repository<Room>
   private playerRepository: PlayersRepository
+  private socketsRepository: SocketsRepository
   private readonly stringsConvertor: StringsConvertor;
 
-  constructor(@Inject() stringsConvertor: StringsConvertor, @Inject() playersRepository: PlayersRepository) {
+  constructor(
+    @Inject() stringsConvertor: StringsConvertor,
+    @Inject() playersRepository: PlayersRepository,
+    @Inject() socketsRepository: SocketsRepository,
+  ) {
     this.stringsConvertor = stringsConvertor
     this.repository = Container.get('roomsRepository')
     this.playerRepository = playersRepository
+    this.socketsRepository = socketsRepository
   }
 
   async findAll(): Promise<Room[]> {
     return await this.repository
       .createQueryBuilder()
       .orderBy('name', 'ASC')
+      .getMany();
+  }
+
+  async findAllWhereSlugNotIn(slugs: string[]): Promise<Room[]> {
+    return await this.repository
+      .createQueryBuilder()
+      .where("room.slug NOT IN ('" + slugs.join("','") + "')")
+      .getMany();
+  }
+
+  async findAllByLeader(leader: Player): Promise<Room[]> {
+    return await this.repository
+      .createQueryBuilder()
+      .where("room.leaderId = '" + leader.id + "'")
       .getMany();
   }
 
@@ -86,11 +107,10 @@ class RoomsRepository {
   }
 
   async addPlayerToRoom(player: Player, room: Room): Promise<void> {
-    if (!room.players) {
-      room.players = [];
-    }
+    const players = await room.players
+    players.push(player)
 
-    room.players.push(player);
+    room.players = Promise.resolve([player])
 
     await this.repository.save(room);
     await this.maybeResetLeader(room)
@@ -120,30 +140,25 @@ class RoomsRepository {
     await this.resetLeader(room)
   }
 
+  async resetLeader(room: Room): Promise<void> {
+    await this.setLeader(room, room.players[0] ?? null)
+  }
+
   async removePlayerFromRoom(playerToRemove: Player, room: Room): Promise<void> {
-    room.players = room.players.filter((player) => {
+    room.players = Promise.resolve((await room.players).filter((player) => {
       return player.socketId !== playerToRemove.socketId
-    });
+    }));
 
     await this.repository.save(room);
   }
 
   async removeAllPlayersFromRoom(room: Room): Promise<void> {
-    room.players = [];
+    room.players = Promise.resolve([]);
     await this.repository.save(room);
   }
 
   async delete(room: Room): Promise<void> {
     await this.repository.delete(room.id);
-  }
-
-  async deleteWhereEmpty(): Promise<void> {
-    const rooms = await this.findAll()
-    rooms.map(room => {
-      if (typeof room.players === 'undefined') {
-        this.delete(room)
-      }
-    })
   }
 
   async clear(): Promise<void> {
@@ -152,9 +167,5 @@ class RoomsRepository {
     );
     await this.repository.query("DELETE FROM room")
     await this.repository.clear();
-  }
-
-  private async resetLeader(room: Room): Promise<void> {
-    await this.setLeader(room, room.players[0])
   }
 }

@@ -45,6 +45,13 @@ class PlayersRepository {
     return player
   }
 
+  async findMultipleWhereSocketIdNotIn(socketIds: string[]): Promise<Player[]> {
+    return await this.repository
+      .createQueryBuilder()
+      .where("player.socketId NOT IN ('" + socketIds.join("', '") + "')")
+      .getMany();
+  }
+
   async findById(id: number): Promise<Player> {
     return await this.findOne({
       where: {id: id},
@@ -66,10 +73,18 @@ class PlayersRepository {
     await this.repository.save(player);
   }
 
+  async deleteRoomAssociation(player: Player) {
+    player.room = null
+
+    await this.repository.save(player);
+  }
+
   async delete(player: Player): Promise<void> {
-    await this.repository.delete({
-      socketId: player.socketId,
-    });
+    await this.repository.createQueryBuilder()
+      .delete()
+      .from(Player)
+      .where("id = :id", {id: player.id})
+      .execute()
   }
 
   async create(playerDto: PlayerDto): Promise<Player> {

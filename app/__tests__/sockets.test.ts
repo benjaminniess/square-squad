@@ -203,7 +203,6 @@ describe('SOCKET - Start game', () => {
     await socketHelpers.joinRoom(socket2, {roomSlug: 'room-name'})
 
     const result: any = await socketHelpers.startGame(socket2, socketHelpers.validGameData,)
-    console.log(result)
     expect(result.success).toBe(false)
     expect(result.error).toBe('You are not admin of this room')
   })

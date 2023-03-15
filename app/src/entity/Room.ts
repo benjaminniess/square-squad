@@ -15,7 +15,7 @@ export class Room {
   slug: string;
 
   @OneToMany(() => Player, (player) => player.room, {eager: false})
-  players: Player[];
+  players: Promise<Player[]>;
 
   // @OneToOne(() => Player, (player) => player.adminOf, {eager: true})
   // leader: Player;
