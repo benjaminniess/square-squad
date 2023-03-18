@@ -16,7 +16,7 @@ export class Player {
   @Column()
   socketId: string;
 
-  @ManyToOne(() => Room, (room) => room.players)
+  @ManyToOne(() => Room, (room) => room.players, {onDelete: 'SET NULL'})
   room: Room;
 
   @OneToMany(() => Room, (room) => room.leader)

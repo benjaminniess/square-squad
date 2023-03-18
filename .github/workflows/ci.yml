@@ -1,18 +1,38 @@
-name: Cypress tests
+name: Tests
 on: [ push ]
 jobs:
+  tests:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Copy .env files
+        working-directory: app/src/
+        run: cp -r data-source-test.ts data-source.ts
+      - name: Install server dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm run test
   cypress-run:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Node -v
+        run: node -v
+      - name: Copy .env files
+        working-directory: app/src/
+        run: cp -r data-source-test.ts data-source.ts
       - name: Install server dependencies
         run: npm ci
       - name: Build server
         run: npm run build
       - name: Build vue
-        run: npm ci
+        run: >
+          npm ci
+          && npm run build
         working-directory: vueapp
       - name: Config cypress env file
         run: cp cypress.env.sample.json cypress.env.json

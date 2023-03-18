@@ -1,33 +1,28 @@
 import {Inject, Service} from "typedi";
 import {Socket} from "socket.io-client";
 import {PlayersRepository} from "../repositories/PlayersRepository";
-import {RoomsRepository} from "../repositories/RoomsRepository";
+import {SocketDatabaseSynchronizer} from "../services/SocketDatabaseSynchronizer";
 
 @Service()
 export class DisconnectingHandler {
   playersRepository: PlayersRepository
-  roomsRepository: RoomsRepository
+  socketDatabaseSynchronizer: SocketDatabaseSynchronizer
 
-  constructor(@Inject() roomsRepository: RoomsRepository, @Inject() playersRepository: PlayersRepository) {
+  constructor(
+    @Inject() socketDatabaseSynchronizer: SocketDatabaseSynchronizer,
+    @Inject() playersRepository: PlayersRepository
+  ) {
     this.playersRepository = playersRepository
-    this.roomsRepository = roomsRepository
+    this.socketDatabaseSynchronizer = socketDatabaseSynchronizer
   }
 
   public handle(socket: Socket | any): void {
     socket.rooms.forEach((roomSlug: string) => {
-      this.roomsRepository.findBySlug(roomSlug).then(room => {
-        if (room) {
-          if (room.leader.socketId === socket.id) {
-            this.roomsRepository.maybeResetLeader(room)
-          } else {
-            this.playersRepository.findOrFailBySocketID(socket.id).then(player => {
-              this.roomsRepository.removePlayerFromRoom(player, room)
-            }).catch(error => {
-              return
-            })
-          }
-        }
-      })
+      socket.leave(roomSlug)
+    })
+
+    this.socketDatabaseSynchronizer.deleteGhostPlayersFromDatabase().then(() => {
+      this.socketDatabaseSynchronizer.deleteGhostRoomsFromDatabase()
     })
   }
 }

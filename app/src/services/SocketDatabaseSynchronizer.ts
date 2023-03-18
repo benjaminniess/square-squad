@@ -39,26 +39,19 @@ export class SocketDatabaseSynchronizer {
   }
 
   async deleteGhostRoomsFromDatabase() {
-    const notEmptyRoomsSlugs = this.socketsRepository.findRoomsSlugs()
-    if (!notEmptyRoomsSlugs) {
-      return
-    }
-
-    const emptyRooms = await this.roomsRepository.findAllWhereSlugNotIn(notEmptyRoomsSlugs)
+    const socketRoomsSlugs = this.socketsRepository.findRoomsSlugs()
+    const emptyRooms = await this.roomsRepository.findAllWhereSlugNotIn(socketRoomsSlugs)
     if (!emptyRooms) {
       return
     }
 
     emptyRooms.map(async room => {
       const players = await room.players
-      if (!players) {
-        return
+      if (players.length > 0) {
+        players.map(async player => {
+          await this.playerRepository.deleteRoomAssociation(player)
+        })
       }
-
-      players.map(async player => {
-        await this.playerRepository.deleteRoomAssociation(player)
-      })
-
       await this.roomsRepository.delete(room)
     })
   }

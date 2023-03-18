@@ -53,7 +53,7 @@ export default {
   },
   data() {
     return {
-      players: [],
+      players: {},
       room: {},
       gameData: {
         timeLeft: null

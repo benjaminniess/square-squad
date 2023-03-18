@@ -35,6 +35,7 @@ import AdminForm from './games/panic-attack/AdminForm.vue'
 import {useSocketStore} from "../stores/SocketStore.js";
 import {useGameStore} from "../stores/GamesStore.js";
 
+
 export default {
   name: 'LobbySection',
   components: {
@@ -49,17 +50,25 @@ export default {
     }
   },
   props: {
-    players: Array,
+    players: Object,
     room: {}
+  },
+  mounted() {
+    const socketStore = useSocketStore()
+
+    socketStore.socket.on('leave-room-result', (result) => {
+      this.$router.push('/rooms')
+    })
   },
   computed: {
     isAdmin() {
       let isAdmin = false
-      this.players.map((player) => {
+
+      Object.keys(this.players).forEach(function (player) {
         if (player.id === this.currentPlayer && player.isAdmin) {
           isAdmin = true
         }
-      })
+      });
 
       return isAdmin
     },
@@ -71,7 +80,10 @@ export default {
   },
   methods: {
     back() {
-      this.$router.push('/rooms')
+      const socketStore = useSocketStore()
+      socketStore.socket.emit('leave-room', {
+        roomSlug: this.room.roomSlug,
+      })
     },
     startGame() {
       const socketStore = useSocketStore()

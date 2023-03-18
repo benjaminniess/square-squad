@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import {AppDataSourceTest} from "../src/data-source-test";
+import {AppDataSource} from "../src/data-source-test";
 import {Container} from "typedi";
 import {Player} from "../src/entity/Player";
 import {Room} from "../src/entity/Room";
@@ -9,10 +9,18 @@ import {PlayersRepository} from "../src/repositories/PlayersRepository";
 let repo: RoomsRepository
 let playerRepo: PlayersRepository
 beforeAll(async () => {
-  await AppDataSourceTest.initialize()
+  await AppDataSource.initialize()
 
-  Container.set('playersRepository', AppDataSourceTest.getRepository(Player))
-  Container.set('roomsRepository', AppDataSourceTest.getRepository(Room))
+  Container.set('playersRepository', AppDataSource.getRepository(Player))
+  Container.set('roomsRepository', AppDataSource.getRepository(Room))
+  Container.set('io', {
+    sockets: {
+      adapter: {
+        rooms: []
+      }
+
+    }
+  })
   repo = Container.get(RoomsRepository)
   playerRepo = Container.get(PlayersRepository)
 })
@@ -37,7 +45,7 @@ describe('Rooms repository', () => {
 
     expect(creationResult.name).toEqual('The Room Name')
     expect(creationResult.slug).toEqual('the-room-name')
-    expect(creationResult.leader).toBeUndefined()
+    expect(await creationResult.leader).toBeNull()
     expect(await repo.findAll()).toHaveLength(1)
   })
 
@@ -62,7 +70,7 @@ describe('Rooms repository', () => {
     expect((await repo.findAll())[0].slug).toEqual('another-room')
     expect((await repo.findAll())[1].slug).toEqual('the-room-name')
     expect((await repo.findAll())[1].name).toEqual('The Room Name')
-    expect((await repo.findAll())[1].leader).toBeUndefined()
+    expect(await (await repo.findAll())[1].leader).toBeNull()
   })
 
   it('returns a single room object', async () => {
@@ -82,8 +90,10 @@ describe('Rooms repository', () => {
 
   it('adds player to the room', async () => {
     const room = await repo.create('The Room Name')
-    expect(room.players).toBeUndefined()
-    expect(room.leader).toBeUndefined()
+    let players = await room.players
+
+    expect(players).toHaveLength(0)
+    expect(await room.leader).toBeNull()
 
     const player = await playerRepo.create({
       socketID: 'abc123456',
@@ -98,23 +108,26 @@ describe('Rooms repository', () => {
     })
 
     await repo.addPlayerToRoom(player, room)
+    await repo.resetLeader(room)
 
     let refreshedRoom = await repo.findBySlug(room.slug)
-    expect(refreshedRoom.players).toHaveLength(1)
-    expect(refreshedRoom.players[0].nickName).toBe('Player 1')
+    players = await room.players
+    expect(players).toHaveLength(1)
+    expect(players[0].nickName).toBe('Player 1')
     expect((await refreshedRoom.leader)).toStrictEqual(player)
 
     await repo.addPlayerToRoom(player2, room)
 
     refreshedRoom = await repo.findBySlug(room.slug)
-    expect(refreshedRoom.players).toHaveLength(2)
-    expect(refreshedRoom.players[0].nickName).toBe('Player 1')
-    expect(refreshedRoom.players[1].nickName).toBe('A Player 2')
+    players = await refreshedRoom.players
+    expect(players).toHaveLength(2)
+    expect(players[0].nickName).toBe('Player 1')
+    expect(players[1].nickName).toBe('A Player 2')
     expect((await refreshedRoom.leader)).toStrictEqual(player)
   })
 
   it('removes player from the room', async () => {
-    const room = await repo.create('The Room Name')
+    let room = await repo.create('The Room Name')
 
     const player = await playerRepo.create({
       socketID: 'abc123456',
@@ -131,11 +144,13 @@ describe('Rooms repository', () => {
     await repo.addPlayerToRoom(player, room)
     await repo.addPlayerToRoom(player2, room)
 
-    expect((await repo.findBySlug(room.slug)).players).toHaveLength(2)
+    room = await repo.findBySlug(room.slug)
+    expect(await room.players).toHaveLength(2)
 
     await repo.removePlayerFromRoom(player, room)
-    expect((await repo.findBySlug(room.slug)).players).toHaveLength(1)
-    expect((await repo.findBySlug(room.slug)).players[0].nickName).toBe('A Player 2')
+    room = await repo.findBySlug(room.slug)
+    expect(await room.players).toHaveLength(1)
+    expect((await room.players)[0].nickName).toBe('A Player 2')
   })
 })
 

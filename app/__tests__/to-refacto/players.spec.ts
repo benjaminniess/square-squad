@@ -1,5 +1,5 @@
 import {Container} from "typedi";
-import {PlayersRepository} from "../src/repositories/PlayersRepository";
+import {PlayersRepository} from "../../src/repositories/PlayersRepository";
 
 
 describe('Players management', () => {

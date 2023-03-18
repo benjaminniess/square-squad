@@ -1,5 +1,5 @@
 import {Container} from "typedi";
-import {Player} from './player'
+import {Player} from './Player'
 import {MasterGame} from '../games/master-game'
 import {PlayersRepository} from "../repositories/PlayersRepository";
 import {Server} from "socket.io";

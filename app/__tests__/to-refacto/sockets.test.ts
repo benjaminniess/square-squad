@@ -1,11 +1,11 @@
-import {SocketHelpers} from "./helpers/socketHelpers";
+import {SocketHelpers} from "../helpers/socketHelpers";
 import {Socket} from "socket.io-client";
-import {AppDataSourceTest} from "../src/data-source-test";
+import {AppDataSource} from "../../src/data-source-test";
 import {Container} from "typedi";
-import {Player} from "../src/entity/Player";
-import {Room} from "../src/entity/Room";
-import {RoomsRepository} from "../src/repositories/RoomsRepository";
-import {PlayersRepository} from "../src/repositories/PlayersRepository";
+import {Player} from "../../src/entity/Player";
+import {Room} from "../../src/entity/Room";
+import {RoomsRepository} from "../../src/repositories/RoomsRepository";
+import {PlayersRepository} from "../../src/repositories/PlayersRepository";
 
 /**
  * Those tests are checking the socket.io client => server communication from user creation/update to game start
@@ -21,10 +21,10 @@ let repo: RoomsRepository
 let playerRepo: PlayersRepository
 
 beforeAll(async () => {
-  await AppDataSourceTest.initialize()
+  await AppDataSource.initialize()
 
-  Container.set('playersRepository', AppDataSourceTest.getRepository(Player))
-  Container.set('roomsRepository', AppDataSourceTest.getRepository(Room))
+  Container.set('playersRepository', AppDataSource.getRepository(Player))
+  Container.set('roomsRepository', AppDataSource.getRepository(Room))
   repo = Container.get(RoomsRepository)
   playerRepo = Container.get(PlayersRepository)
 })

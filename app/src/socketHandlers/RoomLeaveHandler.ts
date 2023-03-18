@@ -17,27 +17,20 @@ export class RoomLeaveHandler {
   }
 
   public handle(socket: Socket | any): void {
-    socket.rooms.forEach((roomSlug: string) => {
-      if (socket.id !== roomSlug) {
-        socket.leave(roomSlug)
+    this.playersRepository.findOrFailBySocketID(socket.id).then(currentPlayer => {
+      socket.rooms.forEach((roomSlug: string) => {
+        if (socket.id !== roomSlug) {
+          socket.leave(roomSlug)
 
-        try {
-          this.roomsRepository.findOrFailBySlug(roomSlug).then(room => {
-            if (room.leader.socketId === socket.id) {
-              this.roomsRepository.maybeResetLeader(room)
-            } else {
-              this.playersRepository.findOrFailBySocketID(socket.id).then(player => {
-                this.roomsRepository.removePlayerFromRoom(player, room)
-              }).catch(error => {
-                return
+          this.roomsRepository.findBySlug(roomSlug).then(room => {
+            this.roomsRepository.removePlayerFromRoom(currentPlayer, room).then(() => {
+              this.io.to(socket.id).emit('leave-room-result', {
+                success: true,
               })
-
-            }
+            })
           })
-        } catch (exception: any) {
-          return
         }
-      }
+      })
     })
   }
 }

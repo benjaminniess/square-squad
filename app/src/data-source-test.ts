@@ -4,7 +4,7 @@ import {GameInstance} from "./entity/GameInstance";
 import {Player} from "./entity/Player";
 import {Room} from "./entity/Room";
 
-export const AppDataSourceTest = new DataSource({
+export const AppDataSource = new DataSource({
   type: "better-sqlite3",
   database: "test.sqlite",
   synchronize: true,

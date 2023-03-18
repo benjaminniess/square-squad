@@ -20,9 +20,9 @@ export class Room {
   // @OneToOne(() => Player, (player) => player.adminOf, {eager: true})
   // leader: Player;
 
-  @ManyToOne(() => Player, (player) => player.adminOf, {eager: false})
-  leader: Player;
+  @ManyToOne(() => Player, (player) => player.adminOf, {eager: false, onDelete: 'SET NULL'})
+  leader: Promise<Player>;
 
-  @OneToOne(() => GameInstance, (game) => game.room, {eager: true})
+  @OneToOne(() => GameInstance, (game) => game.room, {eager: true, nullable: true})
   game: GameInstance;
 }
