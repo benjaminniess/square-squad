@@ -70,11 +70,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.static(path.join(__dirname, '/../vueapp/dist')))
 app.use(express.static(path.join(__dirname, '/../vueapp/static')))
 
-// Enable server listen only if not in a test env
-if (!process.env.NODE_ENV || process.env.NODE_ENV != 'test') {
-  const PORT = process.env.PORT || 8080
-  server.listen(PORT)
-}
+const PORT = process.env.PORT || 8080
+server.listen(PORT)
 
 AppDataSource.initialize().then(async () => {
   Container.set('playersRepository', AppDataSource.getRepository(Player))

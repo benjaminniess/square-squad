@@ -1,10 +1,10 @@
 import "reflect-metadata";
-import {AppDataSource} from "../src/data-source-test";
+import {AppDataSource} from "../../src/data-source-test";
 import {Container} from "typedi";
-import {Player} from "../src/entity/Player";
-import {Room} from "../src/entity/Room";
-import {RoomsRepository} from "../src/repositories/RoomsRepository";
-import {PlayersRepository} from "../src/repositories/PlayersRepository";
+import {Player} from "../../src/entity/Player";
+import {Room} from "../../src/entity/Room";
+import {RoomsRepository} from "../../src/repositories/RoomsRepository";
+import {PlayersRepository} from "../../src/repositories/PlayersRepository";
 
 let repo: RoomsRepository
 let playerRepo: PlayersRepository

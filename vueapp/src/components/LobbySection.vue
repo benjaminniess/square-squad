@@ -65,9 +65,9 @@ export default {
       let isAdmin = false
 
       Object.keys(this.players).forEach(function (player) {
-        if (player.id === this.currentPlayer && player.isAdmin) {
+        /*if (this.currentPlayer && player.id === this.currentPlayer && player.isAdmin) {
           isAdmin = true
-        }
+        }*/
       });
 
       return isAdmin

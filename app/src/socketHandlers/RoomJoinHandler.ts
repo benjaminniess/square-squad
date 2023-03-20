@@ -53,7 +53,9 @@ export class RoomJoinHandler {
           }
         })
 
-        this.io.in(data.roomSlug).emit('refresh-players', room.players)
+        room.players.then(players => {
+          this.io.in(data.roomSlug).emit('refresh-players', players)
+        })
 
         if (room.game?.status === 'playing') {
           this.io.to(socket.id).emit('countdown-update', {

@@ -11,6 +11,7 @@ import {DisconnectingHandler} from "../socketHandlers/DisconnectingHandler";
 import {StartGameHandler} from "../socketHandlers/StartGameHandler";
 import {KeyPressedHandler} from "../socketHandlers/KeyPressedHandler";
 import {KeyUpHandler} from "../socketHandlers/KeyUpHandler";
+import {EmptyDatabaseHandler} from "../socketHandlers/EmptyDatabaseHandler";
 
 @Service()
 export class SocketController {
@@ -26,6 +27,7 @@ export class SocketController {
     @Inject() startGameHandler: StartGameHandler,
     @Inject() keyPressedHandler: KeyPressedHandler,
     @Inject() keyUpHandler: KeyUpHandler,
+    @Inject() emptyDatabaseHandler: EmptyDatabaseHandler,
   ) {
     const io: Server = Container.get('io')
 
@@ -39,6 +41,7 @@ export class SocketController {
       socket.on('start-game', (data: any) => startGameHandler.handle(socket, data))
       socket.on('key-pressed', (socketData: any) => keyPressedHandler.handle(socket, socketData))
       socket.on('key-up', (socketData: any) => keyUpHandler.handle(socket, socketData))
+      socket.on('empty-database', (socketData: any) => emptyDatabaseHandler.handle(socket, socketData))
     })
   }
 }

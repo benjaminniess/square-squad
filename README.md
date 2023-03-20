@@ -36,11 +36,9 @@ To test the front-end
 
 `cd vueapp && npm test`
 
-## Cypress tests
+## Playwright tests
 
-`cp cypress.env.sample.json cypress.env.json`
-
-`cypress open`
+`npx playwright test`
 
 ## :gear: .env file
 

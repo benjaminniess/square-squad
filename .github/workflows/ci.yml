@@ -1,12 +1,12 @@
 name: Tests
 on: [ push ]
 jobs:
-  tests:
+  integration-test:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Copy .env files
         working-directory: app/src/
         run: cp -r data-source-test.ts data-source.ts
@@ -14,17 +14,19 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test
-  cypress-run:
-    runs-on: ubuntu-20.04
+  e2e-tests:
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Node -v
-        run: node -v
-      - name: Copy .env files
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Copy app .env file
         working-directory: app/src/
         run: cp -r data-source-test.ts data-source.ts
+      - name: Copy root .env file
+        run: cp -r .env.test .env
       - name: Install server dependencies
         run: npm ci
       - name: Build server
@@ -34,12 +36,17 @@ jobs:
           npm ci
           && npm run build
         working-directory: vueapp
-      - name: Config cypress env file
-        run: cp cypress.env.sample.json cypress.env.json
-      - name: Cypress run
-        uses: cypress-io/github-action@v4
+      - name: Run node
+        run: npm start &
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
         with:
-          install: true
-          start: |
-            npm start
-          wait-on: http://localhost:8080/#/
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+      - name: Run tests
+        run: npm run test:e2e

@@ -105,4 +105,15 @@ export class SocketHelpers {
       })
     })
   }
+
+  public emptyDatabase = async (socket: Socket) => {
+    return new Promise((resolve, reject) => {
+      socket.emit('empty-database')
+
+      resolve('resolve')
+      socket.on('empty-database-result', (result: any) => {
+        resolve(result)
+      })
+    })
+  }
 }
