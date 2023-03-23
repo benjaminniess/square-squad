@@ -17,7 +17,7 @@ export class Player {
   socketId: string;
 
   @ManyToOne(() => Room, (room) => room.players, {onDelete: 'SET NULL'})
-  room: Room;
+  room: Promise<Room>;
 
   @OneToMany(() => Room, (room) => room.leader)
   adminOf: Room[];

@@ -11,8 +11,8 @@
           :style="{ color: player.color }"
         >
           {{ player.nickName }}
-          <span v-if="player.isAdmin">[Admin]</span>
-          <span v-if="player.id == currentPlayer">[You]</span>
+          <span v-if="player.socketId == admin">[Admin]</span>
+          <span v-if="player.socketId == currentPlayer">[You]</span>
         </li>
       </ul>
 
@@ -22,9 +22,9 @@
         style="visibility: visible;"
       >
         <AdminForm/>
-        <a class="btn" @click="startGame">play</a>
+        <a id="play-btn" class="btn" @click="startGame">play</a>
       </div>
-      <a class="btn" @click="back">back</a>
+      <a id="back-btn" class="btn" @click="back">back</a>
     </div>
   </section>
 </template>
@@ -51,6 +51,7 @@ export default {
   },
   props: {
     players: Object,
+    admin: String,
     room: {}
   },
   mounted() {
@@ -62,15 +63,7 @@ export default {
   },
   computed: {
     isAdmin() {
-      let isAdmin = false
-
-      Object.keys(this.players).forEach(function (player) {
-        /*if (this.currentPlayer && player.id === this.currentPlayer && player.isAdmin) {
-          isAdmin = true
-        }*/
-      });
-
-      return isAdmin
+      return this.currentPlayer === this.admin
     },
     currentPlayer() {
       const socketStore = useSocketStore()

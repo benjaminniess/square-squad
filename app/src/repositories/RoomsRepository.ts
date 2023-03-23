@@ -107,6 +107,10 @@ class RoomsRepository {
   }
 
   async addPlayerToRoom(player: Player, room: Room): Promise<void> {
+    if (await this.isPlayerInARoom(player, room)) {
+      return
+    }
+
     const players = await room.players
     players.push(player)
 
@@ -116,9 +120,9 @@ class RoomsRepository {
     await this.maybeResetLeader(room)
   }
 
-  async isPlayerInARoom(playerId: number): Promise<boolean> {
-    const room = await this.playerRepository.findPlayerRoom(playerId);
-    if (!room) {
+  async isPlayerInARoom(player: Player, room: Room): Promise<boolean> {
+    const playerRoom = await player.room;
+    if (!playerRoom) {
       return false;
     }
 
@@ -126,10 +130,8 @@ class RoomsRepository {
   }
 
   async setLeader(room: Room, player: Player | null): Promise<void> {
-    await this.repository.createQueryBuilder()
-      .relation(Room, "leader")
-      .of(room)
-      .set(player)
+    room.leader = Promise.resolve(player)
+    await this.repository.save(room)
   }
 
   async maybeResetLeader(room: Room): Promise<void> {
@@ -140,10 +142,12 @@ class RoomsRepository {
     await this.resetLeader(room)
   }
 
-  async resetLeader(room: Room): Promise<void> {
+  async resetLeader(room: Room): Promise<Player> {
     const players = await room.players
     const firstPlayer = players[0] ? players[0] : null
     await this.setLeader(room, firstPlayer)
+
+    return firstPlayer
   }
 
   async removePlayerFromRoom(playerToRemove: Player, room: Room): Promise<void> {

@@ -23,6 +23,14 @@ export class FieldsHelpers {
     return this.page.locator('a#playerNameLabel')
   }
 
+  getRefreshRoomsLink(): Locator {
+    return this.page.locator('#refresh-rooms')
+  }
+
+  getRoomsListHolder(): Locator {
+    return this.page.locator('#rooms-holder ul li')
+  }
+
   getRoomsHolder(): Locator {
     return this.page.locator('#rooms-holder')
   }

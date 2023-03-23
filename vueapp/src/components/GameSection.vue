@@ -198,7 +198,7 @@ export default {
       }
     })
   },
-  destroyed() {
+  unmounted() {
     const socketStore = useSocketStore()
 
     // Not to have double listener next time the component is mounted

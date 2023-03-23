@@ -116,6 +116,7 @@ export default {
     socketStore.socket.on('create-room-result', (result) => {
       if (!result.success) {
         this.$router.push('/404?code=' + result.error)
+        return
       }
 
       if (this.$gtag) {
@@ -129,7 +130,7 @@ export default {
     // First refresh everytime the rooms view is mounted
     this.refreshRooms()
   },
-  destroyed() {
+  unmounted() {
     const socketStore = useSocketStore();
 
     socketStore.socket.off('refresh-rooms-result')

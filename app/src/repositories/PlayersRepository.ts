@@ -1,6 +1,5 @@
 import {Container, Service} from "typedi";
 import {Repository} from "typeorm";
-import {Room} from "../entity/Room";
 import {Player} from "../entity/Player";
 
 const _ = require('lodash')
@@ -16,7 +15,7 @@ class PlayersRepository {
   }
 
   async findAll(): Promise<Player[]> {
-    return await this.repository.find();
+    return await this.repository.find()
 
   }
 
@@ -24,7 +23,7 @@ class PlayersRepository {
     return await this.findOne({
       where: {socketId: socketId},
       relations: ['room'],
-    });
+    })
   }
 
   async findOrFailBySocketID(socketID: string): Promise<Player> {
@@ -49,34 +48,25 @@ class PlayersRepository {
     return await this.repository
       .createQueryBuilder()
       .where("player.socketId NOT IN ('" + socketIds.join("', '") + "')")
-      .getMany();
+      .getMany()
   }
 
   async findById(id: number): Promise<Player> {
     return await this.findOne({
       where: {id: id},
-    });
-  }
-
-  async findPlayerRoom(id: number): Promise<Room> {
-    const player = await this.findOne({
-      where: {id: id},
-      relations: ['room'],
-    });
-
-    return player.room;
+    })
   }
 
   async update(player: Player, playerDto: PlayerRequiredInfosDto) {
     player.nickName = playerDto.nickName;
     player.color = playerDto.color;
-    await this.repository.save(player);
+    await this.repository.save(player)
   }
 
   async deleteRoomAssociation(player: Player) {
     player.room = null
 
-    await this.repository.save(player);
+    await this.repository.save(player)
   }
 
   async delete(player: Player): Promise<void> {
@@ -88,16 +78,16 @@ class PlayersRepository {
   }
 
   async create(playerDto: PlayerDto): Promise<Player> {
-    const player = new Player();
+    const player = new Player()
     player.color = playerDto.color;
     player.nickName = playerDto.nickName;
     player.socketId = playerDto.socketID;
 
     try {
-      await this.repository.save(player);
+      await this.repository.save(player)
     } catch (error) {
       if (error.code === 'SQLITE_CONSTRAINT') {
-        throw new Error('player-already-exists');
+        throw new Error('player-already-exists')
       }
 
       throw error;
@@ -118,7 +108,7 @@ class PlayersRepository {
   async clear() {
     await this.repository.query(
       `PRAGMA foreign_keys=off`,
-    );
+    )
     await this.repository.query("DELETE FROM player")
     await this.repository.clear();
   }

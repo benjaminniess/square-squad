@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node build/index.js",
-    "dev": "nodemon build/index.js",
+    "start": "node build/app/index.js",
+    "dev": "nodemon build/app/index.js",
     "build": "tsc",
     "inspect": "nodemon build/index.js --inspect",
     "test-watch": "jest --watch --NODE_ENV=test",
     "test": "jest --runInBand --detectOpenHandles --forceExit app/__tests__/integration --NODE_ENV=test",
-    "test:e2e": "jest --runInBand --detectOpenHandles --forceExit app/__tests__/e2e --NODE_ENV=test",
+    "test:e2e": "jest --runInBand --detectOpenHandles --forceExit app/__tests__/e2e --NODE_ENV=test --forceExit",
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "engines": {

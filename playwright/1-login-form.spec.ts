@@ -1,5 +1,6 @@
 import {expect, test} from '@playwright/test';
 import {FieldsHelpers} from "./helpers/FieldsHelpers";
+import {MultiPlayersHelpers} from "./helpers/MultiPlayersHelpers";
 
 const playerName = 'Player 1'
 const playerColor = '#4137c8'
@@ -7,25 +8,27 @@ let fieldHelpers: FieldsHelpers
 
 test.beforeEach(async ({page}, testInfo) => {
   fieldHelpers = new FieldsHelpers(page)
-  await page.goto('/#/');
-});
+  await page.goto('/#/')
+})
+
+test.afterEach(async ({page}, testInfo) => {
+  await page.close()
+})
 
 test('It displays homepage form and redirect to rooms when for is completed', async ({page}) => {
-  await expect(page).toHaveTitle(/Square Squad/);
+  await expect(page).toHaveTitle(/Square Squad/)
 
-  const playerNameInput = fieldHelpers.getPlayerNameField()
-  const playerColorInput = fieldHelpers.getPlayerColorField()
-  const submitButton = fieldHelpers.getHomeLetsPlayButton()
+  await expect(fieldHelpers.getPlayerNameField()).toHaveCount(1)
+  await expect(fieldHelpers.getPlayerNameField()).toHaveValue('')
+  await expect(fieldHelpers.getPlayerColorField()).toHaveCount(1)
 
-  await expect(playerNameInput).toHaveCount(1)
-  await expect(playerNameInput).toHaveValue('')
-  await expect(playerColorInput).toHaveCount(1)
+  await fieldHelpers.getPlayerNameField().click()
+  await fieldHelpers.getPlayerNameField().fill(playerName)
 
-  await playerNameInput.click();
-  await playerNameInput.fill(playerName);
-  await playerColorInput.click();
-  await playerColorInput.fill(playerColor);
-  await submitButton.click();
+  await fieldHelpers.getPlayerColorField().click()
+  await fieldHelpers.getPlayerColorField().fill(playerColor)
+
+  await fieldHelpers.getHomeLetsPlayButton().click()
 
   await expect(page).toHaveURL('/#/rooms')
 })
@@ -37,23 +40,15 @@ test('It triggers an error if player name is empty', async ({page}) => {
   await expect(page).toHaveURL('/#/')
 })
 
-test('remembers player name and color when visiting the home again', async ({page}) => {
-  const playerNameInput = fieldHelpers.getPlayerNameField()
-  const playerColorInput = fieldHelpers.getPlayerColorField()
-  const submitButton = fieldHelpers.getHomeLetsPlayButton()
+test('remembers player name and color when visiting the home again', async ({page, browser}) => {
+  await expect(fieldHelpers.getPlayerNameField()).toHaveValue('')
 
-  await expect(playerNameInput).toHaveValue('')
-
-  await playerNameInput.click();
-  await playerNameInput.fill(playerName);
-  await playerColorInput.click();
-  await playerColorInput.fill(playerColor);
-  await submitButton.click();
+  await MultiPlayersHelpers.generatesALoggedPlayerFromPage(page, playerName, playerColor)
 
   await expect(page).toHaveURL('/#/rooms')
-  await page.getByRole('link', {name: playerName}).click();
+  await page.getByRole('link', {name: playerName}).click()
 
   await expect(page).toHaveURL('/#/')
-  await expect(page.locator('input#playerName')).toHaveValue(playerName)
-  await expect(page.locator('input#playerColor')).toHaveValue(playerColor)
-});
+  await expect(fieldHelpers.getPlayerNameField()).toHaveValue(playerName)
+  await expect(fieldHelpers.getPlayerColorField()).toHaveValue(playerColor)
+})

@@ -27,10 +27,18 @@ export class RoomLeaveHandler {
               this.io.to(socket.id).emit('leave-room-result', {
                 success: true,
               })
+
+              room.players.then(players => {
+                this.roomsRepository.resetLeader(room).then((leader) => {
+                  this.io.in(room.slug).emit('refresh-players', {admin: leader?.socketId, players: players})
+                })
+              })
+
             })
           })
         }
       })
+    }).catch(error => {
     })
   }
 }

@@ -67,8 +67,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next()
 })
 
-app.use(express.static(path.join(__dirname, '/../vueapp/dist')))
-app.use(express.static(path.join(__dirname, '/../vueapp/static')))
+app.use(express.static(path.join(__dirname, '/../../vueapp/dist')))
+app.use(express.static(path.join(__dirname, '/../../vueapp/static')))
 
 const PORT = process.env.PORT || 8080
 server.listen(PORT)

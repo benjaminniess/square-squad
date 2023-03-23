@@ -18,13 +18,13 @@ beforeEach(async () => {
 })
 
 afterEach(() => {
+  socket1.disconnect()
+  socket2.disconnect()
 
 })
 
 describe('SOCKET - Player Data', () => {
   it('emits a update-player-data-result socket with a success set to false when missing name', async () => {
-
-    return
     const result: any = await socketHelpers.updatePlayer(socket1, {name: '', color: '#FF0000'})
     expect(result.success).toBe(false)
   })
@@ -89,6 +89,7 @@ describe('SOCKET - Rooms', () => {
     expect(result.success).toBeTruthy()
     expect(result.data).toStrictEqual({roomSlug: 'room-name'})
 
+    await socketHelpers.joinRoom(socket1, {roomSlug: 'room-name'})
     expect((await socketHelpers.refreshRooms(socket1)).data).toHaveLength(1)
 
   })
@@ -118,7 +119,7 @@ describe('SOCKET - Rooms', () => {
       roomSlug: 'room-name'
     })
 
-    expect(result['refresh-players']).toHaveLength(2)
+    expect(result['refresh-players'].players).toHaveLength(2)
   })
 })
 
@@ -172,7 +173,7 @@ describe('SOCKET - Player 2 is joining', () => {
       roomName: 'Room name',
       roomSlug: 'room-name'
     })
-    expect(result['refresh-players']).toHaveLength(2)
+    expect(result['refresh-players'].players).toHaveLength(2)
   })
 })
 

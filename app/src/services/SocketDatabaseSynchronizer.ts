@@ -30,12 +30,12 @@ export class SocketDatabaseSynchronizer {
       return
     }
 
-    inactivePlayers.map(async player => {
-      (await this.roomsRepository.findAllByLeader(player)).map(async room => {
+    await Promise.all(inactivePlayers.map(async player => {
+      await Promise.all((await this.roomsRepository.findAllByLeader(player)).map(async room => {
         await this.roomsRepository.resetLeader(room)
-      })
+      }))
       await this.playerRepository.delete(player)
-    })
+    }))
   }
 
   async deleteGhostRoomsFromDatabase() {
@@ -45,14 +45,14 @@ export class SocketDatabaseSynchronizer {
       return
     }
 
-    emptyRooms.map(async room => {
+    await Promise.all(emptyRooms.map(async room => {
       const players = await room.players
       if (players.length > 0) {
-        players.map(async player => {
+        await Promise.all(players.map(async player => {
           await this.playerRepository.deleteRoomAssociation(player)
-        })
+        }))
       }
       await this.roomsRepository.delete(room)
-    })
+    }))
   }
 }

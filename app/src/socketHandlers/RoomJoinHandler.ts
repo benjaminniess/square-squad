@@ -26,7 +26,6 @@ export class RoomJoinHandler {
     }
 
     this.roomsRepository.findOrFailBySlug(data.roomSlug).then(room => {
-
       this.playersRepository.findOrFailBySocketID(socket.id).then(currentPlayer => {
         socket.join(room.slug)
 
@@ -37,34 +36,38 @@ export class RoomJoinHandler {
           //playersRepository.unsetSpectatorMode(currentPlayer.getSocketID())
         }
 
-        this.roomsRepository.addPlayerToRoom(currentPlayer, room)
-
-        if (!room.leader) {
-          this.roomsRepository.setLeader(room, currentPlayer)
-        }
-
-        this.io.to(socket.id).emit('join-room-result', {
-          success: true,
-          data: {
-            roomSlug: room.slug,
-            roomName: room.name,
-            //gameStatus: room.game?.status
-            gameStatus: 'waiting'
-          }
-        })
-
-        room.players.then(players => {
-          this.io.in(data.roomSlug).emit('refresh-players', players)
-        })
-
-        if (room.game?.status === 'playing') {
-          this.io.to(socket.id).emit('countdown-update', {
-            timeleft: 0,
-            gameData: {
-              squareSize: 30 // TODO
+        this.roomsRepository.addPlayerToRoom(currentPlayer, room).then(() => {
+          room.leader.then(async leader => {
+            if (!leader) {
+              await this.roomsRepository.setLeader(room, currentPlayer)
             }
           })
-        }
+
+          this.io.to(socket.id).emit('join-room-result', {
+            success: true,
+            data: {
+              roomSlug: room.slug,
+              roomName: room.name,
+              //gameStatus: room.game?.status
+              gameStatus: 'waiting'
+            }
+          })
+
+          room.players.then(players => {
+            room.leader.then(leader => {
+              this.io.in(data.roomSlug).emit('refresh-players', {admin: leader.socketId, players: players})
+            })
+          })
+
+          if (room.game?.status === 'playing') {
+            this.io.to(socket.id).emit('countdown-update', {
+              timeleft: 0,
+              gameData: {
+                squareSize: 30 // TODO
+              }
+            })
+          }
+        })
       }).catch(error => {
         this.io.to(socket.id).emit('join-room-result', {
           success: false,

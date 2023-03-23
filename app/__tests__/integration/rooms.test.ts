@@ -114,7 +114,7 @@ describe('Rooms repository', () => {
     players = await room.players
     expect(players).toHaveLength(1)
     expect(players[0].nickName).toBe('Player 1')
-    expect((await refreshedRoom.leader)).toStrictEqual(player)
+    expect((await refreshedRoom.leader).id).toStrictEqual(player.id)
 
     await repo.addPlayerToRoom(player2, room)
 
@@ -123,7 +123,7 @@ describe('Rooms repository', () => {
     expect(players).toHaveLength(2)
     expect(players[0].nickName).toBe('Player 1')
     expect(players[1].nickName).toBe('A Player 2')
-    expect((await refreshedRoom.leader)).toStrictEqual(player)
+    expect((await refreshedRoom.leader).id).toStrictEqual(player.id)
   })
 
   it('removes player from the room', async () => {

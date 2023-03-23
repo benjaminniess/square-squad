@@ -8,7 +8,7 @@
         | <button @click="goToAbout">About us</button>
       </span>
       <a href="https://discord.gg/zGZ2TVw6e4" target="_blank">
-        <img :src="'/static/assets/images/discord.png'" width="32px"/>
+        <img :src="'/assets/images/discord.png'" width="32px"/>
       </a>
     </p>
   </footer>

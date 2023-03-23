@@ -10,6 +10,7 @@
     </div>
     <LobbySection
       v-show="status == 'waiting'"
+      v-bind:admin="admin"
       v-bind:isAdmin="isAdmin"
       v-bind:players="players"
       v-bind:room="room"
@@ -54,6 +55,7 @@ export default {
   data() {
     return {
       players: {},
+      admin: '',
       room: {},
       gameData: {
         timeLeft: null
@@ -114,7 +116,8 @@ export default {
     })
 
     socketStore.socket.on('refresh-players', (data) => {
-      this.players = data
+      this.players = data.players
+      this.admin = data.admin
     })
 
     socketStore.socket.on('start-game-result', (result) => {
@@ -162,7 +165,7 @@ export default {
       }
     })
   },
-  destroyed() {
+  unmounted() {
     const socketStore = useSocketStore();
 
     // Not to have double listener next time the component is mounted
