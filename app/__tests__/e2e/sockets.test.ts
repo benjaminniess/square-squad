@@ -162,8 +162,6 @@ describe('SOCKET - Player 2 is joining', () => {
 
   it('joins a room with the second socket and returns a success state and an array of 2 players', async () => {
     await socketHelpers.updatePlayer(socket1)
-    await socketHelpers.createRoom(socket1)
-
     await socketHelpers.updatePlayer(socket2)
     const result: any = await socketHelpers.joinRoom(socket2, {roomSlug: 'room-name'})
 
@@ -177,43 +175,72 @@ describe('SOCKET - Player 2 is joining', () => {
   })
 })
 
-/*
+
 describe('SOCKET - Start game', () => {
-  it('Fails to create a game if not admin', async () => {
+  it('Fails to start a game if not in the room', async () => {
     await socketHelpers.updatePlayer(socket1)
     await socketHelpers.createRoom(socket1)
+
+    const result: any = await socketHelpers.startGame(socket1, socketHelpers.validGameData)
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('action-is-forbidden')
+  })
+
+  it('Fails to start a game if not admin', async () => {
+    await socketHelpers.updatePlayer(socket1)
+    await socketHelpers.createRoom(socket1)
+    await socketHelpers.joinRoom(socket1)
 
     await socketHelpers.updatePlayer(socket2)
     await socketHelpers.joinRoom(socket2, {roomSlug: 'room-name'})
 
-    const result: any = await socketHelpers.startGame(socket2, socketHelpers.validGameData,)
+    const result: any = await socketHelpers.startGame(socket2, socketHelpers.validGameData)
     expect(result.success).toBe(false)
-    expect(result.error).toBe('You are not admin of this room')
+    expect(result.error).toBe('action-is-forbidden')
   })
 
   it('Fails to create a game if missing data', async () => {
-    const result: any = await socketHelpers.startGame(socket2, {},)
+    await socketHelpers.updatePlayer(socket1)
+    await socketHelpers.createRoom(socket1)
+    await socketHelpers.joinRoom(socket1)
+
+    const result: any = await socketHelpers.startGame(socket1, {},)
     expect(result.success).toBe(false)
-    expect(result.error).toBe('room-does-not-exist')
+    expect(result.error).toBe('action-is-forbidden')
   })
 
   it('Creates a game', async () => {
-    const result: any = await socketHelpers.startGame(socket1)
-    expect(result.success).toBeTruthy()
-    expect(result.data.currentRound).toBe(1)
-    expect(result.data.totalRounds).toBe(4)
-  })
+    await socketHelpers.updatePlayer(socket1)
+    await socketHelpers.createRoom(socket1)
+    await socketHelpers.joinRoom(socket1)
 
-  for (let i = 3; i >= 0; i--) {
-    it('Wait for the game to start in ' + i, () => {
-      return new Promise((resolve, reject) => {
-        socket1.on('countdown-update', (data: any) => {
-          resolve(data)
-        })
-      }).then((result: any) => {
-        expect(result.timeleft).toBe(i)
-      })
-    })
-  }
+    expect(await socketHelpers.startGame(
+      socket1,
+      {
+        roomSlug: 'room-name',
+        gameType: 'panic-attack',
+        parameters: {
+          roundsNumber: 4,
+          obstaclesSpeed: 19,
+          bonusFrequency: 2
+        }
+      }
+    )).toBeTruthy()
+
+    const roomMessage: any = await socketHelpers.waitForGameStartRoomMessage(socket1)
+    expect(roomMessage.success).toBeTruthy()
+  })
+//
+//   for (let i = 3; i >= 0; i--) {
+//     it('Wait for the game to start in ' + i, () => {
+//       return new Promise((resolve, reject) => {
+//         socket1.on('countdown-update', (data: any) => {
+//           resolve(data)
+//         })
+//       }).then((result: any) => {
+//         expect(result.timeleft).toBe(i)
+//       })
+//     })
+//   }
 })
-*/
+

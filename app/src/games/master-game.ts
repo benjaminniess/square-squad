@@ -1,10 +1,12 @@
-export { MasterGame }
-const { squareSize } = require('../config/main')
+import {Room} from "../entity/Room";
+
+export {MasterGame}
+const {squareSize} = require('../config/main')
 const BonusManager = require('../managers/bonus-manager')
 const ObstaclesManager = require('../managers/obstacles-manager')
 const PlayersManager = require('../managers/players-manager')
 const Matter = require('matter-js')
-const { EventEmitter } = require('events')
+const {EventEmitter} = require('events')
 const _ = require('lodash')
 
 const Engine = Matter.Engine
@@ -35,7 +37,7 @@ class MasterGame {
   private playersManager: any
   private roundNumber: number = 3
 
-  constructor(room: any) {
+  constructor(room: Room) {
     if (!room) {
       throw new Error('Missing room')
     }
@@ -91,7 +93,7 @@ class MasterGame {
       let worldBodies = Matter.Composite.allBodies(this.engine.world)
       _.forEach(worldBodies, (wb: any) => {
         _.forEach(wb.vertices, (vertice: any) => {
-          debugBodies.push({ x: vertice.x, y: vertice.y })
+          debugBodies.push({x: vertice.x, y: vertice.y})
         })
       })
     }
@@ -276,7 +278,8 @@ class MasterGame {
   }
 
   // Required method
-  refreshData() {}
+  refreshData() {
+  }
 }
 
 module.exports = MasterGame

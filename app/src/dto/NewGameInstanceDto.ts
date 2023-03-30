@@ -1,0 +1,3 @@
+interface NewGameInstanceDto {
+  gameType: GameType,
+}

@@ -1,6 +1,5 @@
 import {Player} from './Player';
-import {GameInstance} from './GameInstance';
-import {Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique,} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique,} from 'typeorm';
 
 @Entity()
 @Unique(['slug'])
@@ -23,6 +22,14 @@ export class Room {
   @ManyToOne(() => Player, (player) => player.adminOf, {eager: false, onDelete: 'SET NULL'})
   leader: Promise<Player>;
 
-  @OneToOne(() => GameInstance, (game) => game.room, {eager: true, nullable: true})
-  game: GameInstance;
+  @Column()
+  gameStatus: string
+
+  @Column()
+  gameType: string
+
+  @Column({
+    nullable: true
+  })
+  gameParameters: string
 }

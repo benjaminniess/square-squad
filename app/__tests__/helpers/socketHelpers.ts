@@ -7,9 +7,12 @@ export class SocketHelpers {
   }
   public validGameData = {
     roomSlug: 'room-name',
-    roundsNumber: '4',
-    obstaclesSpeed: '19',
-    bonusFrequency: '2'
+    gameType: 'panic-attack',
+    parameters: {
+      roundsNumber: '4',
+      obstaclesSpeed: '19',
+      bonusFrequency: '2'
+    }
   }
 
   constructor() {
@@ -106,11 +109,18 @@ export class SocketHelpers {
     })
   }
 
+  public waitForGameStartRoomMessage = async (socket: Socket) => {
+    return new Promise((resolve, reject) => {
+      socket.on('game-about-to-start', (result: any) => {
+        resolve(result)
+      })
+    })
+  }
+
   public emptyDatabase = async (socket: Socket) => {
     return new Promise((resolve, reject) => {
       socket.emit('empty-database')
 
-      resolve('resolve')
       socket.on('empty-database-result', (result: any) => {
         resolve(result)
       })

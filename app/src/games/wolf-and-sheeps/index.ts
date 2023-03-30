@@ -1,11 +1,14 @@
+import {Room} from "../../entity/Room";
+import {GameInterface} from "../GameInterface";
+
 export {}
-const { squareSize } = require('../../config/main')
+const {squareSize} = require('../../config/main')
 const Matter = require('matter-js')
 const MasterGame = require('../master-game')
 const _ = require('lodash')
 
-class Wolf_And_Sheep extends MasterGame {
-  constructor(room: any) {
+export class Wolf_And_Sheep extends MasterGame implements GameInterface {
+  constructor(room: Room) {
     super(room)
     this.speed = 4
     this.slug = 'wolf-and-sheeps'
@@ -128,5 +131,3 @@ class Wolf_And_Sheep extends MasterGame {
     return this.getPlayersManager().getPlayerData(playerID).catchable
   }
 }
-
-module.exports = Wolf_And_Sheep

@@ -1,5 +1,5 @@
 import {Container, Service} from "typedi";
-import {Server} from "socket.io";
+import {Server, Socket} from "socket.io";
 
 @Service()
 export class SocketsRepository {
@@ -51,5 +51,16 @@ export class SocketsRepository {
     })
 
     return roomsSlugs
+  }
+
+  isSocketInRoom(socket: Socket, roomSlug: string): boolean {
+    let roomExists = false
+    socket.rooms.forEach((room) => {
+      if (room === roomSlug) {
+        roomExists = true
+      }
+    })
+
+    return roomExists
   }
 }

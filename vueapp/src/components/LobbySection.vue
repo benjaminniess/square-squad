@@ -84,7 +84,8 @@ export default {
 
       socketStore.socket.emit('start-game', {
         roomSlug: this.room.roomSlug,
-        ...gameStore.gameOptions
+        gameType: "panic-attack",
+        parameters: gameStore.gameOptions
       })
 
       if (this.$gtag) {

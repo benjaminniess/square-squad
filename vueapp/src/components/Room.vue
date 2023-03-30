@@ -154,7 +154,7 @@ export default {
               clearInterval(countdownTimer)
 
               socket.emit('start-game', {
-                roomSlug: room.roomSlug
+                roomSlug: room.roomSlug,
               })
               gameData.timeLeft = 'Starting...'
             }

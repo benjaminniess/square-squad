@@ -1,5 +1,7 @@
 import {RandomContentGenerator} from "../../services/RandomContentGenerator";
 import {Container} from "typedi";
+import {Room} from "../../entity/Room";
+import {GameInterface} from "../GameInterface";
 
 export {}
 const {squareSize} = require('../../config/main')
@@ -7,10 +9,10 @@ const Matter = require('matter-js')
 const MasterGame = require('../master-game')
 const _ = require('lodash')
 
-class Panick_Attack extends MasterGame {
+export class Panick_Attack extends MasterGame implements GameInterface {
   private readonly randomContentGenerator: RandomContentGenerator
 
-  constructor(room: any) {
+  constructor(room: Room) {
     super(room)
     this.speed = 2
     this.slug = 'panic-attack'
@@ -190,5 +192,3 @@ class Panick_Attack extends MasterGame {
     }
   }
 }
-
-module.exports = Panick_Attack

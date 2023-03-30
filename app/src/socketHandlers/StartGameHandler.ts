@@ -3,24 +3,66 @@ import {Server} from "socket.io";
 import {Socket} from "socket.io-client";
 import {PlayersRepository} from "../repositories/PlayersRepository";
 import {RoomsRepository} from "../repositories/RoomsRepository";
-
-const _ = require('lodash')
+import {SocketsRepository} from "../repositories/SocketsRepository";
 
 @Service()
 export class StartGameHandler {
   io: Server
   playersRepository: PlayersRepository
   roomsRepository: RoomsRepository
+  socketsRepository: SocketsRepository
 
-  constructor(@Inject() roomsRepository: RoomsRepository, @Inject() playersRepository: PlayersRepository) {
+  constructor(
+    @Inject() roomsRepository: RoomsRepository,
+    @Inject() playersRepository: PlayersRepository,
+    @Inject() socketsRepository: SocketsRepository,
+  ) {
     this.io = Container.get('io')
     this.playersRepository = playersRepository
     this.roomsRepository = roomsRepository
+    this.socketsRepository = socketsRepository
   }
 
   public handle(socket: Socket | any, data: any): void {
-    this.roomsRepository.findOrFailBySlug(data.roomSlug).then(room => {
+    if (!data || !data.roomSlug || !this.socketsRepository.isSocketInRoom(socket, data.roomSlug)) {
+      this.io.to(socket.id).emit('start-game-result', {
+        success: false,
+        error: 'action-is-forbidden'
+      })
+      return
+    }
 
+    this.roomsRepository.findOrFailBySlug(data.roomSlug).then(room => {
+      room.leader.then(leader => {
+        if (leader.socketId !== socket.id) {
+          this.io.to(socket.id).emit('start-game-result', {
+            success: false,
+            error: 'action-is-forbidden'
+          })
+          return
+        }
+
+        if (!data.parameters || !data.gameType) {
+          this.io.to(socket.id).emit('start-game-result', {
+            success: false,
+            error: 'wrong-formatted-data'
+          })
+          return
+        }
+
+        this.roomsRepository.initializeGameInstance(room, data.gameType, data.parameters).then(() => {
+            this.io.to(socket.id).emit('start-game-result', {
+              success: true,
+              data: {}
+            })
+
+            this.io.to(room.slug).emit('game-about-to-start', {
+              success: true,
+              data: {}
+            })
+          }
+        )
+      })
       // TODO
       // let game = room.game
       // let playersManager = game.getPlayersManager()

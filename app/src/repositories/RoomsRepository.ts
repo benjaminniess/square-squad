@@ -6,6 +6,9 @@ import {Room} from "../entity/Room";
 import validator from 'validator';
 import {PlayersRepository} from "./PlayersRepository";
 import {SocketsRepository} from "./SocketsRepository";
+import {GameStatus} from "../enums/GameStatus";
+import {ErrorLogger} from "../services/ErrorLogger";
+import {GameType} from "../enums/GameType";
 
 
 export {RoomsRepository}
@@ -17,17 +20,20 @@ class RoomsRepository {
   private repository: Repository<Room>
   private playerRepository: PlayersRepository
   private socketsRepository: SocketsRepository
-  private readonly stringsConvertor: StringsConvertor;
+  private readonly stringsConvertor: StringsConvertor
+  private readonly errorLogger: ErrorLogger
 
   constructor(
     @Inject() stringsConvertor: StringsConvertor,
     @Inject() playersRepository: PlayersRepository,
     @Inject() socketsRepository: SocketsRepository,
+    @Inject() errorLogger: ErrorLogger,
   ) {
     this.stringsConvertor = stringsConvertor
     this.repository = Container.get('roomsRepository')
     this.playerRepository = playersRepository
     this.socketsRepository = socketsRepository
+    this.errorLogger = errorLogger
   }
 
   async findAll(): Promise<Room[]> {
@@ -93,14 +99,17 @@ class RoomsRepository {
     roomName = validator.blacklist(roomName, "<>\\/'");
     const roomSlug = this.stringsConvertor.stringToSlug(roomName);
 
-    const room = new Room();
-    room.name = roomName;
+    const room = new Room()
+    room.name = roomName
+    room.gameStatus = GameStatus.Waiting
+    room.gameType = GameType.Panick_Attack
     room.slug = roomSlug;
 
     try {
       await this.repository.save(room);
     } catch (error) {
-      throw new Error('room-already-exists');
+      this.errorLogger.report(error)
+      throw new Error('error-during-room-creation');
     }
 
     return room
@@ -131,6 +140,14 @@ class RoomsRepository {
 
   async setLeader(room: Room, player: Player | null): Promise<void> {
     room.leader = Promise.resolve(player)
+    await this.repository.save(room)
+  }
+
+  async initializeGameInstance(room: Room, gameType: GameType, params: Object) {
+    room.gameStatus = GameStatus.Ready_to_Start
+    room.gameType = gameType
+    room.gameParameters = JSON.stringify(params)
+
     await this.repository.save(room)
   }
 

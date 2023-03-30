@@ -1,22 +1,16 @@
 import {Container, Inject, Service} from "typedi";
 import {Server} from "socket.io";
 import {Socket} from "socket.io-client";
-import {PlayersRepository} from "../repositories/PlayersRepository";
-import {RoomsRepository} from "../repositories/RoomsRepository";
-import {Room} from "../entity/Room";
-
-const validator = require('validator')
+import {RoomsManager} from "../services/RoomsManager";
 
 @Service()
 export class RoomsCreateHandler {
   io: Server
-  playersRepository: PlayersRepository
-  roomsRepository: RoomsRepository
+  roomsManager: RoomsManager
 
-  constructor(@Inject() roomsRepository: RoomsRepository, @Inject() playersRepository: PlayersRepository) {
+  constructor(@Inject() roomsManager: RoomsManager) {
     this.io = Container.get('io')
-    this.playersRepository = playersRepository
-    this.roomsRepository = roomsRepository
+    this.roomsManager = roomsManager
   }
 
   public handle(socket: Socket | any, data: any): void {
@@ -28,39 +22,20 @@ export class RoomsCreateHandler {
       return;
     }
 
-    const roomName = validator.blacklist(data.roomName, "<>\\/'")
-    if (!roomName || roomName.length <= 0) {
-      this.io.to(socket.id).emit('create-room-result', {
-        success: false,
-        error: 'room-name-is-incorrect'
-      })
-      return
-    }
-
-    this.playersRepository.findOrFailBySocketID(socket.id).then(player => {
-      this.roomsRepository.create(roomName).then((room: Room) => {
+    this.roomsManager.createRoom(data.roomName, socket.id)
+      .then(data => {
         this.io.to(socket.id).emit('create-room-result', {
           success: true,
-          data: {roomSlug: room.slug}
+          data: data
         })
-
-        this.roomsRepository.addPlayerToRoom(player, room).then(() => {
-          this.roomsRepository.setLeader(room, player)
-        })
-
-      }).catch(error => {
+      })
+      .catch(error => {
         this.io.to(socket.id).emit('create-room-result', {
           success: false,
-          error: 'name-is-already-taken'
+          error: error
         })
-        return
       })
-    }).catch(error => {
-      this.io.to(socket.id).emit('create-room-result', {
-        success: false,
-        error: 'player-not-logged'
-      })
-      return
-    })
+
+
   }
 }

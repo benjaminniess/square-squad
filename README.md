@@ -57,6 +57,23 @@ DISABLE_OBSTACLES: (bool) Your can disable all obstacles for test purpose
 ADMIN_PASSWORD: The password to access the /admin view
 ```
 
+## :rocket: Socket.io messages
+
+| :arrow_up:           | :arrow_down:                |
+|:---------------------|-----------------------------|
+| `update-player-data` | `update-player-data-result` |
+| `refresh-rooms`      | `refresh-rooms-result`      |
+| `create-room`        | `create-room-result`        |
+| `join-room`          | `join-room-result`          |
+| X                    | `refresh-game-status`       |
+| X                    | `refresh-players`           |
+| `start-game`         | `start-game-result`         |
+| X                    | `countdown-update`          |
+| X                    | `refresh-canvas`            |
+| X                    | `in-game-countdown-update`  |
+| `key-pressed`        | X                           |
+| `key-up`             | X                           |
+
 ## Changelog
 
 ### :package: 1.2.9 - 2021-08-16

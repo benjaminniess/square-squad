@@ -1,6 +1,7 @@
 import {Container, Inject, Service} from "typedi";
 import {Server} from "socket.io";
 import {RoomsRepository} from "../repositories/RoomsRepository";
+import {GameInstancesRepository} from "../repositories/GameInstancesRepository";
 
 const _ = require('lodash')
 
@@ -9,28 +10,26 @@ export class CanevasRefresher {
   private lockedRefresh: boolean = false;
   private io: Server;
   private roomsRepository: RoomsRepository
+  private gameInstancesRepository: GameInstancesRepository
 
-  constructor(@Inject() roomsRepository: RoomsRepository) {
+  constructor(@Inject() roomsRepository: RoomsRepository, @Inject() gameInstancesRepository: GameInstancesRepository) {
     this.roomsRepository = roomsRepository
+    this.gameInstancesRepository = gameInstancesRepository
     this.io = Container.get('io')
 
-    setInterval(() => {
+    setInterval(async () => {
       if (this.lockedRefresh) {
         return
       }
 
       this.lockedRefresh = true
-      this.roomsRepository.findAll().then((rooms) => {
-        rooms.map(room => {
-          let roomGame = room.game
-          let status = room.game?.status
+      await Promise.all(
+        this.gameInstancesRepository.findAll().map(async gameInstance => {
+          this.io.to(gameInstance.getRoom().slug).emit('refresh-canvas', gameInstance.refreshData())
 
-          if (roomGame && (status === 'playing' || status === 'starting')) {
-            // TODO: refresh game data
-            //this.io.to(room.slug).emit('refresh-canvas', roomGame.refreshData())
-          }
+          gameInstance.refreshData()
         })
-      })
+      )
 
       this.lockedRefresh = false
     }, 10)
