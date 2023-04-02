@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@vue/test-utils": "^2.2.8",
+    "eventemitter3": "^5.0.0",
     "pinia": "^2.0.29",
     "socket.io-client": "^4.5.4",
     "vue": "^3.2.45",

@@ -10,12 +10,12 @@ export class SocketsRepository {
   }
 
   findAllPlayers(): string[] {
-    const socketIds = []
+    const socketIDs = []
     this.io.sockets.sockets.forEach(socket => {
-      socketIds.push(socket.id);
+      socketIDs.push(socket.id);
     })
 
-    return socketIds
+    return socketIDs
   }
 
   findAllRooms(): SocketRoomDto[] {

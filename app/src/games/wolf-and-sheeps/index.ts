@@ -1,15 +1,17 @@
 import {Room} from "../../entity/Room";
 import {GameInterface} from "../GameInterface";
+import {RoomDto} from "../../dto/game-instance/RoomDto";
+import {RefreshedGameInstanceDto} from "../../dto/game-instance/RefreshedGameInstanceDto";
+import {PlayersInputManager} from "../features/PlayersInputsManager";
+import {GameStatus} from "../../enums/GameStatus";
+import {SampleDto} from "../sample/dto/SampleDto";
 
-export {}
 const {squareSize} = require('../../config/main')
 const Matter = require('matter-js')
-const MasterGame = require('../master-game')
 const _ = require('lodash')
 
-export class Wolf_And_Sheep extends MasterGame implements GameInterface {
-  constructor(room: Room) {
-    super(room)
+export class Wolf_And_Sheeps implements GameInterface {
+  constructor(room: RoomDto, parameters: SampleDto) {
     this.speed = 4
     this.slug = 'wolf-and-sheeps'
     this.type = 'timed'
@@ -17,42 +19,65 @@ export class Wolf_And_Sheep extends MasterGame implements GameInterface {
     this.eventSubscriptions()
   }
 
-  eventSubscriptions() {
-    this.getEventEmmitter().on('initRound', () => {
-      let playersData = this.getPlayersManager().getPlayersData()
-      _.shuffle(_.keys(playersData))
-      this.setWolf(Object.keys(playersData)[0])
-    })
-
-    Matter.Events.on(this.getEngine(), 'collisionStart', (event: any) => {
-      if (
-        !event.pairs[0].bodyA.gamePlayerID ||
-        !event.pairs[0].bodyB.gamePlayerID
-      ) {
-        return
-      }
-
-      let currentWolf = this.getWolf()
-      if (
-        event.pairs[0].bodyA.gamePlayerID === currentWolf &&
-        this.isCatchable(event.pairs[0].bodyB.gamePlayerID)
-      ) {
-        this.setCatchable(event.pairs[0].bodyA.gamePlayerID, false)
-        this.setWolf(event.pairs[0].bodyB.gamePlayerID)
-      } else if (
-        event.pairs[0].bodyB.gamePlayerID === currentWolf &&
-        this.isCatchable(event.pairs[0].bodyA.gamePlayerID)
-      ) {
-        this.setCatchable(event.pairs[0].bodyB.gamePlayerID, false)
-        this.setWolf(event.pairs[0].bodyA.gamePlayerID)
-      }
-
-      //this.getPlayersManager().killPlayer(player.gamePlayerID)
-      //this.getRoom().refreshPlayers()
-    })
+  getInputManager(): PlayersInputManager {
+    return undefined;
   }
 
-  refreshData() {
+  getPlayersManager(): PlayersInputManager {
+    return undefined;
+  }
+
+  getSlug(): string {
+    return "";
+  }
+
+  getStatus(): GameStatus {
+    return undefined;
+  }
+
+  start(): void {
+  }
+
+  getRoom(): Room {
+    return this.room;
+  }
+
+  eventSubscriptions() {
+    /*    this.getEventEmmitter().on('initRound', () => {
+          let playersData = this.getPlayersManager().getPlayersData()
+          _.shuffle(_.keys(playersData))
+          this.setWolf(Object.keys(playersData)[0])
+        })
+
+        Matter.Events.on(this.getEngine(), 'collisionStart', (event: any) => {
+          if (
+            !event.pairs[0].bodyA.socketID ||
+            !event.pairs[0].bodyB.socketID
+          ) {
+            return
+          }
+
+          let currentWolf = this.getWolf()
+          if (
+            event.pairs[0].bodyA.socketID === currentWolf &&
+            this.isCatchable(event.pairs[0].bodyB.socketID)
+          ) {
+            this.setCatchable(event.pairs[0].bodyA.socketID, false)
+            this.setWolf(event.pairs[0].bodyB.socketID)
+          } else if (
+            event.pairs[0].bodyB.socketID === currentWolf &&
+            this.isCatchable(event.pairs[0].bodyA.socketID)
+          ) {
+            this.setCatchable(event.pairs[0].bodyB.socketID, false)
+            this.setWolf(event.pairs[0].bodyA.socketID)
+          }*/
+
+    //this.getPlayersManager().killPlayer(player.socketID)
+    //this.getRoom().refreshPlayers()
+    // })
+  }
+
+  refreshData(): RefreshedGameInstanceDto {
     //console.log(this.getDebugMatterTree())
 
     let bonusManager = this.getBonusManager()
@@ -82,13 +107,13 @@ export class Wolf_And_Sheep extends MasterGame implements GameInterface {
               playerData.y - squareSize / 2 < bonusData.y + bonusData.height &&
               squareSize + playerData.y - squareSize / 2 > bonusData.y
             ) {
-              playersManager.uptadePlayerSingleData(
+              playersManager.updatePlayerSingleData(
                 playerID,
                 'bonus',
                 bonusData
               )
               bonus.trigger(playerID).then(() => {
-                playersManager.uptadePlayerSingleData(playerID, 'bonus', null)
+                playersManager.updatePlayerSingleData(playerID, 'bonus', null)
               })
             } else {
               updatedBonus.push(bonusData)
@@ -101,9 +126,12 @@ export class Wolf_And_Sheep extends MasterGame implements GameInterface {
     }
 
     return {
+      currentRound: 1,
+      totalRounds: 3,
       players: playersData,
       debugBodies: this.getDebugBodies(),
-      bonusList: updatedBonus
+      bonusList: updatedBonus,
+      obstacles: null,
     }
   }
 
@@ -117,12 +145,12 @@ export class Wolf_And_Sheep extends MasterGame implements GameInterface {
 
   setCatchable(playerID: string, catchable = true) {
     let playersManager = this.getPlayersManager()
-    playersManager.uptadePlayerSingleData(playerID, 'catchable', catchable)
+    playersManager.updatePlayerSingleData(playerID, 'catchable', catchable)
     if (!catchable) {
       let currentClass = this
       let notCatchableTimer = setInterval(function () {
         clearInterval(notCatchableTimer)
-        playersManager.uptadePlayerSingleData(playerID, 'catchable', true)
+        playersManager.updatePlayerSingleData(playerID, 'catchable', true)
       }, 1000)
     }
   }

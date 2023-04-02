@@ -30,7 +30,7 @@ export class RoomLeaveHandler {
 
               room.players.then(players => {
                 this.roomsRepository.resetLeader(room).then((leader) => {
-                  this.io.in(room.slug).emit('refresh-players', {admin: leader?.socketId, players: players})
+                  this.io.in(room.slug).emit('refresh-players', {admin: leader?.socketID, players: players})
                 })
               })
 

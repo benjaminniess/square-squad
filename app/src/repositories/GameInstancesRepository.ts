@@ -1,37 +1,55 @@
 import {Service} from "typedi";
 import {Room} from "../entity/Room";
-import {Panick_Attack} from "../games/panic-attack";
-import {Wolf_And_Sheep} from "../games/wolf-and-sheeps";
 import {GameInterface} from "../games/GameInterface";
-
-
-export {GameInstancesRepository}
-
-const _ = require('lodash')
+import {GameType} from "../enums/GameType";
+import {RoomDto} from "../dto/game-instance/RoomDto";
+import {Sample} from "../games/sample";
+import {PanicAttack} from "../games/panic-attack";
+import {Wolf_And_Sheeps} from "../games/wolf-and-sheeps";
 
 @Service()
-class GameInstancesRepository {
+export class GameInstancesRepository {
   private gameInstances: GameInterface[] = []
 
   constructor() {
   }
 
-  findAll(): GameInterface[] {
+  public findAll(): GameInterface[] {
     return this.gameInstances
   }
 
-  addForRoom(room: Room, gameParameters: NewGameInstanceDto): void {
-    switch (gameParameters.gameType) {
-      case GameType.Panick_Attack:
-        this.gameInstances.push(new Panick_Attack(room))
-        break
-      default:
-        this.gameInstances.push(new Wolf_And_Sheep(room))
-        break
-    }
+  public findByRoomSlug(roomSlug: string): GameInterface {
+    return this.gameInstances.find(i => i.getRoom().slug === roomSlug)
   }
 
-  removeForRoom(room: Room): void {
+  public async addForRoom(room: Room): Promise<void> {
+    const roomDto: RoomDto = {
+      slug: room.slug,
+      name: room.name,
+      players: (await room.players).map(({socketID, nickName, color}) => ({socketID, nickName, color}))
+    }
+
+    const gameParameters = JSON.parse(room.gameParameters)
+    let instance
+    switch (room.gameType) {
+      case GameType.PanicAttack:
+        instance = new PanicAttack(roomDto, gameParameters)
+
+        break
+      case GameType.Wolf_And_Sheeps:
+        instance = new Wolf_And_Sheeps(roomDto, gameParameters)
+
+        break
+      default:
+        instance = new Sample(roomDto, gameParameters)
+        break
+    }
+
+    this.gameInstances.push(instance)
+    instance.start()
+  }
+
+  public removeForRoom(room: Room): void {
     this.gameInstances = this.gameInstances.filter(function (value, index, arr) {
       return value.getRoom().slug !== room.slug;
     });

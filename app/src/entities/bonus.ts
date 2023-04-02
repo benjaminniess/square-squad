@@ -63,7 +63,7 @@ class Bonus {
 
     if (this.getDuration() > 1000) {
       setTimeout(function () {
-        playersManager.uptadePlayerSingleData(playerID, 'bonusBlinking', true)
+        playersManager.updatePlayerSingleData(playerID, 'bonusBlinking', true)
       }, this.getDuration() - 1000)
     }
     return this.onTrigger()

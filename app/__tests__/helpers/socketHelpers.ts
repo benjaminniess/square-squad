@@ -109,9 +109,9 @@ export class SocketHelpers {
     })
   }
 
-  public waitForGameStartRoomMessage = async (socket: Socket) => {
+  public waitForGameStatusUpdate = async (socket: Socket) => {
     return new Promise((resolve, reject) => {
-      socket.on('game-about-to-start', (result: any) => {
+      socket.on('update-game-status', (result: any) => {
         resolve(result)
       })
     })

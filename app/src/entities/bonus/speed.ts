@@ -14,10 +14,10 @@ class Speed extends Bonus {
       let playerID = this.getPlayerID()
       let playerData = game.getPlayersManager().getPlayerData(playerID)
       playerData.speedMultiplicator *= 1.5
-      game.getPlayersManager().setPlayerData(playerID, playerData)
+      game.getPlayersManager().setPlayerData(playerData)
       setTimeout(function () {
         playerData.speedMultiplicator = 1
-        game.getPlayersManager().setPlayerData(playerID, playerData)
+        game.getPlayersManager().setPlayerData(playerData)
 
         resolve(true)
       }, this.getDuration())

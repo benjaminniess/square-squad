@@ -19,9 +19,9 @@ class PlayersRepository {
 
   }
 
-  async findBySocketId(socketId: string): Promise<Player> {
+  async findBySocketId(socketID: string): Promise<Player> {
     return await this.findOne({
-      where: {socketId: socketId},
+      where: {socketID: socketID},
       relations: ['room'],
     })
   }
@@ -29,7 +29,7 @@ class PlayersRepository {
   async findOrFailBySocketID(socketID: string): Promise<Player> {
     const player = await this.findBySocketId(socketID)
     if (!player) {
-      throw new Error('This socket ID does not exist')
+      throw new Error('player-not-logged')
     }
 
     return player
@@ -38,16 +38,16 @@ class PlayersRepository {
   async findOrFailByID(playerID: number): Promise<Player> {
     const player = await this.findById(playerID)
     if (!player) {
-      throw new Error('This ID does not exist')
+      throw new Error('player-not-logged')
     }
 
     return player
   }
 
-  async findMultipleWhereSocketIdNotIn(socketIds: string[]): Promise<Player[]> {
+  async findMultipleWhereSocketIdNotIn(socketIDs: string[]): Promise<Player[]> {
     return await this.repository
       .createQueryBuilder()
-      .where("player.socketId NOT IN ('" + socketIds.join("', '") + "')")
+      .where("player.socketID NOT IN ('" + socketIDs.join("', '") + "')")
       .getMany()
   }
 
@@ -81,7 +81,7 @@ class PlayersRepository {
     const player = new Player()
     player.color = playerDto.color;
     player.nickName = playerDto.nickName;
-    player.socketId = playerDto.socketID;
+    player.socketID = playerDto.socketID;
 
     try {
       await this.repository.save(player)
@@ -96,12 +96,12 @@ class PlayersRepository {
     return player;
   }
 
-  async createOrUpdate(socketId: string, playerData: PlayerRequiredInfosDto): Promise<void> {
-    const existingPlayer = await this.findBySocketId(socketId)
+  async createOrUpdate(socketID: string, playerData: PlayerRequiredInfosDto): Promise<void> {
+    const existingPlayer = await this.findBySocketId(socketID)
     if (existingPlayer) {
       await this.update(existingPlayer, playerData)
     } else {
-      await this.create({...playerData, socketID: socketId})
+      await this.create({...playerData, socketID: socketID})
     }
   }
 

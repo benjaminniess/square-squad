@@ -22,7 +22,7 @@ class Invincible extends Bonus {
       })
 
       setTimeout(function () {
-        playersManager.uptadePlayerSingleData(playerID, 'bonusBlinking', false)
+        playersManager.updatePlayerSingleData(playerID, 'bonusBlinking', false)
         playersManager.setPlayerBodyData(playerID, {
           collisionFilter: prevCollisionFilter
         })

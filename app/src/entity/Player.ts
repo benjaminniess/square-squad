@@ -2,7 +2,7 @@ import {Room} from './Room';
 import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique,} from 'typeorm';
 
 @Entity()
-@Unique(['socketId'])
+@Unique(['socketID'])
 export class Player {
   @PrimaryGeneratedColumn()
   id: number;
@@ -14,7 +14,7 @@ export class Player {
   color: string;
 
   @Column()
-  socketId: string;
+  socketID: string;
 
   @ManyToOne(() => Room, (room) => room.players, {onDelete: 'SET NULL'})
   room: Promise<Room>;

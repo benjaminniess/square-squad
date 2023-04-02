@@ -49,6 +49,8 @@ export default {
       switch (messageKey) {
         case 'room-does-not-exist':
           return "This room does not exist anymore"
+        case 'room-already-exists':
+          return "This room name already exists. Please find another room name."
         case 'player-not-logged':
           return "You are not logged anymore, please try again"
         default:

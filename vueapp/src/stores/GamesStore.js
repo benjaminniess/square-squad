@@ -5,11 +5,7 @@ export const useGameStore = defineStore('game', {
     return {
       gameID: 'panic-attack',
       gameStatus: 'waiting',
-      gameOptions: {
-        roundsNumber: 3,
-        obstaclesSpeed: 10,
-        bonusFrequency: 5
-      }
+      gameOptions: {}
     }
   },
   actions: {

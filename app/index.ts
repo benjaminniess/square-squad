@@ -13,6 +13,9 @@ import {AppDataSource} from "./src/data-source";
 import * as path from "path";
 import {Player} from "./src/entity/Player";
 import {Room} from "./src/entity/Room";
+import {GameInstancesRefresher} from "./src/services/GameInstancesRefresher";
+
+const Matter = require('matter-js')
 
 require('source-map-support').install()
 
@@ -78,11 +81,13 @@ AppDataSource.initialize().then(async () => {
   Container.set('roomsRepository', AppDataSource.getRepository(Room))
   Container.set("io", io)
   Container.set("app", app)
-  Container.get(AdminController);
-  Container.get(EnvironmentFileController);
-  Container.get(MainController);
-  Container.get(SocketController);
-  Container.get(CanevasRefresher);
+  Container.set("matter", Matter)
+  Container.get(AdminController)
+  Container.get(EnvironmentFileController)
+  Container.get(MainController)
+  Container.get(SocketController)
+  Container.get(CanevasRefresher)
+  Container.get(GameInstancesRefresher)
 }).catch(error => console.log(error))
 
 

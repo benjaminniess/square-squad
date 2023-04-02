@@ -1,5 +1,6 @@
 import {SocketHelpers} from "../helpers/socketHelpers";
 import {Socket} from "socket.io-client";
+import {GameStatus} from "../../src/enums/GameStatus";
 
 /**
  * Those tests are checking the socket.io client => server communication from user creation/update to game start
@@ -102,7 +103,7 @@ describe('SOCKET - Rooms', () => {
     const result: any = await socketHelpers.createRoom(socket2)
 
     expect(result.success).toBe(false)
-    expect(result.error).toBe('name-is-already-taken')
+    expect(result.error).toBe('room-already-exists')
   })
 
   it('joins an existing room and send a success state and an array of 2 player', async () => {
@@ -163,6 +164,8 @@ describe('SOCKET - Player 2 is joining', () => {
   it('joins a room with the second socket and returns a success state and an array of 2 players', async () => {
     await socketHelpers.updatePlayer(socket1)
     await socketHelpers.updatePlayer(socket2)
+    await socketHelpers.createRoom(socket1)
+
     const result: any = await socketHelpers.joinRoom(socket2, {roomSlug: 'room-name'})
 
     expect(result['join-room-result'].success).toBeTruthy()
@@ -227,20 +230,11 @@ describe('SOCKET - Start game', () => {
       }
     )).toBeTruthy()
 
-    const roomMessage: any = await socketHelpers.waitForGameStartRoomMessage(socket1)
-    expect(roomMessage.success).toBeTruthy()
+    const readyToStartMessage: any = await socketHelpers.waitForGameStatusUpdate(socket1)
+    expect(readyToStartMessage.status).toBe(GameStatus.Ready_to_Start)
+
+    const playingMessage: any = await socketHelpers.waitForGameStatusUpdate(socket1)
+    expect(playingMessage.status).toBe(GameStatus.Playing)
   })
-//
-//   for (let i = 3; i >= 0; i--) {
-//     it('Wait for the game to start in ' + i, () => {
-//       return new Promise((resolve, reject) => {
-//         socket1.on('countdown-update', (data: any) => {
-//           resolve(data)
-//         })
-//       }).then((result: any) => {
-//         expect(result.timeleft).toBe(i)
-//       })
-//     })
-//   }
 })
 

@@ -17,14 +17,14 @@ export class RoomsManager {
     this.playersRepository = playersRepository
   }
 
-  async createRoom(roomName: string, socketId: string): Promise<any> {
+  async createRoom(roomName: string, socketID: string): Promise<any> {
     return new Promise((resolve, reject) => {
       roomName = validator.blacklist(roomName, "<>\\/'")
       if (!roomName || roomName.length <= 0) {
         reject('room-name-is-incorrect')
       }
 
-      this.playersRepository.findOrFailBySocketID(socketId).then(player => {
+      this.playersRepository.findOrFailBySocketID(socketID).then(player => {
         this.roomsRepository.create(roomName).then((room: Room) => {
           this.roomsRepository.addPlayerToRoom(player, room).then(() => {
             this.roomsRepository.setLeader(room, player).then(() => {

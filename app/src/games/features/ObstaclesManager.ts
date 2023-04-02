@@ -1,89 +1,34 @@
-import {RandomContentGenerator} from "../services/RandomContentGenerator";
-import EventEmitter from 'events'
-import {Container} from "typedi";
+import {Container, Service} from "typedi";
+import * as events from "events";
+import {RandomContentGenerator} from "../../services/RandomContentGenerator";
 
-export {}
-
-const {canvasWidth} = require('../config/main')
+const {canvasWidth} = require('../../config/main')
 const Matter = require('matter-js')
 const Composite = Matter.Composite
 
-const Press = require('../entities/obstacles/press')
-const SimpleHole = require('../entities/obstacles/simple-hole')
-const SpaceInvaders = require('../entities/obstacles/space-invaders')
-const Ball = require('../entities/obstacles/ball')
+const Press = require('../../entities/obstacles/press')
+const SimpleHole = require('../../entities/obstacles/simple-hole')
+const SpaceInvaders = require('../../entities/obstacles/space-invaders')
+const Ball = require('../../entities/obstacles/ball')
 const _ = require('lodash')
 
-class ObstaclesManager {
+@Service()
+export class ObstaclesManager {
   private obstacles: any[]
   private level: number
-  private game: any
-  private compositeObj: any
-  private eventEmitter: EventEmitter
-  private walls: any
+  private readonly compositeObj: any
+  private readonly eventEmitter: events.EventEmitter
+  private readonly walls: any
   private startLevel: number = 1
   private readonly randomContentGenerator: RandomContentGenerator
 
-  constructor(game: any) {
+  constructor() {
     this.obstacles = []
     this.level = 0
-    this.game = game
     this.compositeObj = Matter.Composite.create({label: 'obstacles'})
-    this.eventEmitter = new EventEmitter()
+    this.eventEmitter = new events.EventEmitter()
     this.randomContentGenerator = Container.get(RandomContentGenerator)
 
-    this.walls = Composite.create({label: 'walls'})
-    this.initWalls()
-  }
-
-  initWalls() {
-    let commonProperties = {
-      isStatic: true,
-      collisionFilter: {
-        category: 0x0010,
-        mask: 0x1001
-      },
-      customType: 'wall'
-    }
-
-    Matter.Composite.add(this.walls, [
-      // Top
-      Matter.Bodies.rectangle(
-        canvasWidth / 2,
-        -5,
-        canvasWidth,
-        10,
-        commonProperties
-      ),
-      // Left
-      Matter.Bodies.rectangle(
-        -5,
-        canvasWidth / 2,
-        10,
-        canvasWidth,
-        commonProperties
-      ),
-      // Right
-      Matter.Bodies.rectangle(
-        canvasWidth + 5,
-        canvasWidth / 2,
-        10,
-        canvasWidth,
-        commonProperties
-      ),
-      // Bottom
-      Matter.Bodies.rectangle(
-        canvasWidth / 2,
-        canvasWidth + 5,
-        canvasWidth,
-        10,
-        commonProperties
-      )
-    ])
-  }
-
-  getGame() {
-    return this.game
   }
 
   getComposite() {
@@ -225,4 +170,3 @@ class ObstaclesManager {
   }
 }
 
-module.exports = ObstaclesManager

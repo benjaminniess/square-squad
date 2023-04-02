@@ -99,10 +99,13 @@ class RoomsRepository {
     roomName = validator.blacklist(roomName, "<>\\/'");
     const roomSlug = this.stringsConvertor.stringToSlug(roomName);
 
+    if (await this.findBySlug(roomSlug)) {
+      throw new Error('room-already-exists');
+    }
     const room = new Room()
     room.name = roomName
     room.gameStatus = GameStatus.Waiting
-    room.gameType = GameType.Panick_Attack
+    room.gameType = GameType.PanicAttack
     room.slug = roomSlug;
 
     try {
@@ -113,6 +116,12 @@ class RoomsRepository {
     }
 
     return room
+  }
+
+  async updateStatus(room: Room, status: GameStatus): Promise<void> {
+    room.gameStatus = status
+
+    await this.repository.save(room);
   }
 
   async addPlayerToRoom(player: Player, room: Room): Promise<void> {
@@ -169,7 +178,7 @@ class RoomsRepository {
 
   async removePlayerFromRoom(playerToRemove: Player, room: Room): Promise<void> {
     room.players = Promise.resolve((await room.players).filter((player) => {
-      return player.socketId !== playerToRemove.socketId
+      return player.socketID !== playerToRemove.socketID
     }));
 
     await this.repository.save(room);

@@ -3,8 +3,6 @@ import {Server} from "socket.io";
 import {RoomsRepository} from "../repositories/RoomsRepository";
 import {GameInstancesRepository} from "../repositories/GameInstancesRepository";
 
-const _ = require('lodash')
-
 @Service()
 export class CanevasRefresher {
   private lockedRefresh: boolean = false;
@@ -32,7 +30,6 @@ export class CanevasRefresher {
       )
 
       this.lockedRefresh = false
-    }, 10)
+    }, 20)
   }
-
 }

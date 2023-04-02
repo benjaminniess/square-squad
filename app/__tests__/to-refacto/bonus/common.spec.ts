@@ -5,7 +5,7 @@ export {}
 const Invincible = require('../../src/entities/bonus/invincible')
 const ScoreChanger = require('../../src/entities/bonus/score-changer')
 const Speed = require('../../src/entities/bonus/speed')
-const { EventEmitter } = require('events')
+const {EventEmitter} = require('events')
 
 const bonusTypes = [
   {
@@ -29,7 +29,7 @@ const mockedParams = {
   game: {
     getPlayersManager: () => {
       return {
-        uptadePlayerSingleData: (param1: any, param2: any, param3: any) => {
+        updatePlayerSingleData: (param1: any, param2: any, param3: any) => {
           return
         }
       }

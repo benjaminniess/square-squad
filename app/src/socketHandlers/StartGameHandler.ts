@@ -4,6 +4,7 @@ import {Socket} from "socket.io-client";
 import {PlayersRepository} from "../repositories/PlayersRepository";
 import {RoomsRepository} from "../repositories/RoomsRepository";
 import {SocketsRepository} from "../repositories/SocketsRepository";
+import {GameStatus} from "../enums/GameStatus";
 
 @Service()
 export class StartGameHandler {
@@ -34,7 +35,7 @@ export class StartGameHandler {
 
     this.roomsRepository.findOrFailBySlug(data.roomSlug).then(room => {
       room.leader.then(leader => {
-        if (leader.socketId !== socket.id) {
+        if (leader.socketID !== socket.id) {
           this.io.to(socket.id).emit('start-game-result', {
             success: false,
             error: 'action-is-forbidden'
@@ -56,23 +57,13 @@ export class StartGameHandler {
               data: {}
             })
 
-            this.io.to(room.slug).emit('game-about-to-start', {
-              success: true,
-              data: {}
+            this.io.to(room.slug).emit('update-game-status', {
+              status: GameStatus.Ready_to_Start,
             })
           }
         )
       })
       // TODO
-      // let game = room.game
-      // let playersManager = game.getPlayersManager()
-      // if (room.getAdminPlayer() !== socket.id) {
-      //   this.io.to(socket.id).emit('start-game-result', {
-      //     success: false,
-      //     error: 'You are not admin of this room'
-      //   })
-      //   return
-      // }
       //
       // // first round of the game?
       // let gameStatus = game.getStatus()

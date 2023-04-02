@@ -3,6 +3,7 @@ import {Server} from "socket.io";
 import {Socket} from "socket.io-client";
 import {PlayersRepository} from "../repositories/PlayersRepository";
 import {RoomsRepository} from "../repositories/RoomsRepository";
+import {GameStatus} from "../enums/GameStatus";
 
 @Service()
 export class RoomJoinHandler {
@@ -30,7 +31,7 @@ export class RoomJoinHandler {
         socket.join(room.slug)
 
         // TODO spectator mode
-        if (room.game?.status === 'playing') {
+        if (room.gameStatus === GameStatus.Playing) {
           //playersRepository.setSpectatorMode(currentPlayer.getSocketID())
         } else {
           //playersRepository.unsetSpectatorMode(currentPlayer.getSocketID())
@@ -55,11 +56,11 @@ export class RoomJoinHandler {
 
           room.players.then(players => {
             room.leader.then(leader => {
-              this.io.in(data.roomSlug).emit('refresh-players', {admin: leader.socketId, players: players})
+              this.io.in(data.roomSlug).emit('refresh-players', {admin: leader.socketID, players: players})
             })
           })
 
-          if (room.game?.status === 'playing') {
+          if (room.gameStatus === GameStatus.Playing) {
             this.io.to(socket.id).emit('countdown-update', {
               timeleft: 0,
               gameData: {

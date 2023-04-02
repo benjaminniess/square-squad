@@ -8,7 +8,7 @@ const mockedParams = {
   game: {
     getPlayersManager: () => {
       return {
-        uptadePlayerSingleData: (param1: any, param2: any, param3: any) => {
+        updatePlayerSingleData: (param1: any, param2: any, param3: any) => {
           return
         }
       }
@@ -93,7 +93,7 @@ describe('Score changer bonus tests', () => {
   combinaisons.forEach((combinaison) => {
     it(
       'returns the correct combinaison from the random generated number of ' +
-        combinaison.number,
+      combinaison.number,
       () => {
         const bonusObj = new ScoreChanger(mockedParams)
 

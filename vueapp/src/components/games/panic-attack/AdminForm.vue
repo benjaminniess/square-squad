@@ -48,9 +48,9 @@ export default {
   data() {
     const gameStore = useGameStore()
     return {
-      roundsNumber: gameStore.gameOptions.roundsNumber,
-      obstaclesSpeed: gameStore.gameOptions.obstaclesSpeed,
-      bonusFrequency: gameStore.gameOptions.bonusFrequency
+      roundsNumber: gameStore.gameOptions.roundsNumber ?? 3,
+      obstaclesSpeed: gameStore.gameOptions.obstaclesSpeed ?? 10,
+      bonusFrequency: gameStore.gameOptions.bonusFrequency ?? 5
     }
   },
   methods: {

@@ -9,21 +9,24 @@
       ></canvas>
     </div>
     <LobbySection
-      v-show="status == 'waiting'"
+      v-show="status === 'waiting'"
       v-bind:admin="admin"
       v-bind:isAdmin="isAdmin"
       v-bind:players="players"
       v-bind:room="room"
     ></LobbySection>
+    <ReadyToStart
+      v-show="status === 'ready-to-start'"
+    ></ReadyToStart>
     <GameSection
-      v-show="status == 'playing'"
+      v-show="status === 'playing'"
       v-bind:gameData="gameData"
       v-bind:isAdmin="isAdmin"
       v-bind:players="players"
       v-bind:room="room"
     ></GameSection>
     <RankSection
-      v-show="status == 'end-round'"
+      v-show="status === 'end-round'"
       v-bind:gameIsOver="gameIsOver"
       v-bind:players="players"
       v-bind:ranking="ranking"
@@ -42,10 +45,12 @@ import Footer from './common/Footer.vue'
 import {useGameStore} from "../stores/GamesStore.js";
 import {useSocketStore} from "../stores/SocketStore.js";
 import {usePlayerStore} from "../stores/PlayerStore.js";
+import ReadyToStart from "./ReadyToStart.vue";
 
 export default {
   name: 'App',
   components: {
+    ReadyToStart,
     LobbySection,
     GameSection,
     RankSection,
@@ -54,7 +59,7 @@ export default {
   },
   data() {
     return {
-      players: {},
+      players: [],
       admin: '',
       room: {},
       gameData: {
@@ -120,11 +125,13 @@ export default {
       this.admin = data.admin
     })
 
-    socketStore.socket.on('start-game-result', (result) => {
-      if (result.success) {
-        this.gameData.currentRound = result.data.currentRound
-        this.gameData.totalRounds = result.data.totalRounds
-        gameStore.updateGameStatus('playing')
+    socketStore.socket.on('update-game-status', (result) => {
+      gameStore.updateGameStatus(result.status)
+      if (result.status === 'ready-to-start') {
+        // Show temp message
+      } else if (result.status === 'playing') {
+        this.gameData.currentRound = result.data?.currentRound ?? 1
+        this.gameData.totalRounds = result.data?.totalRounds ?? 1
         this.gameIsOver = false
       }
     })
@@ -136,7 +143,7 @@ export default {
     socketStore.socket.on('in-game-countdown-update', (data) => {
       this.gameData.timeLeft = parseInt(data.timeleft)
 
-      if (data.timeleft == 0) {
+      if (data.timeleft === 0) {
         this.gameData.timeLeft = 'Game over'
 
         this.ranking = data

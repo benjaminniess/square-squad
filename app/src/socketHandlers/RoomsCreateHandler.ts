@@ -32,7 +32,7 @@ export class RoomsCreateHandler {
       .catch(error => {
         this.io.to(socket.id).emit('create-room-result', {
           success: false,
-          error: error
+          error: error.message
         })
       })
 

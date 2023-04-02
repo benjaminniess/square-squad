@@ -8,15 +8,16 @@
           <h4 id="round-number">
             Round {{ gameData.currentRound }}/{{ gameData.totalRounds }}
           </h4>
+          {{ players }}
           <ul v-if="players" class="players-list players">
             <li
               v-for="(player, player_key) in players"
               :key="player_key"
               :style="{ color: player.color }"
             >
-              {{ player.nickname }}
+              {{ player.nickName }}
               <!--<span v-if="player.isAdmin">[Admin]</span>-->
-              <span v-if="player.id == currentPlayer">[You]</span>
+              <span v-if="player.socketID === currentPlayer">[You]</span>
               <span v-if="player.alive !== true">[Dead]</span>
               <span>[{{ player.score }}]</span>
             </li>

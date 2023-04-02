@@ -36,7 +36,7 @@ export class DisconnectingHandler {
             room.players.then(players => {
               room.leader
                 .then(leader => {
-                  this.io.in(room.slug).emit('refresh-players', {admin: leader?.socketId, players: players})
+                  this.io.in(room.slug).emit('refresh-players', {admin: leader?.socketID, players: players})
                 })
                 .then(() => {
                   this.socketDatabaseSynchronizer.deleteGhostPlayersFromDatabase().then(() => {
